@@ -1,4 +1,4 @@
-Azure Container Registry 
+Azure Container Registry Samples and Support
 
 Copyright (c) Microsoft Corporation
 
