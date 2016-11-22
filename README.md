@@ -3,7 +3,7 @@
 This repo contains Samples and Troubleshooting tips for Azure Container Registry. If you face any issues, Please log it here -  https://github.com/Azure/acr/issues
 
 
-[CLI Troubleshooting] (docs/ACR - Troubleshooting Guide .md)
+[CLI Troubleshooting] (docs/CLI - Troubleshooting Guide .md)
 
 [Moving Repositories] (docs/move-repositories-to-new-registry.md)
 
