@@ -13,7 +13,9 @@ ACR User Accounts - https://blogs.msdn.microsoft.com/stevelasker/2016/11/17/azur
 
 ## Resources
 
-Azure Container Registry Home Page: https://azure.microsoft.com/en-us/services/container-registry/
+Articles - https://github.com/Microsoft/azure-docs/blob/master/articles/container-registry/toc.md
+
+Azure Container Registry Home Page - https://azure.microsoft.com/en-us/services/container-registry/
 
 Azure Management Portal - https://portal.azure.com/#blade/HubsExtension/Resources/resourceType/Microsoft.ContainerRegistry%2Fregistries
 
