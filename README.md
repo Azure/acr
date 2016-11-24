@@ -2,6 +2,7 @@
 
 This repo contains Samples and Troubleshooting tips for Azure Container Registry. If you face any issues, Please log it here -  https://github.com/Azure/acr/issues
 
+[FAQ] (docs/FAQ.md)
 
 [CLI Troubleshooting] (docs/CLI - Troubleshooting Guide .md)
 
@@ -13,7 +14,9 @@ ACR User Accounts - https://blogs.msdn.microsoft.com/stevelasker/2016/11/17/azur
 
 ## Resources
 
-Articles - https://github.com/Microsoft/azure-docs/blob/master/articles/container-registry/toc.md
+Official Documentation Page - https://docs.microsoft.com/en-us/azure/container-registry/
+
+Contribute to Documentation - https://github.com/Microsoft/azure-docs/blob/master/articles/container-registry/toc.md
 
 Azure Container Registry Home Page - https://azure.microsoft.com/en-us/services/container-registry/
 
@@ -25,4 +28,4 @@ REST API Reference -  https://docs.microsoft.com/en-us/rest/api/containerregistr
 
 Python SDK - https://github.com/Azure/azure-sdk-for-python/tree/master/azure-mgmt-containerregistry
 
-Issues - https://github.com/Azure/acr/issues
+Log Issues - https://github.com/Azure/acr/issues
