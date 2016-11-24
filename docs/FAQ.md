@@ -8,7 +8,3 @@ Yes. Here is the template that you can use to create a registry - https://github
 Yes. Please check the following links
 Twistlock - https://www.twistlock.com/2016/11/07/twistlock-supports-azure-container-registry/
 Aqua - http://blog.aquasec.com/image-vulnerability-scanning-in-azure-container-registry
-
-## How can I use RBAC for the registries ?
-
-Please check this - https://asciinema.org/a/dloxd5ypqsr3di37z6sol0j7a
