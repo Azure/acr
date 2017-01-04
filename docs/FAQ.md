@@ -6,5 +6,11 @@ Yes. Here is the template that you can use to create a registry - https://github
 ## Is there security vulnerability scanning for images in ACR ?
 
 Yes. Please check the following links
+
 Twistlock - https://www.twistlock.com/2016/11/07/twistlock-supports-azure-container-registry/
+
 Aqua - http://blog.aquasec.com/image-vulnerability-scanning-in-azure-container-registry
+
+
+## How to configure Kubernetes with Azure Container Registry
+http://kubernetes.io/docs/user-guide/images/#using-azure-container-registry-acr
