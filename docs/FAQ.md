@@ -14,3 +14,8 @@ Aqua - http://blog.aquasec.com/image-vulnerability-scanning-in-azure-container-r
 
 ## How to configure Kubernetes with Azure Container Registry
 http://kubernetes.io/docs/user-guide/images/#using-azure-container-registry-acr
+
+
+## How to access Docker Registry HTTP API V2
+ACR supports Docker Registry HTTP API V2. The APIs can be accessed at
+https://<your registry login server>/v2/
