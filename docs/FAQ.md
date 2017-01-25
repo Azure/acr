@@ -19,3 +19,6 @@ http://kubernetes.io/docs/user-guide/images/#using-azure-container-registry-acr
 ## How to access Docker Registry HTTP API V2?
 ACR supports Docker Registry HTTP API V2. The APIs can be accessed at
 https://\<your registry login server\>/v2/
+
+## Is Azure Premium Storage account supported?
+Azure Premium Storage account is not supported.
