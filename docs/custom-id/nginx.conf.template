@@ -1,0 +1,53 @@
+user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log;	#  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+	
+	upstream backends {
+		server ${BACKEND_HOST}:443;
+	}
+
+	server {
+		listen              443 ssl; # 'ssl' parameter tells NGINX to decrypt the traffic
+		server_name         ${FRONTEND_HOST};
+		ssl_certificate     /etc/nginx/ssl/cert.crt; # The certificate file
+		ssl_certificate_key /etc/nginx/ssl/private.key; # The private key file
+		ssl_password_file	/etc/nginx/ssl/pwd;
+
+		location / {
+			proxy_set_header        Host ${BACKEND_HOST};
+			proxy_set_header        X-Real-IP $remote_addr;
+			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header        X-Forwarded-Proto $scheme;
+	  
+			proxy_pass https://backends;
+		}
+	}
+}
+
