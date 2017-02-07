@@ -35,3 +35,10 @@ az account set --subscription <correct-subscription>
 
 See [this] (#RegisterSub) and [this] (#SetCorrectSub)
 
+## Image exists in my ACR but, docker pull returns "image not found"
+
+Please make sure you login before you pull/push repositories
+```
+docker login <yourregistry>.azurecr.io
+```
+
