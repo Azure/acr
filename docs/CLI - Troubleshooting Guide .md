@@ -35,3 +35,6 @@ az account set --subscription <correct-subscription>
 
 See [this] (#RegisterSub) and [this] (#SetCorrectSub)
 
+# How to use a custom regisry ID
+
+Azure docker registries has a typical ID of the format `*-microsoft.azurecr.io`. A customer might like to have a custom registry ID that associate with its own organization. Follow [this guide](custom-registry-id.md) to achieve that.
