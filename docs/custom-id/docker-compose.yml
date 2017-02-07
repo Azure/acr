@@ -1,0 +1,17 @@
+proxy:
+    image: nginx
+
+    ports:
+        - 443:443
+
+    env_file:
+        - custom_id.env
+
+    volumes:
+        - ./ssl/cert.crt:/etc/nginx/ssl/cert.crt:ro
+        - ./ssl/private.key:/etc/nginx/ssl/private.key:ro
+        - ./ssl/pwd:/etc/nginx/ssl/pwd:ro
+        - ./envsubst_nginx.sh:/etc/envsubst_nginx.sh:ro
+        - ./nginx.conf.template:/etc/nginx/nginx.conf.template:ro
+
+    command: /bin/bash -c "/etc/envsubst_nginx.sh && nginx -g 'daemon off;'"
