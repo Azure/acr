@@ -16,7 +16,7 @@ ACR User Accounts - https://blogs.msdn.microsoft.com/stevelasker/2016/11/17/azur
 
 Official Documentation Page - https://docs.microsoft.com/en-us/azure/container-registry/
 
-Contribute to Documentation - https://github.com/Microsoft/azure-docs/blob/master/articles/container-registry/toc.md
+Contribute to Documentation - https://github.com/Microsoft/azure-docs/blob/master/articles/container-registry/TOC.md
 
 Azure Container Registry Home Page - https://azure.microsoft.com/en-us/services/container-registry/
 
@@ -26,6 +26,10 @@ AZ CLI Reference - https://github.com/Azure/azure-cli/blob/master/src/command_mo
 
 REST API Reference -  https://docs.microsoft.com/en-us/rest/api/containerregistry/
 
-Python SDK - https://github.com/Azure/azure-sdk-for-python/tree/master/azure-mgmt-containerregistry
+SDK for Python - https://pypi.python.org/pypi/azure-mgmt-containerregistry/0.1.1
+> Source - https://github.com/Azure/azure-sdk-for-python/tree/master/azure-mgmt-containerregistry
+
+SDK for .NET - https://www.nuget.org/packages/Microsoft.Azure.Management.ContainerRegistry/1.0.0-preview
+> Source - https://github.com/Azure/azure-sdk-for-net/tree/AutoRest/src/ResourceManagement/ContainerRegistry
 
 Log Issues - https://github.com/Azure/acr/issues

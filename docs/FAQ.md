@@ -22,3 +22,22 @@ https://\<your registry login server\>/v2/
 
 ## Is Azure Premium Storage account supported?
 Azure Premium Storage account is not supported.
+
+## How to use Powershell to manage Azure Container Registry?
+
+See [here](https://docs.microsoft.com/en-us/azure/azure-resource-manager/powershell-azure-resource-manager) for an introduction to manage Azure resources with PowerShell.
+
+To set the correct subscription
+```
+Select-AzureRmSubscription -SubscriptionName mySubscription
+```
+
+To show a container registry
+```
+Get-AzureRmResource -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName myResourceGroup -ResourceName myRegistry
+```
+
+To show admin login credentials
+```
+Invoke-AzureRmResourceAction -Action getCredentials -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName myResourceGroup -ResourceName myRegistry
+```
