@@ -4,7 +4,7 @@ This repo contains Samples and Troubleshooting tips for Azure Container Registry
 
 [FAQ] (docs/FAQ.md)
 
-[CLI Troubleshooting] (docs/CLI - Troubleshooting Guide .md)
+[CLI Troubleshooting] (docs/Troubleshooting Guide .md)
 
 [Moving Repositories] (docs/move-repositories-to-new-registry.md)
 
