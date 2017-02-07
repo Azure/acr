@@ -27,12 +27,12 @@ Azure Premium Storage account is not supported.
 
 Please make sure admin is enabled.
 
-To use AZ CLI
+Using `az cli`
 ```
 az acr credential show -n myRegistry
 ```
 
-To use Powershell
+Using `Azure Powershell`
 ```
 Invoke-AzureRmResourceAction -Action getCredentials -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName myResourceGroup -ResourceName myRegistry
 ```
