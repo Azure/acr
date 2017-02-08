@@ -1,6 +1,6 @@
 # How to use a custom domain for azure container registry
 
-Azure docker registries has a typical domain of the format `*.azurecr.io`. A customer might like to have a custom domain that associate with its own organization. The following is the guide on how to achieve that.
+Azure docker registries has a typical login url of the format `*.azurecr.io`. A customer might like to have a custom domain that associate with its own organization. The following is the guide on how to achieve that.
 
 ## Prerequisites
 
