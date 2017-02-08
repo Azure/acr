@@ -42,3 +42,6 @@ Please make sure you login before you pull/push repositories
 docker login <yourregistry>.azurecr.io
 ```
 
+# How to use a custom domain for azure container registry
+
+Azure docker registries has a typical login url of the format `*.azurecr.io`. A customer might like to have a custom domain that associate with its own organization. Follow [this guide](custom-domain.md) to achieve that.
