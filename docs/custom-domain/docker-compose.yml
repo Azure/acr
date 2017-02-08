@@ -5,7 +5,7 @@ proxy:
         - 443:443
 
     env_file:
-        - custom_id.env
+        - custom_domain.env
 
     volumes:
         - ./ssl/cert.crt:/etc/nginx/ssl/cert.crt:ro
