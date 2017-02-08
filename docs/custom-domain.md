@@ -14,7 +14,7 @@ To setup custom domain for azure container registry, the following prerequisites
 
 1. On `registry.contoso.com`, copy [setup files](custom-id/) into it.
 2. Create a sub-directory named `ssl`, copy `cert.crt`, `private.key`, and `pwd` into this directory. The location of these files can be changed but volume entries in the [docker-compose.yml](custom-id/docker-compose.yml#L11-L13) would then need to be updated to reflect the changes.
-3. Edit [custom_id.env](custom-id/custom_id.env) to point to your front end docker host (E.g. `registry.contoso.com`) and backend Azure Docker Registry (E.g. `peterhsuacr-microsoft.azurecr.io`).
+3. Edit [custom_domain.env](custom-domain/custom_domain.env) to point to your front end docker host (E.g. `registry.contoso.com`) and backend Azure Docker Registry (E.g. `peterhsuacr-microsoft.azurecr.io`).
 4. Run `docker-compose up -d` and this should bring up the nginx service that would forward all docker requests from your front end service to the backend Azure Docker Registry.
 
 ## Quick verification
