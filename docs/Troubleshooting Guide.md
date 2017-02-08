@@ -44,4 +44,4 @@ docker login <yourregistry>.azurecr.io
 
 # How to use a custom domain for azure container registry
 
-Azure docker registries has a typical ID of the format `*.azurecr.io`. A customer might like to have a custom registry ID that associate with its own organization. Follow [this guide](custom-registry-id.md) to achieve that.
+Azure docker registries has a typical ID of the format `*.azurecr.io`. A customer might like to have a custom registry ID that associate with its own organization. Follow [this guide](custom-domain.md) to achieve that.
