@@ -6,7 +6,7 @@ export BACKEND_HOST=$2
 export FRONTEND_HOST=$3
 CA_CERT_URL=$4
 
-SOURCE_ROOT="https://raw.githubusercontent.com/shhsu/acr/master"
+SOURCE_ROOT="https://raw.githubusercontent.com/Azure/acr/master"
 
 curl "$SOURCE_ROOT/docs/custom-domain/docker-vm-deploy/setup-certs.sh" -o  setup-certs.sh
 chmod +x ./setup-certs.sh

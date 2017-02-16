@@ -28,10 +28,10 @@ Under [custom-domain/key-vault-setup/](custom-domain/key-vault-setup/), run the 
 
 Deploy via Azure Portal
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fshhsu%2Facr%2Fmaster%2Fdocs%2Fcustom-domain%2Fdocker-vm-deploy%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Facr%2Fmaster%2Fdocs%2Fcustom-domain%2Fdocker-vm-deploy%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fshhsu%2Facr%2Fmaster%2Fdocs%2Fcustom-domain%2Fdocker-vm-deploy%2Fazuredeploy.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Facr%2Fmaster%2Fdocs%2Fcustom-domain%2Fdocker-vm-deploy%2Fazuredeploy.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
