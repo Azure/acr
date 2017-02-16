@@ -4,13 +4,10 @@ This repo contains Samples and Troubleshooting tips for Azure Container Registry
 
 [FAQ] (docs/FAQ.md)
 
-[CLI Troubleshooting] (docs/Troubleshooting Guide .md)
-
-[Moving Repositories] (docs/move-repositories-to-new-registry.md)
+[Troubleshooting] (docs/Troubleshooting Guide.md)
 
 ## Blogs
 ACR User Accounts - https://blogs.msdn.microsoft.com/stevelasker/2016/11/17/azure-container-registry-user-accounts/
-
 
 ## Resources
 
