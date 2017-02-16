@@ -259,7 +259,7 @@
         "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
-          "fileUris": ["https://raw.githubusercontent.com/shhsu/acr/master/docs/custom-domain/docker-vm-deploy/deploy-nginx-docker.sh"]
+          "fileUris": ["https://raw.githubusercontent.com/Azure/acr/master/docs/custom-domain/docker-vm-deploy/deploy-nginx-docker.sh"]
         },
         "protectedSettings": {
           "commandToExecute": "[concat('./deploy-nginx-docker.sh ', parameters('certThumbPrint'), ' ', parameters('backendRegistry'), ' ', parameters('dnsFrontEnd'), ' \"', parameters('caCertUrl'), '\"')]"
