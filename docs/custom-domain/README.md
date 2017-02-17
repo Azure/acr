@@ -53,4 +53,4 @@ Configure the DNS zone so `registry.contoso.com` points to the Azure VM you have
 
 A simple way to test the setup is to call `docker login` to quickly confirm that the requests are properly forwarded:
 
-  `docker login registry.contoso.com -u <username> -p <password>`
+  `docker login -u <username> -p <password> registry.contoso.com`
