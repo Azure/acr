@@ -36,3 +36,15 @@ Using `Azure Powershell`
 ```
 Invoke-AzureRmResourceAction -Action getCredentials -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName myResourceGroup -ResourceName myRegistry
 ```
+
+## How to update my registry to use the regenerated storage account access key?
+
+Using `az cli` to update the storage account for your registry
+```
+az acr update -n myRegistry --storage-account-name myStorageAccount
+```
+
+Your can find `myStorageAccount` to your registry by the following command
+```
+az acr show -n myRegistry --query storageAccount.name
+```
