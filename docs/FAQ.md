@@ -23,7 +23,7 @@ https://\<your registry login server\>/v2/
 ## Is Azure Premium Storage account supported?
 Azure Premium Storage account is not supported.
 
-## How to get admin login credential for a container registry?
+## How to get login credentials for a container registry?
 
 Please make sure admin is enabled.
 
@@ -34,7 +34,25 @@ az acr credential show -n myRegistry
 
 Using `Azure Powershell`
 ```
-Invoke-AzureRmResourceAction -Action getCredentials -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName myResourceGroup -ResourceName myRegistry
+Invoke-AzureRmResourceAction -Action listCredentials -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName myResourceGroup -ResourceName myRegistry
+```
+
+## How to get login credentials in an ARM template?
+
+Please make sure admin is enabled.
+
+```
+{
+    "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-03-01').passwords[0].value]"
+}
+```
+
+To get the second password
+
+```
+{
+    "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-03-01').passwords[1].value]"
+}
 ```
 
 ## How to update my registry to use the regenerated storage account access key?
