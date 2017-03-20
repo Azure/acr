@@ -37,7 +37,7 @@ Using `Azure Powershell`
 Invoke-AzureRmResourceAction -Action listCredentials -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName myResourceGroup -ResourceName myRegistry
 ```
 
-## How to get login credentials in an ARM template?
+## How to get login credentials in an ARM deployment template?
 
 Please make sure admin is enabled.
 
