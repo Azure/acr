@@ -21,6 +21,8 @@ Azure Management Portal - https://portal.azure.com/#blade/HubsExtension/Resource
 
 AZ CLI Reference - https://docs.microsoft.com/en-us/cli/azure/acr
 
+Azure PowerShell Reference - https://docs.microsoft.com/powershell/module/azurerm.containerregistry
+
 Log Issues - https://github.com/Azure/acr/issues
 
 ## API and SDK References
