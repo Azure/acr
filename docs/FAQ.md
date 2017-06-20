@@ -66,3 +66,20 @@ Your can find `myStorageAccount` to your registry by the following command
 ```
 az acr show -n myRegistry --query storageAccount.name
 ```
+
+## How to log into my registry when running the CLI in a container?
+
+You need to run the CLI container by mounting the Docker socket
+```
+docker run -it -v /var/run/docker.sock:/var/run/docker.sock azuresdk/azure-cli-python
+```
+
+In the container, you can install `docker` by
+```
+apk add docker
+```
+
+Then you can log into your registry by
+```
+az acr login -n MyRegistry
+```
