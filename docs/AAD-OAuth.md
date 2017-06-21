@@ -107,7 +107,7 @@ The cycle to get credentials looks as follows:
   1. Call `/oauth2/exchange` presenting the AAD refresh token and the AAD access token. The service will return you an ACR refresh token.
   2. Call `/oauth2/token` presenting the ACR refresh token. The service will return you an ACR access token which you can use to call the Azure Container Registry's APIs.
 
-## Example of calling `/oauth2/exchange`
+## Calling `/oauth2/exchange` to get ACR refresh token
 Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`
   2. The AAD tenant identifier associated to the credentials, which here we'll take to be `409520d4-8100-4d1d-ad47-72432ddcc120`.
@@ -134,7 +134,10 @@ The outcome of this operation will be a response with status 200 OK and a body w
 ```json
 {"refresh_token":"eyJ...L7a"}
 ```
-This response is the ACR refresh token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to obtain an ACR access token programmatically or simply send it to the `docker login` command to get docker talking to the Azure Container Registry. You can do it like this:
+This response is the ACR refresh token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to obtain an ACR access token programmatically or simply send it to the `docker login` command to get docker talking to the Azure Container Registry.
+
+## Logging into docker with an ACR refresh token
+Once you have obtained an ACR refresh token, you can use the docker CLI to sign in to your registry like this:
 ```bash
 export registry="contosoregistry.azurecr.io"
 export acr_username="00000000-0000-0000-0000-000000000000"
@@ -143,7 +146,7 @@ docker login -u "$acr_username" -p "$acr_refresh_token" $registry
 ```
 The null GUID tells the container registry that this is an ACR refresh token during the login flow.
 
-## Example of calling `/oauth2/token`
+## Calling `/oauth2/token` to get ACR access token
 Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
   2. A valid ACR refresh token.
@@ -170,7 +173,7 @@ The outcome of this operation will be a response with status 200 OK and a body w
 ```
 This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry
 
-## Example of calling an Azure Container Registry API
+## Calling an Azure Container Registry API
 Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
   2. A correctly crafted ACR access token
