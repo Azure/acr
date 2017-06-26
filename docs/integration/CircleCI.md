@@ -1,4 +1,4 @@
-# Using Azure Containter Registry With CicleCI
+# Using Azure Containter Registry With CircleCI
 
 For configuration of your Docker build using CircleCI, refer [https://circleci.com/docs/1.0/docker/](https://circleci.com/docs/1.0/docker/)
 
