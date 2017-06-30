@@ -217,7 +217,7 @@ This response is the ACR access token which you can inspect with [jwt.io](https:
 
 In this example we'll call the `/v2/_catalog` API on an Azure Container Registry. Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
-  2. A correctly crafted ACR access token.
+  2. A valid ACR access token, created with the correct scope for the API we're going to call.
 
 Here's how a call to the `/v2/_catalog` API of the given registry would look like when done via `curl`:
 
