@@ -17,7 +17,7 @@ Internally, the CLI will follow these steps:
   1. Calls to Azure Resource Manager to resolve the login server for the specified registry.
   2. Obtains refresh credentials from the profile in use. For a headless call, this will give you the registered SPN, for a regular user this will give you a refresh token.
   3. Makes an HTTPS GET call to the registry server's `/v2` endpoint, without credentials. A bearer token authentication challenge is expected, specifying realm and service values. The realm contains the authentication server's URL.
-  4. Makes an HTTPS POST call to the authentication server's `/oauth2/exchange` endpoint, with a body indicating the grant type, the service, the tenant, and the credentials.
+  4. Makes an HTTPS POST call to the authentication server's `POST /oauth2/exchange` endpoint, with a body indicating the grant type, the service, the tenant, and the credentials.
   5. From the server's response, we extract an Azure Container Registry refresh token.
   6. Pass the refresh token as the password to the Docker CLI, using a null GUID as the username and calling `docker login`. From here on, the docker CLI takes care of the authorization cycle using oauth2.
 
@@ -34,14 +34,14 @@ Internally, the CLI will follow these steps:
   1. Calls to Azure Resource Manager to resolve the login server for the specified registry.
   2. Obtains refresh credentials from the profile in use. For a headless call, this will give you the registered SPN, for a regular user this will give you a refresh token.
   3. Makes an HTTPS GET call to the registry server's `/v2` endpoint, without credentials. A bearer token authentication challenge is expected, specifying realm and service values. The realm contains the authentication server's URL.
-  4. Makes an HTTPS POST call to the authentication server's `/oauth2/exchange` endpoint, with a body indicating the grant type, the service, the tenant, and the credentials.
+  4. Makes an HTTPS POST call to the authentication server's `POST /oauth2/exchange` endpoint, with a body indicating the grant type, the service, the tenant, and the credentials.
   5. From the server's response we extract an Azure Container Registry refresh token.
-  6. Makes an HTTPS POST call to the authentication server's `/oauth2/token` endpoint, with a body indicating the grant type, the service, the scope, and the Azure Container Registry refresh token.
+  6. Makes an HTTPS POST call to the authentication server's `POST /oauth2/token` endpoint, with a body indicating the grant type, the service, the scope, and the Azure Container Registry refresh token.
   7. From the server's response we extract an Azure Container Registry access token.
-  8. Makes an HTTPS GET call to the registry server's `/v2/_catalog` endpoint using the access token as the bearer token.
+  8. Makes an HTTPS GET call to the registry server's `GET /v2/_catalog` endpoint using the access token as the bearer token.
   9. Obtains the data from the service and displays it.
 
-When listing the tags of a repository, every step above is the same except for the call to the endpoint that gives the tags which is `/v2/contosoregistry/tags/list` instead of `/v2/_catalog`.
+When listing the tags of a repository, every step above is the same except for the call to the endpoint that gives the tags which is `GET /v2/contosoregistry/tags/list` instead of GET `/v2/_catalog`.
 
 # Azure Container Registry refresh tokens and access tokens
 
@@ -106,10 +106,10 @@ Ideally you'll present both the AAD access token and the AAD refresh token. The 
   2. The AAD refresh token is sent back to the user so they can initiate a token refresh cycle against AAD. If no AAD refresh token is sent, then the client won't have this credential at hand to initiate a credential refresh.
 
 The cycle to get credentials looks as follows:
-  1. Call `/oauth2/exchange` presenting the AAD refresh token and the AAD access token. The service will return you an ACR refresh token.
-  2. Call `/oauth2/token` presenting the ACR refresh token. The service will return you an ACR access token which you can use to call the Azure Container Registry's APIs.
+  1. Call `POST /oauth2/exchange` presenting the AAD refresh token and the AAD access token. The service will return you an ACR refresh token.
+  2. Call `POST /oauth2/token` presenting the ACR refresh token. The service will return you an ACR access token which you can use to call the Azure Container Registry's APIs.
 
-## Calling `/oauth2/exchange` to get an ACR refresh token
+## Calling `POST /oauth2/exchange` to get an ACR refresh token
 
 In this example, we'll try to obtain an ACR refresh token from existing AAD tokens. Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
@@ -118,7 +118,7 @@ In this example, we'll try to obtain an ACR refresh token from existing AAD toke
 
 The AAD access token and AAD refresh token can be obtained from the Azure CLI. After running `az login` check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
 
-We'll now call `/oauth2/exchange` to exchange the AAD tokens for an ACR refresh token. Here's how such a call looks when done via `curl`:
+We'll now call `POST /oauth2/exchange` to exchange the AAD tokens for an ACR refresh token. Here's how such a call looks when done via `curl`:
 ```bash
 export registry="contosoregistry.azurecr.io"
 export tenant="409520d4-8100-4d1d-ad47-72432ddcc120"
@@ -160,9 +160,9 @@ docker pull contosoregistry.azurecr.io/contoso-marketing
 
 Notice that the ACR refresh token will be saved by the docker CLI in its credential store, and will be used by the docker CLI to obtain an ACR access token on each operation it performs against the Azure Container Registry. The ACR refresh token is made so it stops working after a period of time, but if you obtained it using either `grant_type=access_token_refresh_token` or `grant_type=refresh_token` then it can be refreshed automatically by installing the [ACR docker credential helper](https://github.com/azure/acr-docker-credential-helper).
 
-## Calling `/oauth2/token` to get an ACR access token
+## Calling `POST /oauth2/token` to get an ACR access token
 
-In this example, we'll try to obtain an ACR access token from existing ACR refresh token, and this access token will only work for the operation we're trying to perform, which is a call to the `/v2/_catalog` API. Assume you have the following:
+In this example, we'll try to obtain an ACR access token from existing ACR refresh token, and this access token will only work for the operation we're trying to perform, which is a call to the `GET /v2/_catalog` API. Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
   2. A valid ACR refresh token.
 
@@ -171,6 +171,7 @@ The first thing you want is to obtain an authentication challenge for the operat
 export registry="contosoregistry.azurecr.io"
 curl -v https://$registry/v2/_catalog
 ```
+Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
 
 This will output the following payload, with `...` used to shorten it for illustrative purposes:
 
@@ -190,7 +191,7 @@ Notice the response payload has a header called `Www-Authenticate` that gives us
 
 The body of the payload might provide additional details, but all the information you need is contained in the `Www-Authenticate` header.
 
-With this information we're now ready to call `/oauth2/token` to obtain an ACR access token that will allow us to use the `/v2/_catalog` API. Here's how such a call looks when done via `curl`:
+With this information we're now ready to call `POST /oauth2/token` to obtain an ACR access token that will allow us to use the `GET /v2/_catalog` API. Here's how such a call looks when done via `curl`:
 
 ```bash
 export registry="contosoregistry.azurecr.io"
@@ -205,7 +206,7 @@ The body of the POST message is a querystring-like text that specifies the follo
   - `grant_type` which is expected to be `refresh_token`.
   - `service`, which must indicate the name of your Azure container registry. You obtained this from the `Www-Authenticate` response header from the challenge.
   - `scope`, which is expected to be a valid [scope](https://docs.docker.com/registry/spec/auth/scope/), and can be specified more than once for multiple scope requests. You obtained this from the `Www-Authenticate` response header from the challenge.
-  - `refresh_token`, which must be a valid ACR refresh token, as obtained by calling `/oauth2/exchange`.
+  - `refresh_token`, which must be a valid ACR refresh token, as obtained by calling `POST /oauth2/exchange`.
 
 The outcome of this operation will be a response with status 200 OK and a body with the following JSON payload:
 ```json
@@ -215,17 +216,18 @@ This response is the ACR access token which you can inspect with [jwt.io](https:
 
 ## Calling an Azure Container Registry API
 
-In this example we'll call the `/v2/_catalog` API on an Azure Container Registry. Assume you have the following:
+In this example we'll call the `GET /v2/_catalog` API on an Azure Container Registry. Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
   2. A valid ACR access token, created with the correct scope for the API we're going to call.
 
-Here's how a call to the `/v2/_catalog` API of the given registry would look like when done via `curl`:
+Here's how a call to the `GET /v2/_catalog` API of the given registry would look like when done via `curl`:
 
 ```bash
 export registry="contosoregistry.azurecr.io"
 export acr_access_token="eyJ...xcg"
 curl -v -H "Authorization: Bearer $acr_access_token" https://$registry/v2/_catalog
 ```
+Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
 
 This should result in a status 200 OK, and a body with a JSON payload listing the repositories held in this registry:
 
