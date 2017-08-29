@@ -41,7 +41,7 @@ Internally, the CLI will follow these steps:
   8. Makes an HTTPS GET call to the registry server's `GET /v2/_catalog` endpoint using the access token as the bearer token.
   9. Obtains the data from the service and displays it.
 
-When listing the tags of a repository, every step above is the same except for the call to the endpoint that gives the tags which is `GET /v2/contosoregistry/tags/list` instead of GET `/v2/_catalog`.
+When listing the tags of a repository, every step above is the same except for the call to the endpoint that gives the tags which is `GET /v2/contosoregistry/tags/list` instead of `GET /v2/_catalog`.
 
 # Azure Container Registry refresh tokens and access tokens
 
@@ -233,4 +233,43 @@ This should result in a status 200 OK, and a body with a JSON payload listing th
 
 ```json
 {"repositories":["alpine","hello-world","contoso-marketing"]}
+```
+
+### Full script to call Azure Container Registry API
+This is a summary script of the points discussed above. The first three variables have to be filled out.
+  - Variable `registry` can be something like `"contosoregistry.azurecr.io"`.
+  - The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running az login check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
+
+Note that stale AAD tokens will result in this script failing to obtain an ACR refresh token, and therefore it won't succeed in obtaining an ACR access token or in executing the operation against the registry.
+
+```bash
+#!/bin/bash
+
+export registry=" --- you have to fill this out --- "
+export aad_refresh_token=" --- you have to fill this out --- "
+export aad_access_token=" --- you have to fill this out --- "
+
+export operation="/v2/_catalog"
+
+export acr_refresh_token=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=access_token_refresh_token&service=$registry&refresh_token=$aad_refresh_token&access_token=$aad_access_token" https://$registry/oauth2/exchange | jq '.refresh_token' | sed -e 's/^"//' -e 's/"$//')
+echo "ACR Refresh Token"
+echo $acr_refresh_token
+
+export acr_username="00000000-0000-0000-0000-000000000000"
+
+export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
+echo "Challenge"
+echo $challenge
+
+export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
+echo "Scope"
+echo $scope
+
+export acr_access_token=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=refresh_token&service=$registry&scope=$scope&refresh_token=$acr_refresh_token" https://$registry/oauth2/token | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+echo "ACR Access Token"
+echo $acr_access_token
+
+export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
+echo "Catalog"
+echo $catalog
 ```
