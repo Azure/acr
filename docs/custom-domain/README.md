@@ -14,7 +14,7 @@ For this example, we suppose that you want to associate `registry.contoso.com` w
 
 ### Upload your cert into Azure Key Vault
 
-Under [custom-domain/key-vault-setup/](custom-domain/key-vault-setup/), run the following:
+Under [key-vault-setup/](key-vault-setup/), run the following:
 
 1. (Optional) Create an Azure Key Vault, if you don't already have one:
 
@@ -35,9 +35,9 @@ Deploy via Azure Portal
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
-Alternatively, to deploy using powershell script, [custom-domain/docker-vm-deploy/](custom-domain/docker-vm-deploy/), do the following:
+Alternatively, to deploy using powershell script, [docker-vm-deploy/](docker-vm-deploy/), do the following:
 
-1. Edit [azuredeploy.parameters.json](custom-domain/docker-vm-deploy/azuredeploy.parameters.json) and populate all necessary parameters
+1. Edit [azuredeploy.parameters.json](docker-vm-deploy/azuredeploy.parameters.json) and populate all necessary parameters
 
 2. Run the following script to create the new VM:
 
