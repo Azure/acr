@@ -1,0 +1,42 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "newVmName": {
+      "value": "<My VM>"
+    },
+    "newStorageAccountName": {
+      "value": "<My new Storage>"
+    },
+    "adminUsername": {
+      "value": "<Admin User>"
+    },
+    "adminPassword": {
+      "value": "<Password>"
+    },
+    "dnsNameForVM": {
+      "value": "<VM DNS>"
+    },
+    "vaultName": {
+      "value": "<My Valut>"
+    },
+    "vaultResourceGroup": {
+      "value": "<Resource Group>"
+    },
+    "secretUrlWithVersion": {
+      "value": "<Secret URL>"
+    },
+    "certThumbPrint": {
+      "value": "<Key Thumbprint>"
+    },
+    "dnsFrontEnd": {
+      "value": "<Front End URL>"
+    },
+    "backendRegistry": {
+      "value": "<Azure Registry URL>"
+    },
+    "caCertUrl": {
+      "value": "<Optional: CA Cert URL>"
+    }
+  }
+}

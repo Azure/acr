@@ -35,3 +35,17 @@ az account set --subscription <correct-subscription>
 
 See [this] (#RegisterSub) and [this] (#SetCorrectSub)
 
+## Image exists in my ACR but, docker pull returns "image not found"
+
+Please make sure you login before you pull/push repositories
+```
+docker login <yourregistry>.azurecr.io
+```
+
+## Configuring a custom domain for azure container registry
+
+Azure container registries have a typical login url of the format `*.azurecr.io`. A customer might like to use a custom domain for the registry. Follow [this guide](custom-domain/README.md) to achieve that.
+
+## Moving repositories to a new registry 
+
+To move your repositories to a newly created registry, follow [this guide](move-repositories-to-new-registry/README.md).
