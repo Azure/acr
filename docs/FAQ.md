@@ -83,3 +83,32 @@ Then you can log into your registry by
 ```
 az acr login -n MyRegistry
 ```
+
+## How to enable and get the debug logs of docker daemon?
+
+* You need to start dockerd with debug option.
+
+    First, create the docker daemon configuration file (`/etc/docker/daemon.json`) if it doesn't exist, and add the `debug` option:
+    ```
+    {
+        "debug": true
+    }
+    ```
+    Then, restart the daemon. For Ubuntu 14.04 user, you can do
+    ```
+    sudo service docker restart
+    ```
+    Details can be found [here](https://docs.docker.com/engine/admin/#enable-debugging).
+
+* The logs may be generated at different locations, depending on your system. For example, for Ubuntu 14.04, it's `/var/log/upstart/docker.log`.
+You can refer to [the link](https://docs.docker.com/engine/admin/#read-the-logs) for details:
+
+* For Docker for Windows, the logs are generated under %LOCALAPPDATA%/docker/. However it may not contain all the debug information yet.
+In order to access full daemon log, you may need some extra steps:
+    ```
+    docker run --privileged -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker alpine sh
+    docker run --net=host --ipc=host --uts=host --pid=host -it --security-opt=seccomp=unconfined --privileged --rm -v /:/host alpine /bin/sh
+    chroot /host
+    ```
+
+    Now you have access to all the files of the VM running dockerd. The log is at `/var/log/docker.log`.
