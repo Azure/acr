@@ -44,6 +44,10 @@ We've heard customers tell us that vulnerability scanning is table stakes for co
 ### Portal Face Lift ###
 As we add more and more features, the current user flow is starting to suffer. We'll be reworking the flow to support a host of new enhancements we're working on over the next few months.
 
+### Image Promotion ###
+We're starting to see a pattern where teams use multiple registries that align to their environments. Dev has a registry they develop, build, test within. The entire development team has full access to push and pull. The production environment is locked down to a subset of users and service accounts. It has only the images that have passed quality testing. It may be the registry that gets geo-replicated, where the dev registry is limited to the region(s) where developers work/deploy to. 
+Through an `az acr xxx --source-registry -- destination-registry`, and/or through the Azure Portal, teams can promote/move an image from one registry to another. 
+
 ### User Telemetry ###
 As your registry usage increases through automation, providing visibility into the usage and image size utilization.
 
