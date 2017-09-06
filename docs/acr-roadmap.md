@@ -63,6 +63,10 @@ Containers include a portion of the base OS & Development Framework. As base ima
 ### Sovereign and Government Clouds ###
 As container hosts, such as Azure Container Services move into these regions, ACR will be available. The exhaustive and lengthy certification process has begun.
 
+### Custom Domain Support ###
+Rather than using https://contoso.azurecr.io, you want https://registry.contso.com. 
+In the spirit of what can be done without direct changes to ACR, we've provided a [doc on configuring an NGINX front end](https://github.com/Azure/acr/tree/master/docs/custom-domain). Over time, we will incorporate more native support for custom domains, and likely join in the limit endpoint access request as well.  
+
 ### Auto Purge ###
 As registries are filled with automated image builds, they wind up filling with layers that never get used. Auto-purge will track image usage and move unused layers to a recycle bin, allowing subsequent purging. The feature will be configured and managed, with reasonable defaults, assuring you'll never lose anything you really wanted to keep. 
 
