@@ -255,8 +255,6 @@ export acr_refresh_token=$(curl -s -X POST -H "Content-Type: application/x-www-f
 echo "ACR Refresh Token"
 echo $acr_refresh_token
 
-export acr_username="00000000-0000-0000-0000-000000000000"
-
 export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
 echo "Challenge"
 echo $challenge
@@ -269,6 +267,54 @@ export acr_access_token=$(curl -s -X POST -H "Content-Type: application/x-www-fo
 echo "ACR Access Token"
 echo $acr_access_token
 
+export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
+echo "Catalog"
+echo $catalog
+```
+
+Here's an equivalent set of scripts that will allow you to execute an operation against an Azure Container Registry, but this time using only the admin credentials, and not AAD.
+
+If you'd like to use basic auth, you can do a direct call to the registry like this:
+```bash
+#!/bin/bash
+ 
+export registry=" --- you have to fill this out --- "
+export user=" --- you have to fill this out --- "
+export password=" --- you have to fill this out --- "
+ 
+export operation="/v2/_catalog"
+ 
+export credentials=$(echo -n "$user:$password" | base64 -w 0)
+ 
+export catalog=$(curl -s -H "Authorization: Basic $credentials" https://$registry$operation)
+echo "Catalog"
+echo $catalog
+```
+
+If you'd like to use bearer auth, you have to first convert your admin credentials to an ACR access token like this:
+```bash
+#!/bin/bash
+ 
+export registry=" --- you have to fill this out --- "
+export user=" --- you have to fill this out --- "
+export password=" --- you have to fill this out --- "
+ 
+export operation="/v2/_catalog"
+ 
+export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
+echo "Challenge"
+echo $challenge
+ 
+export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
+echo "Scope"
+echo $scope
+ 
+export credentials=$(echo -n "$user:$password" | base64 -w 0)
+ 
+export acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" -H "Authorization: Basic $credentials" "https://$registry/oauth2/token?service=$registry&scope=$scope" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+echo "ACR Access Token"
+echo $acr_access_token
+ 
 export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
 echo "Catalog"
 echo $catalog
