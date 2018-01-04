@@ -21,17 +21,17 @@ Partner services and orchestrators are encouraged to use specific header values 
 
 The values we ask ACR partners to use when populating the `X-Meta-Source-Client` field are as follows:
 
-| Service Name              | Header                                |
-| ------------------------- | ------------------------------------- |
-| Azure Container Service   | `azure/compute/azure-container-service` |
-| App Service - Web Apps    | `azure/app-service/web-apps`            |
+| Service name              | Header                                  |
+| ------------------------- | --------------------------------------- |
 | App Service - Logic Apps  | `azure/app-service/logic-apps`          |
+| App Service - Web Apps    | `azure/app-service/web-apps`            |
+| Azure Container Service   | `azure/compute/azure-container-service` |
 | Batch                     | `azure/compute/batch`                   |
 | Cloud Console             | `azure/cloud-console`                   |
 | Functions                 | `azure/compute/functions`               |
-| Internet of Things - Hub  | `azure/iot/hub`                         |
 | HDInsight                 | `azure/data/hdinsight`                  |
+| Internet of Things - Hub  | `azure/iot/hub`                         |
 | Jenkins                   | `azure/jenkins`                         |
-| Machine Learning          | `azure/data/machile-learning`           |
+| Machine Learning          | `azure/data/machine-learning`           |
 | Service Fabric            | `azure/compute/service-fabric`          |
 | VSTS                      | `azure/vsts`                            |
