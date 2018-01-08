@@ -15,6 +15,20 @@ X-Meta-Source-Client: <cloud>/<service>/<optionalservicename>
 * `service`: The name of the service.
 * `optionalservicename`: An optional parameter for services with subservices, or for specifying a SKU. For example, Web Apps corresponds to `azure/app-service/web-apps`).
 
+### Example
+
+```JSON
+{
+	"auths": {
+		"myregistry.azurecr.io": {},
+	},
+	"HttpHeaders": {
+		"X-Meta-Source-Client": "azure/aks"
+	},
+	"credsStore": "wincred"
+}
+```
+
 ## Header values
 
 Partner services and orchestrators are encouraged to use specific header values to help with our telemetry. Users can also modify the value passed to the header if they so desire.
@@ -25,13 +39,16 @@ The values we ask ACR partners to use when populating the `X-Meta-Source-Client`
 | ------------------------- | --------------------------------------- |
 | App Service - Logic Apps  | `azure/app-service/logic-apps`          |
 | App Service - Web Apps    | `azure/app-service/web-apps`            |
-| Azure Container Service   | `azure/compute/azure-container-service` |
-| Batch                     | `azure/compute/batch`                   |
+| Azure Container Instance  | `azure/aci`                             |
+| Azure Container Service   | `azure/acs`                             |
+| Azure Kubernetes Service  | `azure/aks`                             |
+| Azure Container Builder   | `azure/acb`                             |
+| Batch                     | `azure/batch`                           |
 | Cloud Console             | `azure/cloud-console`                   |
-| Functions                 | `azure/compute/functions`               |
-| HDInsight                 | `azure/data/hdinsight`                  |
+| Functions                 | `azure/functions`                       |
+| HDInsight                 | `azure/hdinsight`                       |
 | Internet of Things - Hub  | `azure/iot/hub`                         |
 | Jenkins                   | `azure/jenkins`                         |
-| Machine Learning          | `azure/data/machine-learning`           |
-| Service Fabric            | `azure/compute/service-fabric`          |
+| Machine Learning          | `azure/ml`                              |
+| Service Fabric            | `azure/service-fabric`                  |
 | VSTS                      | `azure/vsts`                            |
