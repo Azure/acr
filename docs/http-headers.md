@@ -1,17 +1,17 @@
 
 # Azure Container Registry HTTP headers
 
-Azure container registries are compatible with a multitude of services and orchestrators. To make it easier to track the source services and agents from which ACR is used, we have started using the `HttpHeaders` field in the Docker `config.json` file.
+Azure container registries are compatible with a multitude of services and orchestrators. To help our customers, we'd like to understand which services in Azure, or outside of Azure, are issuing registry requests. To track the source services and agents from which ACR is used, we have started using the `HttpHeaders` field in the Docker `config.json` file.
 
 ## Header format
 
-The ACR headers follow this format:
+ACR will parse headers using the following format:
 
 ```HTTP
 X-Meta-Source-Client: <cloud>/<service>/<optionalservicename>
 ```
 
-* `cloud`: Azure, Azure Stack, or other government- or country-specific Azure cloud. Although Azure Stack and government clouds are not currently supported, this parameter enables future support.
+* `cloud`: Azure, Azure Stack, or other government- or country-specific Azure cloud.
 * `service`: The name of the service.
 * `optionalservicename`: An optional parameter for services with subservices, or for specifying a SKU. For example, Web Apps corresponds to `azure/app-service/web-apps`).
 
@@ -19,11 +19,11 @@ X-Meta-Source-Client: <cloud>/<service>/<optionalservicename>
 
 ```JSON
 {
-	"auths": {
-		"myregistry.azurecr.io": {},
-	},
 	"HttpHeaders": {
 		"X-Meta-Source-Client": "azure/aks"
+	},
+	"auths": {
+		"myregistry.azurecr.io": {},
 	},
 	"credsStore": "wincred"
 }
@@ -33,7 +33,17 @@ X-Meta-Source-Client: <cloud>/<service>/<optionalservicename>
 
 Partner services and orchestrators are encouraged to use specific header values to help with our telemetry. Users can also modify the value passed to the header if they so desire.
 
-The values we ask ACR partners to use when populating the `X-Meta-Source-Client` field are as follows:
+The values we ask ACR partners to use when populating the `X-Meta-Source-Client` field are:
+
+| Cloud                     | Header                                  |
+| ------------------------- | --------------------------------------- |
+| Azure Public Cloud        | `azure/`                                |
+| Azure Stack               | `azurestack/`                           |
+| China (Mooncake)          | `china/`                                |
+| Germany                   | `germany/`                              |
+| US Gov                    | `auzreusgov/`                           |
+| US DOD                    | `auzreusdod/`                           |
+
 
 | Service name              | Header                                  |
 | ------------------------- | --------------------------------------- |
