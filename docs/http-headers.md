@@ -41,8 +41,8 @@ The values we ask ACR partners to use when populating the `X-Meta-Source-Client`
 | Azure Stack               | `azurestack/`                           |
 | China (Mooncake)          | `china/`                                |
 | Germany                   | `germany/`                              |
-| US Gov                    | `azureusgov/`                           |
 | US DOD                    | `azureusdod/`                           |
+| US Gov                    | `azureusgov/`                           |
 
 
 | Service name              | Header                                  |
