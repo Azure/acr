@@ -41,18 +41,18 @@ The values we ask ACR partners to use when populating the `X-Meta-Source-Client`
 | Azure Stack               | `azurestack/`                           |
 | China (Mooncake)          | `china/`                                |
 | Germany                   | `germany/`                              |
-| US Gov                    | `auzreusgov/`                           |
-| US DOD                    | `auzreusdod/`                           |
+| US Gov                    | `azureusgov/`                           |
+| US DOD                    | `azureusdod/`                           |
 
 
 | Service name              | Header                                  |
 | ------------------------- | --------------------------------------- |
 | App Service - Logic Apps  | `azure/app-service/logic-apps`          |
 | App Service - Web Apps    | `azure/app-service/web-apps`            |
+| Azure Container Builder   | `azure/acb`                             |
 | Azure Container Instance  | `azure/aci`                             |
 | Azure Container Service   | `azure/acs`                             |
 | Azure Kubernetes Service  | `azure/aks`                             |
-| Azure Container Builder   | `azure/acb`                             |
 | Batch                     | `azure/batch`                           |
 | Cloud Console             | `azure/cloud-console`                   |
 | Functions                 | `azure/functions`                       |
