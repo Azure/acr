@@ -43,7 +43,7 @@ Please make sure admin is enabled.
 
 ```
 {
-    "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-03-01').passwords[0].value]"
+    "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-10-01').passwords[0].value]"
 }
 ```
 
@@ -51,7 +51,7 @@ To get the second password
 
 ```
 {
-    "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-03-01').passwords[1].value]"
+    "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-10-01').passwords[1].value]"
 }
 ```
 
@@ -64,18 +64,19 @@ az acr update -n myRegistry --storage-account-name myStorageAccount
 
 Your can find `myStorageAccount` to your registry by the following command
 ```
-az acr show -n myRegistry --query storageAccount.name
+az acr show -n myRegistry --query storageAccount
 ```
 
 ## How to log into my registry when running the CLI in a container?
 
 You need to run the CLI container by mounting the Docker socket
 ```
-docker run -it -v /var/run/docker.sock:/var/run/docker.sock azuresdk/azure-cli-python
+docker run -it -v /var/run/docker.sock:/var/run/docker.sock azuresdk/azure-cli-python:dev
 ```
 
 In the container, you can install `docker` by
 ```
+apk update
 apk add docker
 ```
 
