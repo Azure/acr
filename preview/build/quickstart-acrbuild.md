@@ -7,9 +7,10 @@
 1. Enter the directory
 
     `cd aspnetcore-helloworld`
+    
 1. Build locally - note this step is optionaly, only used as a comparison with `az acr build`. If you don't have docker installed or running locally, you can skip to **Testing in Azure**
     
-    ` docker build -t helloworld:v1 -f HelloWorld/Dockerfile . `
+    `docker build -t helloworld:v1 -f HelloWorld/Dockerfile . `
 
 1. Run the image
 
