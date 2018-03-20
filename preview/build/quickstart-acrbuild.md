@@ -91,7 +91,7 @@ In the following example, I create a registry named **jengademos**. This registr
        --registry-login-server $ACR_NAME.azurecr.io \
        --registry-username $(az keyvault secret show --vault-name acr -n $ACR_NAME-pull-usr --query value -o tsv) \
        --registry-password $(az keyvault secret show --vault-name acr -n $ACR_NAME-pull-pwd --query value -o tsv) \
-       --ip-address public \
+       --dns-name-label aci-demo \
        -o json
     ```
 
