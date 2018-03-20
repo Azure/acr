@@ -1,5 +1,10 @@
 ## Test Locally
 
+1. Request access to ACR Build Preview https://aka.ms/acr/preview/signup
+
+1. [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest)
+
+
 1. Clone the sample repo
 
     ```
