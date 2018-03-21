@@ -7,6 +7,11 @@ Request early access to ACR Build at: https://aka.ms/acr/preview/signup
 
 > For Preview 1, ACR Build is currently available in EastUS. 
 
+## Providing Feedback
+
+We're currently in private preview, which is why our docs are hosted here. 
+To discuss ACR Build with the product team and others within the preview, once you're signed up and given access, you can find us at: http://azurecr.slack.com/
+
 ## Try ACR with Cloud Shell
 
 - Launch Cloud shell [http://shell.azure.com](https://shell.azure.com)
