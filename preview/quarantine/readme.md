@@ -51,13 +51,13 @@ Once the image is pushed and in quarantine state, you will receive a notificatio
   "action": "quarantined",
   "target": {
     "size": 1791,
-    "digest": "sha256:91ef6
+    "digest": "sha256:91ef6",
     "length": 1791,
-    "repository": “helloworld",
+    "repository": "helloworld",
     "tag": "1"},
   "request": {
     "id": "978fc988-zzz-yyyy-xxxx-4f6e331d1591",
-    "host": “[registry]azurecr-test.azurecr.io",
+    "host": "[registry]azurecr-test.azurecr.io",
     "method": "PUT"}
 }
 ```
@@ -70,7 +70,7 @@ Once the image is quarantined, you will need user with the **AcrQuarantineReader
 
 Now the user can pull the quarantined image by digest
 
-```bash
+```
 docker pull [registry].azurecr-test.io/helloworld@sha256:sha256:80f0d5cxxxxXxxXxxxxece0db56d11cdc624ad20da9fe62d7d
   Pulling from helloworld
 	Digest: sha256:80f0d5cxxxxXxxXxxxxece0db56d11cdc624ad20da9fe62d7d
@@ -160,10 +160,11 @@ Once a scan completes, a user with the **AcrQuarantineWriter** role can update t
 - Update manifest attributes using the access token.    
     REST format: `PATCH https://`**[login-url]**`acr/v1`**[image]**`/_manifests/`**[digest]**
     Payload:
-    ```JSON
+    ```json
         {
-            "quarantinestate": [ScanStarted|ScanSucceeded|ScanFailed], 
-            "quarantinereport": [url for a full quarantine report]}
+            "quarantinestate": "[ScanStarted|ScanSucceeded|ScanFailed]", 
+            "quarantinereport": "[url for a full quarantine report]"}
+        }
     ```
     |Header | Value |
     |-------|-------|
@@ -173,14 +174,14 @@ Once a scan completes, a user with the **AcrQuarantineWriter** role can update t
     example: 
 
 	PATCH https://quarantinetest1.azurecr-test.io/acr/v1/mytest/_manifests/sha256:80f0d5c8786bb9e621a45ece0db56d11cdc624ad20da9fe62e9d25490f331d7d HTTP/1.1
-    ```JSON
+    ```json
         {
             "quarantinestate": "ScanSucceeded", 
             "quarantinereport": "http://test.io/test"}
         }
     ```
 
-    > Note: we will expand this JSON to support versioned MIME types, such as Grafeas". For now, quarantinereport is a simple text field.
+    > Note: we will expand this JSON to support versioned MIME types, such as Grafeas". For now, **quarantinereport** is a simple text field.
 
 ## Image Pushed Webhook Notification
 
@@ -190,7 +191,7 @@ Based on the registry policy, once the image has been set to **ScanSucceeded**, 
 
 With the quarantine removed, a user with standard **reader** role can pull the image, using the tag
 
-```bash
+```
 docker login [registry].azurecr-test.io
 docker pull [registry].azurecr-test.io/helloworld:1
 ```
