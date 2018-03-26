@@ -1,11 +1,21 @@
 # ACR Build Preview information
 
+## Announcements
+We're happy to release Preview 2 which includes:
+
+- build-task: a build definition that can be triggered on git commits, or run directly
+- build-task logs: which lists the logs, their status and can connect to currently running build
+
+## Things that are coming soon
+
+- Build Caching: we know this is the most painful part of ACR Build; waiting for image pulls and benefiting from interim image cache. 
+
 ## Getting access to ACR Build Preview
 
 Request early access to ACR Build at: https://aka.ms/acr/preview/signup
 
 
-> For Preview 1, ACR Build is currently available in EastUS. 
+> For Preview 2, ACR Build is currently available in EastUS. 
 
 ## Providing Feedback
 
@@ -17,13 +27,16 @@ To discuss ACR Build with the product team and others within the preview, once y
 - Launch Cloud shell [http://shell.azure.com](https://shell.azure.com)
 
 
-```bash
+```
 mkdir ~/cli-extensions
 cd ~/cli-extensions 
-curl -O https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.1-py2.py3-none-any.whl
-az extension add --source ./acrbuildext-0.0.1-py2.py3-none-any.whl -y
+curl -O https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.2-py2.py3-none-any.whl
+az extension list
+az extension remove -n acrbuildext
+az extension add --source ./acrbuildext-0.0.2-py2.py3-none-any.whl -y
 az acr build --help
 ```
+
 
 ## Create an ACR instance in EastUS
 
