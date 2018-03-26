@@ -109,3 +109,8 @@ In the following example, I create a registry named **jengademos**. This registr
 az group delete -g $ACR_NAME
 az ad sp delete --id http://$ACR_NAME-pull
 ```
+
+
+
+curl -O https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.2-py2.py3-none-any.whl
+az extension add --source ./acrbuildext-0.0.2-py2.py3-none-any.whl -y

@@ -19,12 +19,12 @@ ACR Build can be triggered from several sources:
 - additional webhook triggers, including Azure Event Grid
 - manually triggered with the az cli `az acr build --task [taskname]`
 
-## Integrating ACR Build into ___ Build Systems
+# Integrating ACR Build into ___ Build Systems
 *Comming soon*
-### Integrating ACR Build with VSTS
+## Integrating ACR Build with VSTS
 *Comming soon*
-### Integrating ACR Build with Jenkins
+## Integrating ACR Build with Jenkins
 *Comming soon*
-### Integrating ACR Build with Brigade
+## Integrating ACR Build with Brigade
 *Comming soon*
 

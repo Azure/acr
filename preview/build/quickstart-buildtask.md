@@ -1,27 +1,80 @@
+# Setup Automated Build
 
-## Setup Automated Build
+ACR Build can be triggered on:
+- git commits
+- base image updates *
+- Webhooks *
+- Azure Evengtrid notifications *
+    
+    \* indicates events not yet supported
 
-> Automated builds are not yet avaialble in the az acr build CLI. They should be avaiable soon. To get a feel for the experience, and to provide us feedback, the following walkthrough is available:
+> ACR Build currently supports github based PAT tokens. VSTS tokens will come in a future preview
 
+## Create a Github Personal Access Token
+- Create a github token by navigating to: 
+    https://github.com/settings/tokens/new
+- Under repo, enable repo:status, public_repo
 
-- Create a build task, which is automatically triggered on scc commits. 
+    ![](./media/CreateGithubToken.png)
 
-> ACR Build currently supports github based tokens. VSTS tokens will come in a future preview
+- Copy the generated token
+
+## Create a build task, which is automatically triggered on scc commits. 
+
+With the git PAT, execute the following command replacing the context with your github:
 
 ```bash
 az acr build-task create --name helloworld -n jengademos \
-    -t helloworld:{buildnumber} -f ./HelloWorld/Dockerfile \
-    --cpu 2 --context https://[yourrepo] --git-access-token [gitHubToken]
+    -t helloworld:v1 -f ./HelloWorld/Dockerfile \
+    --context https://github.com/SteveLasker/aspnetcore-helloworld --git-access-token [yourToken]
 ```
 
-- Trigger the build with a source change
-  - code change
-  - commit
+> Note: Setting the :tag to :{build.Id} will be implemented in a future preview
 
-- View the status
+### Specifying a sub folder
+
+We're exploring the same convention as the [docker cli](https://docs.docker.com/engine/reference/commandline/build/#git-repositories), to specify the branch and sub folder as well.
 
 ```bash
-az acr build-task show-logs -n helloworld -r jengademos
+az acr build-task create --name helloworld -n jengademos \
+    -t helloworld:v1 -f ./HelloWorld/Dockerfile \
+    --context https://github.com/SteveLasker/aspnetcore-helloworld.git$subBranch:subFolder --git-access-token [yourToken]
+```
+Your feedback on [azurecr.slack.com](https://azurecr.slack.com) would be helpful...
+
+
+# View the status
+Build logs, including access to live streaming of current builds are available through the `build-task logs` parameter
+
+
+### list the build tasks for a registry
+```bash
+az acr build-task list -r jengademos
+```
+
+### list the builds for a registry
+```bash
+az acr build-task list-builds -r jengademos
+```
+
+### list the builds for a build-task within a registry
+```bash
+az acr build-task list-builds -n hellowworld -r jengademos
+```
+
+### show the last (or current) log for a build-task
+```bash
+az acr build-task logs -n helloworld -r jengademos
+```
+
+### show the log for a specific build
+```bash
+az acr build-task logs --build-id eus-1 -r jengademos
+```
+
+
+```bash
+az acr build-task logs -n helloworld -r jengademos
 ```
 
 - Manually trigger the build
@@ -29,7 +82,7 @@ az acr build-task show-logs -n helloworld -r jengademos
 ```
 az acr build -n helloworld -r jengademos
 ```
-
+# Future Stuff
 - View dependencies
 
 ```bash
@@ -39,7 +92,7 @@ az acr build-task show -n helloworld -r jengademos --query dependencies
 - Configure base image updates
 
 ```bash
-az acr build-task configure -n helloworld -r jengademos --base-image-updates final
+az acr build-task configure -n helloworld -r jengademos --base-image-updates runtime
 ```
 
 - Make a change to the base image
