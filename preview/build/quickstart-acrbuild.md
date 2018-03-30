@@ -1,10 +1,12 @@
 # ACR Build for Quick Builds
-With ACR Build, you can extend your inner loop to the cloud, validating your build will work once your code is checked in. ACR Build also enables you to work locally, without the docker client as you can take your source, build in Azure and test a deployment.
+With ACR Build, you can extend your inner loop to the cloud, validating your build will work once your code is checked in. ACR Build also enables you to work locally, without the docker client as you can take your source, build in Azure and test a deployment. 
+
+Once you've tested your inner loop, [configure a build task](./quickstart-buildtask.md) which can be triggered by SCC commits, or base image updates. 
 
 ## Getting Access to ACR Build
 - Request access to ACR Build Preview https://aka.ms/acr/preview/signup
 
-- [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest)
+- [Install the preview az acr build cli](../install.md)
 
 ## Test Locally (using Docker for Windows/Mac)
 To see a quick example, we'll clone a repo, build it locally, and compare with ACR Build in Azure, testing with Azure Container Instances (ACI)
