@@ -52,8 +52,8 @@ You can trigger a build with a SCC commit, but we can also manually trigger a bu
 az acr build-task run --name helloworld -r $ACR_NAME
 ```
 
-# View the status
-There are several commands to view logs, including the most recent/current build log available through the `build-task logs` parameter
+# View Build Status
+There are several commands to view the status of a build-task, as well as the logs, including live-streaming the most recent/current build log available through the `build-task logs` parameter
 
 ## Trigger a build, view the status
 Using the --no-logs, trigger a build. Then, use the `build-task logs` parameter to view the current log
@@ -64,40 +64,40 @@ az acr build-task logs -r $ACR_NAME
 
 > Note: in a future preview, `--name helloworld` will limit displaying the most recent build log to a specific build-task
 
-## List the build tasks for a registry
+## List the build-tasks For a Registry
 ```
 az acr build-task list -r $ACR_NAME
 ```
 
-### list the builds for a registry
+## List the builds that have been executed, or executing for a registry
 ```
 az acr build-task list-builds -r $ACR_NAME
 ```
 
-### list the builds for a build-task within a registry
+## List the builds for a build-task within a registry
 ```
-az acr build-task list-builds --task-name hellowworld -r $ACR_NAME
+az acr build-task list-builds --name helloworld -r $ACR_NAME
 ```
+> Note: preview 2 is outputting additional data in the table output that will be scrubbed in a future preview
 
-### show the last (or current) log for a build-task
+## Show the last (or current) log for a build-task
 ```
 az acr build-task logs -r $ACR_NAME
 ```
 
-### show the last (or current) log for a build-task
+## Show the last (or current) log for a build-task
 ```
 az acr build-task logs --name helloworld -r $ACR_NAME
 ```
+> Note: log filtering to a build-task is not yet implemented
 
-### show the log for a specific build
+## Show the log for a specific build
 ```
 az acr build-task logs --build-id eus-1 -r $ACR_NAME
 ```
 
-### Manually trigger the build
+## Manually trigger the build
 
 ```
-az acr build --task-name helloworld -r jengademos
+az acr build-task run --name helloworld -r $ACR_NAME
 ```
-
-
