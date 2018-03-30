@@ -162,8 +162,8 @@ Once a scan completes, a user with the **AcrQuarantineWriter** role can update t
     Payload:
     ```json
         {
-            "quarantinestate": "[ScanStarted|ScanSucceeded|ScanFailed]", 
-            "quarantinereport": "[url for a full quarantine report]"}
+            "quarantineState": "[ScanStarted|ScanSucceeded|ScanFailed]", 
+            "quarantineDetails": "[url for a full quarantine report]"}
         }
     ```
     |Header | Value |
@@ -176,8 +176,8 @@ Once a scan completes, a user with the **AcrQuarantineWriter** role can update t
 	PATCH https://quarantinetest1.azurecr-test.io/acr/v1/mytest/_manifests/sha256:80f0d5c8786bb9e621a45ece0db56d11cdc624ad20da9fe62e9d25490f331d7d HTTP/1.1
     ```json
         {
-            "quarantinestate": "ScanSucceeded", 
-            "quarantinereport": "http://test.io/test"}
+            "quarantineState": "ScanSucceeded", 
+            "quarantineDetails": "http://test.io/test"}
         }
     ```
 
