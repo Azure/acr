@@ -96,13 +96,13 @@ To query attributes via REST, use the following workflow:
 
 - Using a REST client, like Postman, query for the OAuth token:
 
-    REST format: `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`@scope=repository:`**[image]**`:pull`
+    REST format: `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`&scope=repository:`**[image]**`:pull`
 
-- Set the header for Authorization, setting the encoded usr:pwd value as a bearer token
+- Set the header for Authorization, setting the 'Basic' word followed by a space and the encoded usr:pwd value
 
     |Header | Value |
     |-------|-------|
-    | Authorization | bearer [base64 encoded usr:pwd] |
+    | Authorization | Basic [base64 encoded usr:pwd] |
     | Host | [login-url] |
 
     example: 
@@ -141,18 +141,18 @@ Once a scan completes, a user with the **AcrQuarantineWriter** role can update t
 
 - Using a REST client, like Postman, query for the OAuth token:
 
-    REST format: `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`@scope=repository:`**[image]**`:pull`
+    REST format: `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`&scope=repository:`**[image]**`:pull,push`
 
-- Set the header for Authorization, setting the encoded usr:pwd value as a bearer token
+- Set the header for Authorization, setting the 'Basic' word followed by a space and the encoded usr:pwd value
 
     |Header | Value |
     |-------|-------|
-    | Authorization | bearer [base64 encoded usr:pwd] |
+    | Authorization | Basic [base64 encoded usr:pwd] |
     | Host | [login-url] |
 
     example: 
     ```
-    GET https://quarantinetest1.azurecr-test.io/oauth2/token?service=quarantinetest1.azurecr-test.io&scope=repository:helloworld:pull
+    GET https://quarantinetest1.azurecr-test.io/oauth2/token?service=quarantinetest1.azurecr-test.io&scope=repository:helloworld:pull,push
     ```
 
 ### Remove the Quarantine Flag
