@@ -8,6 +8,7 @@ We're happy to release Preview 2 which includes:
 
 ## Things that are coming soon
 
+- Base image updates: this was the main scenario we focus upon for ACR build. We'll have more on this soon. For background, you can read [OS & Framework Patching with Docker Containers – a paradigm shift](https://blogs.msdn.microsoft.com/stevelasker/2017/12/20/os-framework-patching-with-docker-containers-paradigm-shift/)
 - Build Caching: we know this is the most painful part of ACR Build; waiting for image pulls and benefiting from interim image cache. 
 
 ## Getting access to ACR Build Preview
@@ -27,13 +28,11 @@ To discuss ACR Build with the product team and others within the preview, once y
 - Launch Cloud shell [http://shell.azure.com](https://shell.azure.com)
 
 
+- Remove any previous versions and install the current extension
+
 ```
-mkdir ~/cli-extensions
-cd ~/cli-extensions 
-curl -O https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.2-py2.py3-none-any.whl
-az extension list
 az extension remove -n acrbuildext
-az extension add --source ./acrbuildext-0.0.2-py2.py3-none-any.whl -y
+az extension add --source https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.2-py2.py3-none-any.whl -y
 az acr build --help
 ```
 
@@ -51,9 +50,9 @@ az acr create -g $ACR_NAME --sku Standard -n $ACR_NAME
 ## Try acr build
 
 ```bash
-git clone https://github.com/SteveLasker/aspnetcore-helloworld.git
-cd aspnetcore-helloworld
-az acr build -t helloworld:v1 -f ./HelloWorld/Dockerfile --context . -r myregistry
+git clone https://github.com/SteveLasker/node-helloworld.git
+cd node-helloworld
+az acr build -t helloworld:v1 --context . -r $ACR_NAME
 ```
 
 ## Next Steps

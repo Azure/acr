@@ -1,9 +1,13 @@
-## Test Locally
+# ACR Build for Quick Builds
+With ACR Build, you can extend your inner loop to the cloud, validating your build will work once your code is checked in. ACR Build also enables you to work locally, without the docker client as you can take your source, build in Azure and test a deployment.
 
+## Getting Access to ACR Build
 - Request access to ACR Build Preview https://aka.ms/acr/preview/signup
 
 - [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest)
 
+## Test Locally (using Docker for Windows/Mac)
+To see a quick example, we'll clone a repo, build it locally, and compare with ACR Build in Azure, testing with Azure Container Instances (ACI)
 
 - Clone the sample repo
 
@@ -17,7 +21,7 @@
     cd aspnetcore-helloworld
     ```
 
-- Build locally - note this step is optional, only used as a comparison with `az acr build`. If you don't have docker installed or running locally, you can skip to **Testing in Azure**
+- Build locally - *note this step is optional*, only used as a comparison with `az acr build`. If you don't have docker installed or running locally, you can skip to **Testing in Azure**
     
     ```
     docker build -t helloworld:v1 -f HelloWorld/Dockerfile .
@@ -57,14 +61,16 @@ In the following example, I create a registry named **jengademos**. This registr
     ```
 
 ## Deploy to ACI
+As we continue to integrate ACI into end to end workflows, we're working through more production grade examples for authenticating between ACI and ACR. In this example, we use Azure Keyvault to store the user/password required to access ACR. 
 
 - Create a Keyvault to store the Username/Password for access to all your registries within ACR.
 
     `az keyvault create -g $ACR_NAME -n acr`
 	
 - Create a service principal for use by any service that requires registry access, storing the user/pwd values in keyvault for current and future reference
+    - create a service principal, saving the password
 
-    ```bash
+    ```
     az keyvault secret set --vault-name acr \
       --name $ACR_NAME-pull-pwd \
       --value $(az ad sp create-for-rbac \
@@ -75,7 +81,7 @@ In the following example, I create a registry named **jengademos**. This registr
                     --output tsv)
     ```
 
-	- Set the keyvault secrets
+	- Set the pull-usr based on the Service Principal AppId
 
     ```
     az keyvault secret set --vault-name acr \
@@ -109,8 +115,3 @@ In the following example, I create a registry named **jengademos**. This registr
 az group delete -g $ACR_NAME
 az ad sp delete --id http://$ACR_NAME-pull
 ```
-
-
-
-curl -O https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.2-py2.py3-none-any.whl
-az extension add --source ./acrbuildext-0.0.2-py2.py3-none-any.whl -y

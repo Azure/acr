@@ -1,11 +1,14 @@
+# Preview 2 Enables Build-Tasks
+With preview 2, you can now create and save a build-task. Which is the definition of a build.
+
 # Setup Automated Build
 
-ACR Build can be triggered on:
+ACR Build-tasks can be triggered on:
 - git commits
 - base image updates *
 - Webhooks *
 - Azure Evengtrid notifications *
-    
+
     \* indicates events not yet supported
 
 > ACR Build currently supports github based PAT tokens. VSTS tokens will come in a future preview
@@ -23,10 +26,10 @@ ACR Build can be triggered on:
 
 With the git PAT, execute the following command replacing the context with your github:
 
-```bash
-az acr build-task create --name helloworld -n jengademos \
-    -t helloworld:v1 -f ./HelloWorld/Dockerfile \
-    --context https://github.com/SteveLasker/aspnetcore-helloworld --git-access-token [yourToken]
+```
+az acr build-task create --name helloworld -r $ACR_NAME \
+    -t helloworld:v1 \
+    --context https://github.com/SteveLasker/node-helloworld --git-access-token [yourToken]
 ```
 
 > Note: Setting the :tag to :{build.Id} will be implemented in a future preview
@@ -35,76 +38,66 @@ az acr build-task create --name helloworld -n jengademos \
 
 We're exploring the same convention as the [docker cli](https://docs.docker.com/engine/reference/commandline/build/#git-repositories), to specify the branch and sub folder as well.
 
-```bash
+```
 az acr build-task create --name helloworld -n jengademos \
-    -t helloworld:v1 -f ./HelloWorld/Dockerfile \
-    --context https://github.com/SteveLasker/aspnetcore-helloworld.git$subBranch:subFolder --git-access-token [yourToken]
+    -t helloworld:v1  \
+    --context https://github.com/SteveLasker/node-helloworld.git$subBranch:subFolder --git-access-token [yourToken]
 ```
 Your feedback on [azurecr.slack.com](https://azurecr.slack.com) would be helpful...
 
+## Trigger a build
+
+You can trigger a build with a SCC commit, but we can also manually trigger a build
+```
+az acr build-task run --name helloworld -r $ACR_NAME
+```
 
 # View the status
-Build logs, including access to live streaming of current builds are available through the `build-task logs` parameter
+There are several commands to view logs, including the most recent/current build log available through the `build-task logs` parameter
 
+## Trigger a build, view the status
+Using the --no-logs, trigger a build. Then, use the `build-task logs` parameter to view the current log
+```
+az acr build-task run --name helloworld --no-logs -r $ACR_NAME 
+az acr build-task logs -r $ACR_NAME
+```
 
-### list the build tasks for a registry
-```bash
-az acr build-task list -r jengademos
+> Note: in a future preview, `--name helloworld` will limit displaying the most recent build log to a specific build-task
+
+## List the build tasks for a registry
+```
+az acr build-task list -r $ACR_NAME
 ```
 
 ### list the builds for a registry
-```bash
-az acr build-task list-builds -r jengademos
+```
+az acr build-task list-builds -r $ACR_NAME
 ```
 
 ### list the builds for a build-task within a registry
-```bash
-az acr build-task list-builds -n hellowworld -r jengademos
+```
+az acr build-task list-builds --task-name hellowworld -r $ACR_NAME
 ```
 
 ### show the last (or current) log for a build-task
-```bash
-az acr build-task logs -n helloworld -r jengademos
+```
+az acr build-task logs -r $ACR_NAME
+```
+
+### show the last (or current) log for a build-task
+```
+az acr build-task logs --name helloworld -r $ACR_NAME
 ```
 
 ### show the log for a specific build
-```bash
-az acr build-task logs --build-id eus-1 -r jengademos
+```
+az acr build-task logs --build-id eus-1 -r $ACR_NAME
+```
+
+### Manually trigger the build
+
+```
+az acr build --task-name helloworld -r jengademos
 ```
 
 
-```bash
-az acr build-task logs -n helloworld -r jengademos
-```
-
-- Manually trigger the build
-
-```
-az acr build -n helloworld -r jengademos
-```
-# Future Stuff
-- View dependencies
-
-```bash
-az acr build-task show -n helloworld -r jengademos --query dependencies
-```
-
-- Configure base image updates
-
-```bash
-az acr build-task configure -n helloworld -r jengademos --base-image-updates runtime
-```
-
-- Make a change to the base image
-  - Commit a code change that reflects a value that shows in the subsequent app
-  - Commit
-- Watch the logs for the automated base image build task
-
-```bash
-az acr build-task show-log -n helloworld -r corp-aspnetcore
-```
-
-- Watch the logs for the helloworld image, which is automatically built when the base image, corp-aspnetcore is completed.
-```bash
-az acr build-task show-log -n helloworld -r jengademos
-```
