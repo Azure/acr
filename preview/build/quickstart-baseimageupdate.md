@@ -63,9 +63,9 @@ git clone https://github.com/SteveLasker/node-helloworld.git
 Build the base image, then push to the registry
 
 ```bash
-docker build -t ${REGISTRY_NAME}corpimages/node:9 -f nodeDockerfile .
+docker build -t ${REGISTRY_NAME}baseimages/node:9 -f nodeDockerfile .
 az acr login -n $ACR_NAME
-docker push ${REGISTRY_NAME}corpimages/node:9
+docker push ${REGISTRY_NAME}baseimages/node:9
 ```
 
 ## Create the hello world image, from the base image
@@ -172,8 +172,8 @@ Build the corp image and push to the registry. Note, we continue to use the stab
 > See [Docker Tagging: Best practices for tagging and versioning docker imagese](https://blogs.msdn.microsoft.com/stevelasker/2018/03/01/docker-tagging-best-practices-for-tagging-and-versioning-docker-images/) for info on stable and unique tagging.
 
 ```
-docker build -t ${REGISTRY_NAME}corpimages/node:9 -f nodeDockerfile .
-docker push ${REGISTRY_NAME}corpimages/node:9
+docker build -t ${REGISTRY_NAME}baseimages/node:9 -f nodeDockerfile .
+docker push ${REGISTRY_NAME}baseimages/node:9
 ```
 
 View the logs as the base image update triggers the **helloworld** build task. Watch the build-id as it may take a moment for the notification to trigger the build.
@@ -183,7 +183,7 @@ az acr build-task logs -r $ACR_NAME
 
 ## Next steps
 
-In this tutorial, you created a private, geo-replicated container registry, built a container image, and then pushed that image to your registry. By following the steps in this tutorial, you:
+In this tutorial, you created a build-task to monitor git commits as well as base image updates. These primitives support OS & Framework Patching scenarios, enabling developers to quickly iterate while still in their inner-loop. While setting their build system to support the longevity of their production apps. 
 
 > [!div class="checklist"]
 > * Created a geo-replicated Azure container registry
@@ -191,11 +191,7 @@ In this tutorial, you created a private, geo-replicated container registry, buil
 > * Built a Docker container image from application source
 > * Pushed the container image to your registry
 
-Advance to the next tutorial to learn about deploying your container to multiple Web Apps for Containers instances, using geo-replication to serve the images locally.
+Advance to the next tutorial to learn about update-tasks that enable developers to iterate on a build-task while a deployed image will receive base image updates.
 
 > [!div class="nextstepaction"]
-> [Deploy web app from Azure Container Registry](container-registry-tutorial-deploy-app.md)
-
-<!-- IMAGES -->
-[tut-portal-01]: ./media/container-registry-tutorial-prepare-registry/tut-portal-01.png
-[github-change-remote-uyl]: https://help.github.com/articles/changing-a-remote-s-url/
+> [coming soon](quickstart-updatetask.md)
