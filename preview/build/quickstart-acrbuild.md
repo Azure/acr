@@ -1,119 +1,167 @@
-# ACR Build for Quick Builds
-With ACR Build, you can extend your inner loop to the cloud, validating your build will work once your code is checked in. ACR Build also enables you to work locally, without the docker client as you can take your source, build in Azure and test a deployment. 
+# ACR Build for quick builds
 
-Once you've tested your inner loop, [configure a build task](./quickstart-buildtask.md) which can be triggered by SCC commits, or base image updates. 
+ACR Build extends your inner loop to the cloud, validating build success once your code is checked in. ACR Build also enables you to work locally, without the Docker client: build your source in Azure, then test it with a deployment to the cloud.
 
-## Getting Access to ACR Build
-- Request access to ACR Build Preview https://aka.ms/acr/preview/signup
+## Get ACR Build
 
-- [Install the preview az acr build cli](../install.md)
+* **Access**: While ACR Build is in preview, you must first request access at https://aka.ms/acr/preview/signup
 
-## Test Locally (using Docker for Windows/Mac)
-To see a quick example, we'll clone a repo, build it locally, and compare with ACR Build in Azure, testing with Azure Container Instances (ACI)
+* **Installation**: Next, [install the ACR Build](../install.md) preview, which enables the `az acr build` command in the Azure CLI.
 
-- Clone the sample repo
+## Test locally with Docker for Windows/Mac
+To see a quick example, we'll clone a repo and build it locally. In the next section, we'll compare by using ACR Build in Azure, then deploy to Azure Container Instances (ACI).
 
-    ```
+1. Clone the sample repo
+
+    ```sh
     git clone https://github.com/SteveLasker/aspnetcore-helloworld.git
     ```
 
-- Enter the directory
-    
-    ```
+1. Enter the directory
+
+    ```sh
     cd aspnetcore-helloworld
     ```
 
-- Build locally - *note this step is optional*, only used as a comparison with `az acr build`. If you don't have docker installed or running locally, you can skip to **Testing in Azure**
-    
-    ```
+1. (OPTIONAL) Build and run locally. This step is use only as a comparison with `az acr build`. If you don't have Docker installed or running locally, you can skip this step and move on to [Building in Azure](#building-in-azure).
+
+    ```sh
+    # Build image locally
     docker build -t helloworld:v1 -f HelloWorld/Dockerfile .
+    # Run the image
+    docker run -d -p 8088:80 helloworld:v1
     ```
 
-- Run the image
-
-    ```
-    docker run -D -p 8088:80 helloworld:v1
-    ```
-
-- Browse the site: 
-
-    ```
-    http://localhost:8088
-    ```
+    Browse the locally running application: http://localhost:8088
 
 ## Building in Azure
 
-In the following example, I create a registry named **jengademos**. This registry name will be taken. Replace **jengademos** with your own registry. 
+In the following example, I create a registry named **jengademos**. This registry name will be taken. Replace **jengademos** with the name of your own Azure container registry.
 
-***Note: for Preview 1, only registries in EastUS are supported***
+> Note: ACR Build Preview 2 supports only those registries in **EastUS**.
 
-- Create a registry and login with your azure id
-    
-    ```
+1. Create a registry and log in to it with your Azure ID:
+
+    ```sh
+    RES_GROUP=myresourcegroup # Resource Group name
     ACR_NAME=jengademos
-    az group create -l eastus -g $ACR_NAME
-    az acr create -g $ACR_NAME --sku Standard -n $ACR_NAME
+    az group create -l eastus -g $RES_GROUP
+    az acr create -g $RES_GROUP --sku Standard -n $ACR_NAME
     az acr login -n $ACR_NAME
 	```
 
-- Build the image:
+1. Build the image with **ACR Build**:
 
-    ```
-    az acr build -t helloworld:v1 -f ./HelloWorld/Dockerfile --context . --registry $ACR_NAME 
+    ```sh
+    az acr build -t helloworld:v1 -f ./HelloWorld/Dockerfile --context . --registry $ACR_NAME
     ```
 
 ## Deploy to ACI
-As we continue to integrate ACI into end to end workflows, we're working through more production grade examples for authenticating between ACI and ACR. In this example, we use Azure Keyvault to store the user/password required to access ACR. 
+As we continue to integrate ACI into end to end workflows, we're working through more production-grade examples for authenticating between ACI and ACR. In this example, we use Azure Key Vault to store the user/password required to access ACR.
 
-- Create a Keyvault to store the Username/Password for access to all your registries within ACR.
+### Configure registry authentication
 
-    `az keyvault create -g $ACR_NAME -n acr`
-	
-- Create a service principal for use by any service that requires registry access, storing the user/pwd values in keyvault for current and future reference
-    - create a service principal, saving the password
+In any production scenario, access to an Azure container registry should be provided by using [service principals](../container-registry/container-registry-auth-service-principal.md). Service principals allow you to provide role-based access control to your container images. For example, you can configure a service principal with pull-only access to a registry.
 
-    ```
-    az keyvault secret set --vault-name acr \
-      --name $ACR_NAME-pull-pwd \
-      --value $(az ad sp create-for-rbac \
-      --name $ACR_NAME-pull \
-      --scopes $(az acr show --name $ACR_NAME --query id --output tsv) \
-                    --role reader \
-                    --query password \
-                    --output tsv)
-    ```
+In this section, you create an Azure key vault and a service principal, and store the service principal's credentials in the vault.
 
-	- Set the pull-usr based on the Service Principal AppId
+#### Create key vault
 
-    ```
-    az keyvault secret set --vault-name acr \
-      --name $ACR_NAME-pull-usr \
-      --value $(az ad sp show --id http://$ACR_NAME-pull --query appId --output tsv)
-    ```
+If you don't already have a vault in [Azure Key Vault](/azure/key-vault/), create one with the Azure CLI using the following commands.
 
-	- With service principal credentials saved in keyvault, create an ACI instance
+Specify a name for your new key vault in `AKV_NAME`. The vault name must be unique within Azure and must be 3-24 alphanumeric characters in length, begin with a letter, end with a letter or digit, and cannot contain consecutive hyphens.
 
-    ```
-    az container create --name jengademo -g jengademos1 -l eastus \
-       --image $ACR_NAME.azurecr.io/helloworld:v1 \
-       --registry-login-server $ACR_NAME.azurecr.io \
-       --registry-username $(az keyvault secret show --vault-name acr -n $ACR_NAME-pull-usr --query value -o tsv) \
-       --registry-password $(az keyvault secret show --vault-name acr -n $ACR_NAME-pull-pwd --query value -o tsv) \
-       --dns-name-label aci-demo \
-       -o json
-    ```
+```sh
+AKV_NAME=mykeyvault # Must be unique within Azure
 
-	Watch the creation of ACI, awaiting the public IP
+az keyvault create -g $RES_GROUP -n $AKV_NAME
+```
 
-    ```
-    watch az container show  --name jengademo -g jengademos
-    ```
+#### Create service principal and store credentials
 
-	Browse ACI
+You now need to create a service principal and store its credentials in your key vault.
+
+The following command uses [az ad sp create-for-rbac][az-ad-sp-create-for-rbac] to create the service principal, and [az keyvault secret set][az-keyvault-secret-set] to store the service principal's **password** in the vault.
+
+```sh
+# Create service principal, store its password in AKV (the registry *password*)
+az keyvault secret set \
+  --vault-name $AKV_NAME \
+  --name $ACR_NAME-pull-pwd \
+  --value $(az ad sp create-for-rbac \
+                --name $ACR_NAME-pull \
+                --scopes $(az acr show --name $ACR_NAME --query id --output tsv) \
+                --role reader \
+                --query password \
+                --output tsv)
+```
+
+The `--role` argument in the preceding command configures the service principal with the *reader* role, which grants it pull-only access to the registry. To grant both push and pull access, change the `--role` argument to *contributor*.
+
+Next, store the service principal's *appId* in the vault, which is the **username** you pass to Azure Container Registry for authentication.
+
+```sh
+# Store service principal ID in AKV (the registry *username*)
+az keyvault secret set \
+    --vault-name $AKV_NAME \
+    --name $ACR_NAME-pull-usr \
+    --value $(az ad sp show --id http://$ACR_NAME-pull --query appId --output tsv)
+```
+
+You've created an Azure Key Vault and stored two secrets in it:
+
+* `$ACR_NAME-pull-usr`: The service principal ID, for use as the container registry **username**.
+* `$ACR_NAME-pull-pwd`: The service principal password, for use as the container registry **password**.
+
+You can now reference these secrets by name when you or your applications and services pull images from the registry.
+
+### Deploy container with Azure CLI
+
+Now that the service principal credentials are stored as Azure Key Vault secrets, your applications and services can use them to access your private registry.
+
+Execute the following [az container create][az-container-create] command to deploy a container instance. The command uses the service principal's credentials stored in Azure Key Vault to authenticate to your container registry.
+
+```sh
+az container create \
+    --name aci-demo \
+    --resource-group $RES_GROUP \
+    --image $ACR_NAME.azurecr.io/helloworld:v1 \
+    --registry-login-server $ACR_NAME.azurecr.io \
+    --registry-username $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-usr --query value -o tsv) \
+    --registry-password $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-pwd --query value -o tsv) \
+    --dns-name-label aci-demo-$RANDOM \
+    --query ipAddress.fqdn
+```
+
+The `--dns-name-label` value must be unique within Azure, so the preceding command appends a random number to the container's DNS name label. The output from the command displays the container's fully qualified domain name (FQDN), for example:
+
+```console
+$ az container create --name aci-demo --resource-group $RES_GROUP --image $ACR_NAME.azurecr.io/aci-helloworld:v1 --registry-login-server $ACR_NAME.azurecr.io --registry-username $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-usr --query value -o tsv) --registry-password $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-pwd --query value -o tsv) --dns-name-label aci-demo-$RANDOM --query ipAddress.fqdn
+"aci-demo-25007.eastus.azurecontainer.io"
+```
+
+### Verify deployment
+
+Watch the creation of the container instance, awaiting the public IP:
+
+```
+watch az container show -g $RES_GROUP -n $ACR_NAME
+```
+
+Once the container has started successfully, you can navigate to its FQDN in your browser to verify the application is running successfully.
 
 ## Cleaning up
 
-```
+```sh
 az group delete -g $ACR_NAME
 az ad sp delete --id http://$ACR_NAME-pull
 ```
+
+## Next steps
+
+Now that you've tested your inner loop, [configure a build task](./quickstart-buildtask.md) that can be triggered by SCC commits or base image updates.
+
+<!-- LINKS -->
+[az-ad-sp-create-for-rbac]: https://docs.microsoft.com/cli/azure/ad/sp#az-ad-sp-create-for-rbac
+[az-container-create]: https://docs.microsoft.com/cli/azure/container#az-container-create
+[az-keyvault-secret-set]: https://docs.microsoft.com/cli/azure/keyvault/secret#az-keyvault-secret-set
