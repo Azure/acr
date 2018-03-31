@@ -45,15 +45,14 @@ To see a quick example, we'll clone a repo, build it locally, and compare with A
 
 In the following example, I create a registry named **jengademos**. This registry name will be taken. Replace **jengademos** with your own registry. 
 
-***Note: for Preview 1, only registries in EastUS are supported***
+***Note: for Preview, only registries in EastUS are supported***
 
-- Create a registry and login with your azure id
+- Create a registry
     
     ```
     ACR_NAME=jengademos
     az group create -l eastus -g $ACR_NAME
     az acr create -g $ACR_NAME --sku Standard -n $ACR_NAME
-    az acr login -n $ACR_NAME
 	```
 
 - Build the image:
