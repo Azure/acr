@@ -167,7 +167,7 @@ Edit **nodeDockerfile** to bump the version with an **a**
 ENV NODE_VERSION 9.10.0a
 ```
 
-Build the corp image and push to the registry. Note, we continue to use the stable tag of 9, as we're doing an OS and/or Framework update.  
+Build a base image, that you maintain and push to the registry. Note, we continue to use the stable tag of 9, as we're doing an OS and/or Framework update.
 
 > See [Docker Tagging: Best practices for tagging and versioning docker imagese](https://blogs.msdn.microsoft.com/stevelasker/2018/03/01/docker-tagging-best-practices-for-tagging-and-versioning-docker-images/) for info on stable and unique tagging.
 
@@ -180,16 +180,22 @@ View the logs as the base image update triggers the **helloworld** build task. W
 ```
 az acr build-task logs -r $ACR_NAME
 ```
+## Base image updates from other locations
+ACR Build will support base image update notifications from Docker Hub as well as other Azure Container Registries. The current preview is limited to base image update notifications from the same registry.
+
+Base Image Update notifications are also currently limited to the runtime dependency. In a future preview, `acr build-task create` will expose parameters for which base image dependencies to monitor, including not monitoring. 
 
 ## Next steps
 
 In this tutorial, you created a build-task to monitor git commits as well as base image updates. These primitives support OS & Framework Patching scenarios, enabling developers to quickly iterate while still in their inner-loop. While setting their build system to support the longevity of their production apps. 
 
 > [!div class="checklist"]
-> * Created a geo-replicated Azure container registry
-> * Cloned application source code from GitHub
-> * Built a Docker container image from application source
-> * Pushed the container image to your registry
+> * Create an Azure Container Registry
+> * Create a base image in the registry, used for base image updates
+> * Clone a sample repo
+> * Create a build-task to host the build definition
+> * Make a git-commit to demonstrate a code change triggered build
+> * Make a change to the base image to demonstrate a OS & Framework patching build
 
 Advance to the next tutorial to learn about update-tasks that enable developers to iterate on a build-task while a deployed image will receive base image updates.
 
