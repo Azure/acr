@@ -167,9 +167,9 @@ Now listening on: http://[::]:80
 Application started. Press Ctrl+C to shut down.
 ```
 
-Once the container has started successfully, you can navigate to its FQDN in your browser to verify the application is running successfully. When you see "Application started. Press Ctrl+C to shut down.", the application has started and you can navigate to its FQDN. To detach from the container, hit `Control+C`.
+When you see "Application started. Press Ctrl+C to shut down.", the application has started and you can navigate to the container's FQDN to view it. To detach from the container, hit `Control+C`.
 
-> NOTE: The last line in the output, "`Press Ctrl+C to shut down.`", is from the STDOUT of the *container*. By pressing *Control+C*, you actually quit the `az container attach` command, and the container and its application continues to run.
+> NOTE: The last line in the output, "`Press Ctrl+C to shut down.`", is output from the *container's* STDOUT. By pressing *Control+C*, you exit the `az container attach` command. The container and its application continues to run.
 
 ## Clean up resources
 
