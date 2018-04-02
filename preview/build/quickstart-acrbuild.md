@@ -38,6 +38,7 @@ To see a quick example, we'll clone a repo and build it locally. In the next sec
 
 In the following example, I create a registry named **jengademos**. This registry name will be taken. Replace **jengademos** with the name of your own Azure container registry.
 
+<<<<<<< HEAD
 > NOTE: ACR Build Preview 2 supports only those registries in **EastUS**.
 
 1. Create a registry and log in to it with your Azure ID:
@@ -48,6 +49,16 @@ In the following example, I create a registry named **jengademos**. This registr
     az group create -l eastus -g $RES_GROUP
     az acr create -g $RES_GROUP --sku Standard -n $ACR_NAME
     az acr login -n $ACR_NAME
+=======
+***Note: for Preview, only registries in EastUS are supported***
+
+- Create a registry
+    
+    ```
+    ACR_NAME=jengademos
+    az group create -l eastus -g $ACR_NAME
+    az acr create -g $ACR_NAME --sku Standard -n $ACR_NAME
+>>>>>>> f71e02c05a5ceb181c381c9bcaf1de5e43a47192
 	```
 
 1. Build the image with **ACR Build**:
