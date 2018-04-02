@@ -23,7 +23,7 @@ To see a quick example, we'll clone a repo and build it locally. In the next sec
     cd aspnetcore-helloworld
     ```
 
-1. (OPTIONAL) Build and run locally. This step is use only as a comparison with `az acr build`. If you don't have Docker installed or running locally, you can skip this step and move on to [Building in Azure](#building-in-azure).
+1. (OPTIONAL) Build and run locally. This step is used only as a comparison with `az acr build`. If you don't have Docker installed or running locally, you can skip this step and move on to [Building in Azure](#building-in-azure).
 
     ```sh
     # Build image locally
@@ -38,7 +38,7 @@ To see a quick example, we'll clone a repo and build it locally. In the next sec
 
 In the following example, I create a registry named **jengademos**. This registry name will be taken. Replace **jengademos** with the name of your own Azure container registry.
 
-> Note: ACR Build Preview 2 supports only those registries in **EastUS**.
+> NOTE: ACR Build Preview 2 supports only those registries in **EastUS**.
 
 1. Create a registry and log in to it with your Azure ID:
 
@@ -142,18 +142,41 @@ $ az container create --name aci-demo --resource-group $RES_GROUP --image $ACR_N
 
 ### Verify deployment
 
-Watch the creation of the container instance, awaiting the public IP:
-
-```
-watch az container show -g $RES_GROUP -n $ACR_NAME
-```
-
-Once the container has started successfully, you can navigate to its FQDN in your browser to verify the application is running successfully.
-
-## Cleaning up
+To watch the startup process of the container, use the [az container attach][az-container-attach] command. The `az container attach` first displays the container's status as it pulls its image and starts, then binds your local console's STDOUT and STDERR to that of the container's.
 
 ```sh
-az group delete -g $ACR_NAME
+az container attach -g $RES_GROUP -n aci-demo
+```
+
+Output from the `az container attach` command should appear similar to the following:
+
+```console
+$ az container attach -g $RES_GROUP -n aci-demo
+Container 'aci-demo' is in state 'Running'...
+(count: 1) (last timestamp: 2018-04-02 20:26:23+00:00) pulling image "jengademos.azurecr.io/helloworld:v1"
+(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Successfully pulled image "jengademos.azurecr.io/helloworld:v1"
+(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Created container with id 971fe0a761c9d932071d2fe4bdf374ab712bb6d6e8d077edaa7a1e266a421bba
+(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Started container with id 971fe0a761c9d932071d2fe4bdf374ab712bb6d6e8d077edaa7a1e266a421bba
+
+Start streaming logs:
+warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+      No XML encryptor configured. Key {73c045ae-b90a-4d6c-ad92-54f1ffb18c37} may be persisted to storage in unencrypted form.
+Hosting environment: Production
+Content root path: /app
+Now listening on: http://[::]:80
+Application started. Press Ctrl+C to shut down.
+```
+
+Once the container has started successfully, you can navigate to its FQDN in your browser to verify the application is running successfully. When you see "Application started. Press Ctrl+C to shut down.", the application has started and you can navigate to its FQDN. To detach from the container, hit `Control+C`.
+
+> NOTE: The last line in the output, "`Press Ctrl+C to shut down.`", is from the STDOUT of the *container*. By pressing *Control+C*, you actually quit the `az container attach` command, and the container and its application continues to run.
+
+## Clean up resources
+
+To remove all resources you've created in this quickstart, including the container, container registry, key vault, and service principal, issue the following commands:
+
+```sh
+az group delete -g $RES_GROUP
 az ad sp delete --id http://$ACR_NAME-pull
 ```
 
@@ -163,5 +186,6 @@ Now that you've tested your inner loop, [configure a build task](./quickstart-bu
 
 <!-- LINKS -->
 [az-ad-sp-create-for-rbac]: https://docs.microsoft.com/cli/azure/ad/sp#az-ad-sp-create-for-rbac
+[az-container-attach]: https://docs.microsoft.com/cli/azure/container#az-container-attach
 [az-container-create]: https://docs.microsoft.com/cli/azure/container#az-container-create
 [az-keyvault-secret-set]: https://docs.microsoft.com/cli/azure/keyvault/secret#az-keyvault-secret-set
