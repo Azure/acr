@@ -57,7 +57,7 @@ Clone the sample, which includes:
 - A sample hellowworld app used for demonstrating base image updates
 
 ```bash
-git clone https://github.com/SteveLasker/node-helloworld.git
+git clone https://github.com/SteveLasker/acrbuild-node-helloworld.git
 ```
 
 Build the base image, then push to the registry
