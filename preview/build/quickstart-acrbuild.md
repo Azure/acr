@@ -1,6 +1,10 @@
 # ACR Build for quick builds
 
-ACR Build extends your inner loop to the cloud, validating build success once your code is checked in. ACR Build also enables you to work locally, without the Docker client: build your source in Azure, then test it with a deployment to the cloud.
+Azure Container Registry's **ACR Build** feature extends your development "inner loop" to the cloud, building your container images in Azure when you commit your code. ACR Build also enables you to work locally, building container images in the cloud without requiring a local Docker Engine installation.
+
+In this quickstart, you build a container image from source code in Azure with ACR Build, then test it with a deployment to the cloud using Azure Container Instances.
+
+> IMPORTANT: ACR Build is in currently in preview, and is supported **only** by Azure container registries in the **EastUS** region.
 
 ## Get ACR Build
 
@@ -36,15 +40,18 @@ To see a quick example, we'll clone a repo and build it locally. In the next sec
 
 ## Building in Azure
 
-In the following example, I create a registry named **jengademos**. This registry name will be taken. Replace **jengademos** with the name of your own Azure container registry.
+Now that you've pulled the source code down to your machine, follow the steps below to create a container registry and build the container image with **ACR Build**.
 
-> NOTE: ACR Build Preview 2 supports only those registries in **EastUS**.
+The example below creates an Azure container registry named **mycontainerregistry**. Because this registry name might already be taken, replace **mycontainerregistry** with a unique name for your registry. The registry name must be unique within Azure, and contain 5-50 alphanumeric characters. You're also welcome to change the resource group name defined in `RES_GROUP`.
+
+> NOTE: ACR Build is currently supported only by registries in **EastUS**. Do not change the location of the resource group.
 
 1. Create a registry and log in to it with your Azure ID:
 
     ```sh
-    RES_GROUP=myresourcegroup # Resource Group name
-    ACR_NAME=jengademos
+    RES_GROUP=myResourceGroup    # Resource Group name
+    ACR_NAME=mycontainerregistry # Registry name - must be unique within Azure
+
     az group create -l eastus -g $RES_GROUP
     az acr create -g $RES_GROUP --sku Standard -n $ACR_NAME
     az acr login -n $ACR_NAME
