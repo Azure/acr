@@ -1,19 +1,33 @@
-# ACR Build for quick builds
+---
+title: Quickstart - Build container images in Azure with Azure Container Registry Build
+description: Quickly learn how to build Docker container images in Azure with Azure Container Registry Build (ACR Build), then deploy it to Azure Container Instances.
+services: container-registry
+author: mmacy
+manager: timlt
+
+ms.service: container-registry
+ms.topic: article
+ms.date: 04/03/2018
+ms.author: marsma
+---
+
+# Use Azure Container Registry Build for quick image build and deployment
 
 Azure Container Registry's **ACR Build** feature extends your development "inner loop" to the cloud, building your container images in Azure when you commit your code. ACR Build also enables you to work locally, building container images in the cloud without requiring a local Docker Engine installation.
 
 In this quickstart, you build a container image from source code in Azure with ACR Build, then test it with a deployment to the cloud using Azure Container Instances.
 
-> IMPORTANT: ACR Build is in currently in preview, and is supported **only** by Azure container registries in the **EastUS** region.
+> IMPORTANT: ACR Build is in currently in preview, and is supported **only** by Azure container registries in the **EastUS** region. Previews are made available to you on the condition that you agree to the [supplemental terms of use][terms-of-use]. Some aspects of this feature may change prior to general availability (GA).
 
 ## Get ACR Build
 
 * **Access**: While ACR Build is in preview, you must first request access at https://aka.ms/acr/preview/signup
 
-* **Installation**: Next, [install the ACR Build](../install.md) preview, which enables the `az acr build` command in the Azure CLI.
+* **Installation**: Next, [install the ACR Build preview](../install.md), which enables the `az acr build` command in the Azure CLI.
 
-## Test locally with Docker for Windows/Mac
-To see a quick example, we'll clone a repo and build it locally. In the next section, we'll compare by using ACR Build in Azure, then deploy to Azure Container Instances (ACI).
+## Build locally with Docker Engine
+
+To compare the two image build methods--local build and ACR Build--first clone the following Git repo and build it locally. In the next section you use ACR Build to build the image in Azure, then deploy a container from the image to Azure Container Instances (ACI).
 
 1. Clone the sample repo
 
@@ -27,7 +41,7 @@ To see a quick example, we'll clone a repo and build it locally. In the next sec
     cd aspnetcore-helloworld
     ```
 
-1. (OPTIONAL) Build and run locally. This step is used only as a comparison with `az acr build`. If you don't have Docker installed or running locally, you can skip this step and move on to [Building in Azure](#building-in-azure).
+1. Build and run locally. This step is actually *optional*, and isn't needed when you use ACR Build to build your images. In this article, it's used only as a comparison with `az acr build`. If you don't have Docker running locally, you can skip this step and move directly to [Building in Azure](#build-in-azure-with-acr-build).
 
     ```sh
     # Build image locally
@@ -36,13 +50,13 @@ To see a quick example, we'll clone a repo and build it locally. In the next sec
     docker run -d -p 8088:80 helloworld:v1
     ```
 
-    Browse the locally running application: http://localhost:8088
+    View the locally running application by navigating to http://localhost:8088 in your browser.
 
-## Building in Azure
+## Build in Azure with ACR Build
 
-Now that you've pulled the source code down to your machine, follow the steps below to create a container registry and build the container image with **ACR Build**.
+Now that you've pulled the source code down to your machine, follow these steps to create a container registry and build the container image with **ACR Build**.
 
-The example below creates an Azure container registry named **mycontainerregistry**. Because this registry name might already be taken, replace **mycontainerregistry** with a unique name for your registry. The registry name must be unique within Azure, and contain 5-50 alphanumeric characters. You're also welcome to change the resource group name defined in `RES_GROUP`.
+The example below creates an Azure container registry named **mycontainerregistry**. Because this registry name might already be taken, replace **mycontainerregistry** with a unique name for your registry. The registry name must be unique within Azure and contain 5-50 alphanumeric characters. You're also welcome to change the resource group name defined in `RES_GROUP`.
 
 > NOTE: ACR Build is currently supported only by registries in **EastUS**. Do not change the location of the resource group.
 
@@ -197,3 +211,4 @@ Now that you've tested your inner loop, [configure a build task](./quickstart-bu
 [az-container-attach]: https://docs.microsoft.com/cli/azure/container#az-container-attach
 [az-container-create]: https://docs.microsoft.com/cli/azure/container#az-container-create
 [az-keyvault-secret-set]: https://docs.microsoft.com/cli/azure/keyvault/secret#az-keyvault-secret-set
+[terms-of-use]: https://azure.microsoft.com/support/legal/preview-supplemental-terms/
