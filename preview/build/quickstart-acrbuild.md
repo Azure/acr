@@ -63,8 +63,8 @@ The example below creates an Azure container registry named **mycontainerregistr
 1. Create a registry and log in to it with your Azure ID:
 
     ```sh
-    RES_GROUP=myResourceGroup    # Resource Group name
-    ACR_NAME=mycontainerregistry # Registry name - must be unique within Azure
+    ACR_NAME=mycontainerregistry # Registry name - must be *unique* within Azure
+    RES_GROUP=$ACR_NAME # Resource Group name
 
     az group create -g $RES_GROUP -l eastus
     az acr create -g $RES_GROUP -n $ACR_NAME --sku Standard
