@@ -45,7 +45,7 @@ To compare the two image build methods--local build and ACR Build--first clone t
 
     ```sh
     # Build image locally
-    docker build -t helloacrbuild:v1 -f ./Dockerfile .
+    docker build -t helloacrbuild:v1 .
     # Run the image
     docker run -d -p 8088:80 helloacrbuild:v1
     ```
@@ -74,26 +74,26 @@ The example below creates an Azure container registry named **mycontainerregistr
 1. Build the image with **ACR Build**:
 
     ```sh
-    az acr build -t helloacrbuild:v1 -f ./Dockerfile --context . --registry $ACR_NAME
+    az acr build -t helloacrbuild:v1 --context . --registry $ACR_NAME
     ```
 
     Shown here truncated, the output from the [az acr build][az-acr-build] command is similar to the following. You can see the packaging of the source code into a tarball, its upload to Azure, and the details of the `docker build` operation occurring in the cloud.
 
     ```console
-    $ az acr build -t helloacrbuild:v1 -f ./Dockerfile --context . --registry $ACR_NAME
-    Starting to archive the source code to '/tmp/source_archive_2137912318970281282.tar.gz'.
-    The source code tarball file size is 22510 bytes.
+    $ az acr build -t helloacrbuild:v1 --context . --registry $ACR_NAME
+    Starting to archive the source code to '/tmp/source_archive_-5931255349851486748.tar.gz'.
+    The source code tarball file size is 22518 bytes.
     Queued a build with build-id: eastus-1.
     Starting to stream the logs...
-    time="2018-04-03T19:35:15Z" level=info msg="Running command docker login -u 00000000-0000-0000-0000-000000000000 --password-stdin mycontainerregistry.azurecr.io"
+    time="2018-04-03T22:19:15Z" level=info msg="Running command docker login -u 00000000-0000-0000-0000-000000000000 --password-stdin mycontainerregistry.azurecr.io"
     Login Succeeded
-    time="2018-04-03T19:35:21Z" level=info msg="Running command docker build -f ./Dockerfile -t mycontainerregistry.azurecr.io/helloacrbuild:v1 ."
+    time="2018-04-03T22:19:17Z" level=info msg="Running command docker build -f Dockerfile -t mycontainerregistry.azurecr.io/helloacrbuild:v1 ."
     Sending build context to Docker daemon  124.9kB
 
     [...]
 
     Build complete
-    Build ID: eastus-1 was successful after 1m2.638806785s
+    Build ID: eastus-1 was successful after 1m15.680657431s
     ```
 
 ## Deploy to Azure Container Instances
