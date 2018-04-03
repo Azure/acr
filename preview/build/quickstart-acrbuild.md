@@ -29,19 +29,19 @@ In this quickstart, you build a container image from source code in Azure with A
 
 To compare the two image build methods--local build and ACR Build--first clone the following Git repo and build it locally. In the next section you use ACR Build to build the image in Azure, then deploy a container from the image to Azure Container Instances (ACI).
 
-1. Clone the sample repo
+1. Clone the sample repo from GitHub:
 
     ```sh
     git clone https://github.com/SteveLasker/aspnetcore-helloworld.git
     ```
 
-1. Enter the directory
+1. Enter the directory containing the cloned source code:
 
     ```sh
     cd aspnetcore-helloworld
     ```
 
-1. Build and run locally. This step is actually *optional*, and isn't needed when you use ACR Build to build your images. In this article, it's used only as a comparison with `az acr build`. If you don't have Docker running locally, you can skip this step and move directly to [Building in Azure](#build-in-azure-with-acr-build).
+1. Build and run locally. This step is actually *optional*, and isn't needed when you use ACR Build to build your images. In this article, it's used only as a comparison with `az acr build`. If you don't have Docker running locally, you can skip this step and move directly to [Build in Azure with ACR Build](#build-in-azure-with-acr-build).
 
     ```sh
     # Build image locally
@@ -77,20 +77,21 @@ The example below creates an Azure container registry named **mycontainerregistr
     az acr build -t helloworld:v1 -f ./HelloWorld/Dockerfile --context . --registry $ACR_NAME
     ```
 
-## Deploy to ACI
-As we continue to integrate ACI into end to end workflows, we're working through more production-grade examples for authenticating between ACI and ACR. In this example, we use Azure Key Vault to store the user/password required to access ACR.
+## Deploy to Azure Container Instances
+
+When you use ACR Build to build your container images, they're automatically pushed to your container registry, allowing you deploy them immediately after the build is complete. You don't have the extra step of pushing the image to your registry when you use ACR Build.
+
+In this section, you create an Azure Key Vault and service principal, then deploy the container to Azure Container Instances (ACI) using the service principal's credentials.
 
 ### Configure registry authentication
 
-In any production scenario, access to an Azure container registry should be provided by using [service principals](../container-registry/container-registry-auth-service-principal.md). Service principals allow you to provide role-based access control to your container images. For example, you can configure a service principal with pull-only access to a registry.
-
-In this section, you create an Azure key vault and a service principal, and store the service principal's credentials in the vault.
+All production scenarios should use [service principals][service-principal-auth] for access to an Azure container registry. Service principals allow you to provide role-based access control to your container images. For example, you can configure a service principal with pull-only access to a registry.
 
 #### Create key vault
 
-If you don't already have a vault in [Azure Key Vault](/azure/key-vault/), create one with the Azure CLI using the following commands.
+If you don't already have a vault in [Azure Key Vault](/azure/key-vault/), create one with the Azure CLI using the following [az keyvault create][az-keyvault-create] command.
 
-Specify a name for your new key vault in `AKV_NAME`. The vault name must be unique within Azure and must be 3-24 alphanumeric characters in length, begin with a letter, end with a letter or digit, and cannot contain consecutive hyphens.
+Specify a name for your new key vault in `AKV_NAME`. The vault name must be unique within Azure, and must be 3-24 alphanumeric characters in length.
 
 ```sh
 AKV_NAME=mykeyvault # Must be unique within Azure
@@ -174,8 +175,8 @@ Output from the `az container attach` command should appear similar to the follo
 ```console
 $ az container attach -g $RES_GROUP -n aci-demo
 Container 'aci-demo' is in state 'Running'...
-(count: 1) (last timestamp: 2018-04-02 20:26:23+00:00) pulling image "jengademos.azurecr.io/helloworld:v1"
-(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Successfully pulled image "jengademos.azurecr.io/helloworld:v1"
+(count: 1) (last timestamp: 2018-04-02 20:26:23+00:00) pulling image "mycontainerregistry.azurecr.io/helloworld:v1"
+(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Successfully pulled image "mycontainerregistry.azurecr.io/helloworld:v1"
 (count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Created container with id 971fe0a761c9d932071d2fe4bdf374ab712bb6d6e8d077edaa7a1e266a421bba
 (count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Started container with id 971fe0a761c9d932071d2fe4bdf374ab712bb6d6e8d077edaa7a1e266a421bba
 
@@ -203,12 +204,20 @@ az ad sp delete --id http://$ACR_NAME-pull
 
 ## Next steps
 
-Now that you've tested your inner loop, [configure a build task](./quickstart-buildtask.md) that can be triggered by SCC commits or base image updates.
+Now that you've tested your inner loop, configure a **build task** that can be triggered by source code commits or base image updates:
 
+[Configure a build task](quickstart-buildtask.md)
+
+<!-- docs.microsoft.com ONLY
+> [!div class="nextstepaction"]
+> [Configure a build task][quickstart-buildtask.md]
+-->
 
 <!-- LINKS -->
 [az-ad-sp-create-for-rbac]: https://docs.microsoft.com/cli/azure/ad/sp#az-ad-sp-create-for-rbac
 [az-container-attach]: https://docs.microsoft.com/cli/azure/container#az-container-attach
 [az-container-create]: https://docs.microsoft.com/cli/azure/container#az-container-create
+[az-keyvault-create]: https://docs.microsoft.com/cli/azure/keyvault/secret#az-keyvault-create
 [az-keyvault-secret-set]: https://docs.microsoft.com/cli/azure/keyvault/secret#az-keyvault-secret-set
+[service-principal-auth]: https://docs.microsoft.com/azure/container-registry/container-registry-auth-service-principal
 [terms-of-use]: https://azure.microsoft.com/support/legal/preview-supplemental-terms/
