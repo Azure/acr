@@ -48,7 +48,7 @@ Once the image is pushed and in quarantine state, you will receive a notificatio
 {
   "id": "0d799b14-404b-4859-b2f6-50c5ee2a2c3a",
   "timestamp": "2018-02-28T00:42:54.4509516Z",
-  "action": "quarantined",
+  "action": "quarantine",
   "target": {
     "size": 1791,
     "digest": "sha256:91ef6",

@@ -29,7 +29,7 @@ With the git PAT, execute the following command replacing the context with your 
 ```
 az acr build-task create --name helloworld -r $ACR_NAME \
     -t helloworld:v1 \
-    --context https://github.com/SteveLasker/node-helloworld --git-access-token [yourToken]
+    --context https://github.com/SteveLasker/acrbuild-node-helloworld --git-access-token [yourToken]
 ```
 
 > Note: Setting the :tag to :{build.Id} will be implemented in a future preview
@@ -41,7 +41,7 @@ We're exploring the same convention as the [docker cli](https://docs.docker.com/
 ```
 az acr build-task create --name helloworld -n jengademos \
     -t helloworld:v1  \
-    --context https://github.com/SteveLasker/node-helloworld.git$subBranch:subFolder --git-access-token [yourToken]
+    --context https://github.com/SteveLasker/acrbuild-node-helloworld.git$subBranch:subFolder --git-access-token [yourToken]
 ```
 Your feedback on [azurecr.slack.com](https://azurecr.slack.com) would be helpful...
 
