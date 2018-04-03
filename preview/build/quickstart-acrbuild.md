@@ -13,9 +13,9 @@ ms.author: marsma
 
 # Use Azure Container Registry Build for quick image build and deployment
 
-Azure Container Registry's **ACR Build** feature extends your development "inner loop" to the cloud, building your container images in Azure when you commit your code. ACR Build also enables you to work locally, building container images in the cloud without requiring a local Docker Engine installation.
+Azure Container Registry's **ACR Build** feature extends your development "inner loop" to the cloud, building your container images in Azure when you commit your code. It also enables you to work locally, building container images in the cloud without requiring a local Docker Engine installation. ACR Build can speed deployment and testing of containers since you don't need a separate `docker push` operation prop your images to your container registry.
 
-In this quickstart, you build a container image from source code in Azure with ACR Build, then test it with a deployment to the cloud using Azure Container Instances.
+In this quickstart, you build a container image from source code in Azure with ACR Build, then test it with a deployment to Azure Container Instances.
 
 > IMPORTANT: ACR Build is in currently in preview, and is supported **only** by Azure container registries in the **EastUS** region. Previews are made available to you on the condition that you agree to the [supplemental terms of use][terms-of-use]. Some aspects of this feature may change prior to general availability (GA).
 
@@ -32,22 +32,22 @@ To compare the two image build methods--local build and ACR Build--first clone t
 1. Clone the sample repo from GitHub:
 
     ```sh
-    git clone https://github.com/SteveLasker/aspnetcore-helloworld.git
+    git clone https://github.com/Azure-Samples/aci-helloworld
     ```
 
 1. Enter the directory containing the cloned source code:
 
     ```sh
-    cd aspnetcore-helloworld
+    cd aci-helloworld
     ```
 
 1. Build and run locally. This step is actually *optional*, and isn't needed when you use ACR Build to build your images. In this article, it's used only as a comparison with `az acr build`. If you don't have Docker running locally, you can skip this step and move directly to [Build in Azure with ACR Build](#build-in-azure-with-acr-build).
 
     ```sh
     # Build image locally
-    docker build -t helloworld:v1 -f HelloWorld/Dockerfile .
+    docker build -t helloacrbuild:v1 -f ./Dockerfile .
     # Run the image
-    docker run -d -p 8088:80 helloworld:v1
+    docker run -d -p 8088:80 helloacrbuild:v1
     ```
 
     View the locally running application by navigating to http://localhost:8088 in your browser.
@@ -66,20 +66,39 @@ The example below creates an Azure container registry named **mycontainerregistr
     RES_GROUP=myResourceGroup    # Resource Group name
     ACR_NAME=mycontainerregistry # Registry name - must be unique within Azure
 
-    az group create -l eastus -g $RES_GROUP
-    az acr create -g $RES_GROUP --sku Standard -n $ACR_NAME
+    az group create -g $RES_GROUP -l eastus
+    az acr create -g $RES_GROUP -n $ACR_NAME --sku Standard
     az acr login -n $ACR_NAME
 	```
 
 1. Build the image with **ACR Build**:
 
     ```sh
-    az acr build -t helloworld:v1 -f ./HelloWorld/Dockerfile --context . --registry $ACR_NAME
+    az acr build -t helloacrbuild:v1 -f ./Dockerfile --context . --registry $ACR_NAME
+    ```
+
+    Shown here truncated, the output from the [az acr build][az-acr-build] command is similar to the following. You can see the packaging of the source code into a tarball, its upload to Azure, and the details of the `docker build` operation occurring in the cloud.
+
+    ```console
+    $ az acr build -t helloacrbuild:v1 -f ./Dockerfile --context . --registry $ACR_NAME
+    Starting to archive the source code to '/tmp/source_archive_2137912318970281282.tar.gz'.
+    The source code tarball file size is 22510 bytes.
+    Queued a build with build-id: eastus-1.
+    Starting to stream the logs...
+    time="2018-04-03T19:35:15Z" level=info msg="Running command docker login -u 00000000-0000-0000-0000-000000000000 --password-stdin mycontainerregistry.azurecr.io"
+    Login Succeeded
+    time="2018-04-03T19:35:21Z" level=info msg="Running command docker build -f ./Dockerfile -t acr112mycontainerregistry92.azurecr.io/helloacrbuild:v1 ."
+    Sending build context to Docker daemon  124.9kB
+
+    [...]
+
+    Build complete
+    Build ID: eastus-1 was successful after 1m2.638806785s
     ```
 
 ## Deploy to Azure Container Instances
 
-When you use ACR Build to build your container images, they're automatically pushed to your container registry, allowing you deploy them immediately after the build is complete. You don't have the extra step of pushing the image to your registry when you use ACR Build.
+When you use ACR Build to build your container images, they're automatically pushed to your container registry, allowing you deploy them immediately after the build is complete. You don't have the extra step of pushing the image to a registry when you use ACR Build.
 
 In this section, you create an Azure Key Vault and service principal, then deploy the container to Azure Container Instances (ACI) using the service principal's credentials.
 
@@ -147,7 +166,7 @@ Execute the following [az container create][az-container-create] command to depl
 az container create \
     --name aci-demo \
     --resource-group $RES_GROUP \
-    --image $ACR_NAME.azurecr.io/helloworld:v1 \
+    --image $ACR_NAME.azurecr.io/helloacrbuild:v1 \
     --registry-login-server $ACR_NAME.azurecr.io \
     --registry-username $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-usr --query value -o tsv) \
     --registry-password $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-pwd --query value -o tsv) \
@@ -158,7 +177,7 @@ az container create \
 The `--dns-name-label` value must be unique within Azure, so the preceding command appends a random number to the container's DNS name label. The output from the command displays the container's fully qualified domain name (FQDN), for example:
 
 ```console
-$ az container create --name aci-demo --resource-group $RES_GROUP --image $ACR_NAME.azurecr.io/aci-helloworld:v1 --registry-login-server $ACR_NAME.azurecr.io --registry-username $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-usr --query value -o tsv) --registry-password $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-pwd --query value -o tsv) --dns-name-label aci-demo-$RANDOM --query ipAddress.fqdn
+$ az container create --name aci-demo --resource-group $RES_GROUP --image $ACR_NAME.azurecr.io/aci-helloacrbuild:v1 --registry-login-server $ACR_NAME.azurecr.io --registry-username $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-usr --query value -o tsv) --registry-password $(az keyvault secret show --vault-name $AKV_NAME -n $ACR_NAME-pull-pwd --query value -o tsv) --dns-name-label aci-demo-$RANDOM --query ipAddress.fqdn
 "aci-demo-25007.eastus.azurecontainer.io"
 ```
 
@@ -173,25 +192,18 @@ az container attach -g $RES_GROUP -n aci-demo
 Output from the `az container attach` command should appear similar to the following:
 
 ```console
-$ az container attach -g $RES_GROUP -n aci-demo
+$ $ az container attach -g $RES_GROUP -n aci-demo
 Container 'aci-demo' is in state 'Running'...
-(count: 1) (last timestamp: 2018-04-02 20:26:23+00:00) pulling image "mycontainerregistry.azurecr.io/helloworld:v1"
-(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Successfully pulled image "mycontainerregistry.azurecr.io/helloworld:v1"
-(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Created container with id 971fe0a761c9d932071d2fe4bdf374ab712bb6d6e8d077edaa7a1e266a421bba
-(count: 1) (last timestamp: 2018-04-02 20:26:40+00:00) Started container with id 971fe0a761c9d932071d2fe4bdf374ab712bb6d6e8d077edaa7a1e266a421bba
+(count: 1) (last timestamp: 2018-04-03 19:45:37+00:00) pulling image "acr11292.azurecr.io/helloacrbuild:v1"
+(count: 1) (last timestamp: 2018-04-03 19:45:44+00:00) Successfully pulled image "acr11292.azurecr.io/helloacrbuild:v1"
+(count: 1) (last timestamp: 2018-04-03 19:45:44+00:00) Created container with id 094ab4da40138b36ca15fc2ad5cac351c358a7540a32e22b52f78e96a4cb3413
+(count: 1) (last timestamp: 2018-04-03 19:45:44+00:00) Started container with id 094ab4da40138b36ca15fc2ad5cac351c358a7540a32e22b52f78e96a4cb3413
 
 Start streaming logs:
-warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
-      No XML encryptor configured. Key {73c045ae-b90a-4d6c-ad92-54f1ffb18c37} may be persisted to storage in unencrypted form.
-Hosting environment: Production
-Content root path: /app
-Now listening on: http://[::]:80
-Application started. Press Ctrl+C to shut down.
+listening on port 80
 ```
 
-When you see "Application started. Press Ctrl+C to shut down.", the application has started and you can navigate to the container's FQDN to view it. To detach from the container, hit `Control+C`.
-
-> NOTE: The last line in the output, "`Press Ctrl+C to shut down.`", is output from the *container's* STDOUT. By pressing *Control+C*, you exit the `az container attach` command. The container and its application continues to run.
+When you see "listening on port 80", which is output from the container's STDOUT, the application has started and you can navigate to the container's FQDN to view it. To detach your console from the container, hit `Control+C`.
 
 ## Clean up resources
 
@@ -214,6 +226,7 @@ Now that you've tested your inner loop, configure a **build task** that can be t
 -->
 
 <!-- LINKS -->
+[az-acr-build]: https://docs.microsoft.com/cli/azure/acr#az-acr-build
 [az-ad-sp-create-for-rbac]: https://docs.microsoft.com/cli/azure/ad/sp#az-ad-sp-create-for-rbac
 [az-container-attach]: https://docs.microsoft.com/cli/azure/container#az-container-attach
 [az-container-create]: https://docs.microsoft.com/cli/azure/container#az-container-create
