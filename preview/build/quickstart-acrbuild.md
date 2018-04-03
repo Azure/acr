@@ -13,7 +13,7 @@ ms.author: marsma
 
 # Use Azure Container Registry Build for quick image build and deployment
 
-Azure Container Registry's **ACR Build** feature extends your development "inner loop" to the cloud, building your container images in Azure when you commit your code. It also enables you to work locally, building container images in the cloud without requiring a local Docker Engine installation. ACR Build can speed deployment and testing of containers since you don't need a separate `docker push` operation to prop your images to your container registry.
+Azure Container Registry's **ACR Build** feature extends your development "inner loop" to the cloud, building your container images in Azure when you commit your code. It also enables you to work locally, building container images in the cloud without requiring a local Docker Engine installation. ACR Build can speed deployment and validation of containers since you don't need a separate `docker push` operation to prop your images to your container registry.
 
 In this quickstart, you build a container image from source code in Azure with ACR Build, then test it with a deployment to Azure Container Instances.
 
@@ -87,7 +87,7 @@ The example below creates an Azure container registry named **mycontainerregistr
     Starting to stream the logs...
     time="2018-04-03T19:35:15Z" level=info msg="Running command docker login -u 00000000-0000-0000-0000-000000000000 --password-stdin mycontainerregistry.azurecr.io"
     Login Succeeded
-    time="2018-04-03T19:35:21Z" level=info msg="Running command docker build -f ./Dockerfile -t acr112mycontainerregistry92.azurecr.io/helloacrbuild:v1 ."
+    time="2018-04-03T19:35:21Z" level=info msg="Running command docker build -f ./Dockerfile -t mycontainerregistry.azurecr.io/helloacrbuild:v1 ."
     Sending build context to Docker daemon  124.9kB
 
     [...]
