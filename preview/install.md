@@ -2,7 +2,7 @@
 
 The `az acr build` CLI is in preview, and must be installed manually.
 
-- [Install the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest)
+- [Install the Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli-macos?view=azure-cli-latest)
 
 - After installing the az cli, remove any previous versions of `acr build` and install the current extension, using the following commands:
 
@@ -13,6 +13,6 @@ az acr build --help
 ```
 
 ## Next Steps
-- [Quick Start - az acr build through cloud shell](./build/readme.md)
-- [Quick Start - create a build with az acr build, test with ACI](./build/quickstart-acrbuild.md)
-- [Quick Start - create a build-task, triggered by git commits, and view logs](./build/quickstart-buildtask.md)
+- [Quick Start - az acr build in the Azure Cloud Shell](./build/readme.md)
+- [Quick Start - Create a build with az acr build, test with ACI](./build/quickstart-acrbuild.md)
+- [Quick Start - Create a build-task, triggered by git commits, and view logs](./build/quickstart-buildtask.md)
