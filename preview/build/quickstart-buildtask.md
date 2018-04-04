@@ -1,3 +1,16 @@
+---
+title: Create a build tasks for automated container image builds in Azure Container Registry
+description: Learn how to build Docker container images in Azure with Azure Container Registry Build (ACR Build), then deploy it to Azure Container Instances.
+services: container-registry
+author: mmacy
+manager: timlt
+
+ms.service: container-registry
+ms.topic: article
+ms.date: 04/03/2018
+ms.author: marsma
+---
+
 # Preview 2 Enables Build-Tasks
 With preview 2, you can now create and save a build-task. Which is the definition of a build.
 
@@ -14,7 +27,7 @@ ACR Build-tasks can be triggered on:
 > ACR Build currently supports github based PAT tokens. VSTS tokens will come in a future preview
 
 ## Create a Github Personal Access Token
-- Create a github token by navigating to: 
+- Create a github token by navigating to:
     https://github.com/settings/tokens/new
 - Under repo, enable repo:status, public_repo
 
@@ -22,7 +35,7 @@ ACR Build-tasks can be triggered on:
 
 - Copy the generated token
 
-## Create a build task, which is automatically triggered on scc commits. 
+## Create a build task, which is automatically triggered on scc commits.
 
 With the git PAT, execute the following command replacing the context with your github:
 
@@ -58,7 +71,7 @@ There are several commands to view the status of a build-task, as well as the lo
 ## Trigger a build, view the status
 Using the --no-logs, trigger a build. Then, use the `build-task logs` parameter to view the current log
 ```
-az acr build-task run --name helloworld --no-logs -r $ACR_NAME 
+az acr build-task run --name helloworld --no-logs -r $ACR_NAME
 az acr build-task logs -r $ACR_NAME
 ```
 
