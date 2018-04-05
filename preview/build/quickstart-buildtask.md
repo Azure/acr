@@ -58,19 +58,28 @@ To trigger a build on a commit to a Git repository, ACR Build must be able to ac
 
    ![Screenshot of the generated Personal Access Token in GitHub](./media/build-task-02-generated-token.png)
 
+### Fork sample repository
 
-### Create a Build Task
+Next, use the GitHub UI to fork the the sample repository into your GitHub account. ACR Build uses your GitHub PAT to not only query commit status, but also create a GitHub webhook for each build task.
 
-Now that you have the credential required for ACR Build to read the commit status of a public repository, you can create a build task that triggers a container image build on source code commits to the repo.
+Sample repository: https://github.com/Azure-Samples/aci-helloworld
 
-Execute the following [az acr build-task create][az-acr-build-task-create] command. Replace `<your-access-token>` with the PAT you generated in a previous step. If you haven't previously populated the `ACR_NAME` environment variable with the name of your Azure container registry (such as in the [previous tutorial](quickstart-acrbuild.md)), replace `$ACR_NAME` with the name of your registry.
+![Screenshot of the Fork button (highlighted) in GitHub](./media/build-task-03-fork.png)
+
+> NOTE: You can skip forking the sample repository if you have write access to a different GitHub repo. Because ACR Build needs to create webhooks in GitHub on your behalf, your account must have write access to the repo for which you'd like to create the build task.
+
+### Create the build task
+
+Now that you've completed the steps required for ACR Build to be able to read the commit status and create webhooks in a repository, you can create a build task that triggers a container image build on commits to the repo.
+
+Execute the following [az acr build-task create][az-acr-build-task-create] command. Replace `<your-github-username>` with your GitHub username, and `<your-access-token>` with the PAT you generated in a previous step. If you haven't previously populated the `ACR_NAME` environment variable with the name of your Azure container registry (such as in the [previous tutorial](quickstart-acrbuild.md)), replace `$ACR_NAME` with the name of your registry.
 
 ```sh
 az acr build-task create \
-    --name build-helloworld \
+    --name buildhelloworld \
     -r $ACR_NAME \
     -t helloworld:v1 \
-    --context https://github.com/SteveLasker/acrbuild-node-helloworld \
+    --context https://github.com/<your-github-username>/aci-helloworld \
     --git-access-token <your-access-token>
 ```
 
@@ -78,12 +87,50 @@ This build task specifies that any time code is committed to the repository spec
 
 > NOTE: Although not yet implemented, Azure Container Registry plans support for specifying parameters in the build task definition. For example, setting `:tag` to `:{build.Id}` to automatically tag an image with the ACR Build build ID.
 
+Output from a successful [az acr build-task create][az-acr-build-task-create] command is similar to the following:
+
+```console
+$ az acr build-task create --name buildhelloworld -r $ACR_NAME -t helloworld:v1 --context https://github.com/githubuser/aci-helloworld --git-access-token 0123456789abcdef1234567890
+{
+  "additionalProperties": {},
+  "alias": "buildhelloworld",
+  "creationDate": "2018-04-05T17:26:14.347346+00:00",
+  "id": "/subscriptions/<subscriptionID>/resourceGroups/myResourceGroup/providers/Microsoft.ContainerRegistry/registries/mycontainerregistry/buildTasks/buildhelloworld",
+  "location": "eastus",
+  "name": "buildhelloworld",
+  "platform": {
+    "additionalProperties": {},
+    "cpu": 1,
+    "osType": "Linux"
+  },
+  "provisioningState": "Succeeded",
+  "resourceGroup": "myResourceGroup",
+  "sourceRepository": {
+    "additionalProperties": {},
+    "isCommitTriggerEnabled": true,
+    "repositoryUrl": "https://github.com/githubuser/aci-helloworld",
+    "sourceControlAuthProperties": null,
+    "sourceControlType": "Github"
+  },
+  "status": "enabled",
+  "tags": null,
+  "timeout": null,
+  "type": "Microsoft.ContainerRegistry/registries/buildTasks"
+}
+```
+
 ## Trigger a build
 
 You now have a build task that defines your build. To test the build definition, trigger a build manually by executing the [az acr build-task run][az-acr-build-task-run] command:
 
+```sh
+az acr build-task run --name buildhelloworld -r $ACR_NAME
 ```
-az acr build-task run --name helloworld -r $ACR_NAME
+
+Be default, the `az acr build-task run` command streams the log output to your console when you execute the command.
+
+```sh
+TODO: SHOW BUILD OUTPUT HERE
 ```
 
 ## View build status
@@ -98,7 +145,7 @@ az acr build-task run --name helloworld --no-logs -r $ACR_NAME
 az acr build-task logs -r $ACR_NAME
 ```
 
-> Note: in a future preview, `--name build-helloworld` will limit displaying the most recent build log to a specific build-task
+> Note: in a future preview, `--name buildhelloworld` will limit displaying the most recent build log to a specific build-task
 
 ## List the build-tasks For a Registry
 ```
@@ -112,7 +159,7 @@ az acr build-task list-builds -r $ACR_NAME
 
 ## List the builds for a build-task within a registry
 ```
-az acr build-task list-builds --name build-helloworld -r $ACR_NAME
+az acr build-task list-builds --name buildhelloworld -r $ACR_NAME
 ```
 > Note: preview 2 is outputting additional data in the table output that will be scrubbed in a future preview
 
@@ -123,7 +170,7 @@ az acr build-task logs -r $ACR_NAME
 
 ## Show the last (or current) log for a build-task
 ```
-az acr build-task logs --name build-helloworld -r $ACR_NAME
+az acr build-task logs --name buildhelloworld -r $ACR_NAME
 ```
 > Note: log filtering to a build-task is not yet implemented
 
@@ -135,7 +182,7 @@ az acr build-task logs --build-id eus-1 -r $ACR_NAME
 ## Manually trigger the build
 
 ```
-az acr build-task run --name build-helloworld -r $ACR_NAME
+az acr build-task run --name buildhelloworld -r $ACR_NAME
 ```
 
 ## Next steps
