@@ -48,12 +48,12 @@ Build tasks define the conditions under which a build should be triggered, the l
 To trigger a build on a commit to a Git repository, ACR Build must be able to access the repository. You can provide this access with a personal access token (PAT) you generate in GitHub.
 
 1. Navigate to the PAT creation page on GitHub at https://github.com/settings/tokens/new
-1. Enter short **description** for the token, for example, "ACR Build Task Demo"
+1. Enter a short **description** for the token, for example, "ACR Build Task Demo"
 1. Under **repo**, enable **repo:status** and **public_repo**
 
    ![Screenshot of the Personal Access Token generation page in GitHub](./media/build-task-01-new-token.png)
 
-1. Select **Generate token** button (you may be asked to confirm your password)
+1. Select the **Generate token** button (you may be asked to confirm your password)
 1. Copy and save the generated token in a **secure location**. You'll use the token when you define a build task in a later step.
 
    ![Screenshot of the generated Personal Access Token in GitHub](./media/build-task-02-generated-token.png)
@@ -61,11 +61,11 @@ To trigger a build on a commit to a Git repository, ACR Build must be able to ac
 
 ### Create a Build Task
 
-Now that you have the credential required for ACR Build to read the commit status of a public repository, you can create a build task that triggers a container image build on source code commits a repo.
+Now that you have the credential required for ACR Build to read the commit status of a public repository, you can create a build task that triggers a container image build on source code commits to the repo.
 
 Execute the following [az acr build-task create][az-acr-build-task-create] command. Replace `<your-access-token>` with the PAT you generated in a previous step. If you haven't previously populated the `ACR_NAME` environment variable with the name of your Azure container registry (such as in the [previous tutorial](quickstart-acrbuild.md)), replace `$ACR_NAME` with the name of your registry.
 
-```
+```sh
 az acr build-task create \
     --name build-helloworld \
     -r $ACR_NAME \
