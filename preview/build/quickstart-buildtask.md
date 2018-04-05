@@ -7,37 +7,60 @@ manager: timlt
 
 ms.service: container-registry
 ms.topic: article
-ms.date: 04/03/2018
+ms.date: 04/05/2018
 ms.author: marsma
 ---
 
-# Preview 2 Enables Build-Tasks
-With preview 2, you can now create and save a build-task. Which is the definition of a build.
+# Automate container image builds with Azure Container Registry Build
 
-# Setup Automated Build
+In addition to [Quick Build](quickstart-acrbuild.md), ACR Build supports automated Docker container image builds with the *Build Task*. In this article, you use the Azure CLI to configure a build task to automatically trigger container image builds in the cloud when you commit source code to a Git repository.
 
-ACR Build-tasks can be triggered on:
-- git commits
-- base image updates *
-- Webhooks *
-- Azure Evengtrid notifications *
+## Prerequisites
 
-    \* indicates events not yet supported
+To complete the steps in this article, you must have the following:
 
-> ACR Build currently supports github based PAT tokens. VSTS tokens will come in a future preview
+* [Access](https://aka.ms/acr/preview/signup) to the ACR Build preview
+* [Azure CLI][azure-cli] with the [ACR Build extension](../install.md) installed
+* [GitHub](github.com) user account
 
-## Create a Github Personal Access Token
-- Create a github token by navigating to:
-    https://github.com/settings/tokens/new
-- Under repo, enable repo:status, public_repo
+## Build Task
 
-    ![](./media/CreateGithubToken.png)
+A Build Task defines the properties of an automated build, including the location of the container image source code and the event that triggers the build. When an event defined in the Build Task occurs, such as a commit to a Git repository, ACR Build initiates a container image build in the cloud, and by default, pushes a succesfully built image to the Azure container registry specified in the task.
 
-- Copy the generated token
+ACR Build currently supports the following build triggers:
 
-## Create a build task, which is automatically triggered on scc commits.
+* Commit to a Git repository
 
-With the git PAT, execute the following command replacing the context with your github:
+> Git commit-triggered build tasks currently support only GitHub-based personal access tokens (PAT). VSTS token support is planned for a future update.
+
+Support for these build task triggers is planned, but **not yet implemented**:
+
+* Update to a base container image
+* Webhook event
+* Azure Event Grid notification
+
+## Create a Build Task
+
+Build tasks define the conditions under which a build should be triggered
+
+### Create a GitHub personal access token
+
+To trigger a build on a commit to a Git repository, ACR Build must be able to access the repository. You can provide this access with a personal access token you generate in GitHub.
+
+1. Create a Github Personal Access Token
+    - Create a github token by navigating to:
+        https://github.com/settings/tokens/new
+    - Under repo, enable repo:status, public_repo
+
+        ![](./media/CreateGithubToken.png)
+
+    - Copy the generated token
+
+### Create a Build Task
+
+Create a build task, which is automatically triggered on scc commits.
+
+With the GitHub PAT, execute the following command replacing the context with your github:
 
 ```
 az acr build-task create --name helloworld -r $ACR_NAME \
@@ -46,17 +69,6 @@ az acr build-task create --name helloworld -r $ACR_NAME \
 ```
 
 > Note: Setting the :tag to :{build.Id} will be implemented in a future preview
-
-### Specifying a sub folder
-
-We're exploring the same convention as the [docker cli](https://docs.docker.com/engine/reference/commandline/build/#git-repositories), to specify the branch and sub folder as well.
-
-```
-az acr build-task create --name helloworld -n jengademos \
-    -t helloworld:v1  \
-    --context https://github.com/SteveLasker/acrbuild-node-helloworld.git$subBranch:subFolder --git-access-token [yourToken]
-```
-Your feedback on [azurecr.slack.com](https://azurecr.slack.com) would be helpful...
 
 ## Trigger a build
 
@@ -114,3 +126,33 @@ az acr build-task logs --build-id eus-1 -r $ACR_NAME
 ```
 az acr build-task run --name helloworld -r $ACR_NAME
 ```
+
+## Next steps
+
+Your feedback on [azurecr.slack.com](https://azurecr.slack.com) would be helpful.
+
+<!-- LINKS -->
+[azure-cli]: https://docs.microsoft.com/cli/azure/install-azure-cli
+
+
+<!-- NOT YET IMPLEMENTED
+### Specify a sub folder
+
+We're exploring the same convention as the [docker cli](https://docs.docker.com/engine/reference/commandline/build/#git-repositories), to specify the branch and sub folder as well.
+
+```
+az acr build-task create --name helloworld -n jengademos \
+    -t helloworld:v1  \
+    --context https://github.com/SteveLasker/acrbuild-node-helloworld.git$subBranch:subFolder --git-access-token [yourToken]
+```
+
+ACR Build supports several triggers that can initiate an build:
+
+* Commit to a Git repository<sup>1</sup>
+* Update to a base container image<sup>2</sup>
+* Webhook<sup>2</sup>
+* Azure Event Grid notification<sup>2</sup>
+
+<sup>1</sup> ACR Build currently supports only GitHub-based personal access tokens (PAT) for Git commit-triggered builds. VSTS token support is planned for a future update.<br/>
+<sup>2</sup> Support for these build task triggers is planned, but not yet implemented.
+-->
