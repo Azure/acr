@@ -67,28 +67,28 @@ Execute the following [az acr build-task create][az-acr-build-task-create] comma
 
 ```
 az acr build-task create \
-    --name build-helloworld
+    --name build-helloworld \
     -r $ACR_NAME \
     -t helloworld:v1 \
     --context https://github.com/SteveLasker/acrbuild-node-helloworld \
     --git-access-token <your-access-token>
 ```
 
+This build task specifies that any time code is committed to the repository specified in the `--context` parameter, ACR Build will build the container image from the code in the repository.
+
 > NOTE: Although not yet implemented, Azure Container Registry plans support for specifying parameters in the build task definition. For example, setting `:tag` to `:{build.Id}` to automatically tag an image with the ACR Build build ID.
 
 ## Trigger a build
 
-You now have a build task that defines your build. To test the build definition, trigger a build manually by executing the following [az acr build-task run][az-acr-build-task-run] command:
+You now have a build task that defines your build. To test the build definition, trigger a build manually by executing the [az acr build-task run][az-acr-build-task-run] command:
 
 ```
 az acr build-task run --name helloworld -r $ACR_NAME
 ```
 
-
-
 ## View build status
 
-There are several commands to view the status of a build-task, as well as the logs, including live-streaming the most recent/current build log available through the `build-task logs` parameter
+There are several commands you can use to view build tasks, the status of a particular build task, as well as its logs.
 
 ## Trigger a build, view the status
 Using the --no-logs, trigger a build. Then, use the `build-task logs` parameter to view the current log
@@ -98,7 +98,7 @@ az acr build-task run --name helloworld --no-logs -r $ACR_NAME
 az acr build-task logs -r $ACR_NAME
 ```
 
-> Note: in a future preview, `--name helloworld` will limit displaying the most recent build log to a specific build-task
+> Note: in a future preview, `--name build-helloworld` will limit displaying the most recent build log to a specific build-task
 
 ## List the build-tasks For a Registry
 ```
@@ -112,7 +112,7 @@ az acr build-task list-builds -r $ACR_NAME
 
 ## List the builds for a build-task within a registry
 ```
-az acr build-task list-builds --name helloworld -r $ACR_NAME
+az acr build-task list-builds --name build-helloworld -r $ACR_NAME
 ```
 > Note: preview 2 is outputting additional data in the table output that will be scrubbed in a future preview
 
@@ -123,7 +123,7 @@ az acr build-task logs -r $ACR_NAME
 
 ## Show the last (or current) log for a build-task
 ```
-az acr build-task logs --name helloworld -r $ACR_NAME
+az acr build-task logs --name build-helloworld -r $ACR_NAME
 ```
 > Note: log filtering to a build-task is not yet implemented
 
@@ -135,7 +135,7 @@ az acr build-task logs --build-id eus-1 -r $ACR_NAME
 ## Manually trigger the build
 
 ```
-az acr build-task run --name helloworld -r $ACR_NAME
+az acr build-task run --name build-helloworld -r $ACR_NAME
 ```
 
 ## Next steps
