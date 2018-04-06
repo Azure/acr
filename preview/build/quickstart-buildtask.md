@@ -60,13 +60,13 @@ To trigger a build on a commit to a Git repository, ACR Build must be able to ac
 
 ### Fork sample repository
 
-Next, use the GitHub UI to fork the sample repository into your GitHub account. ACR Build uses your GitHub PAT to not only query commit status, but also create a GitHub webhook for each build task.
+Next, use the GitHub UI to fork the sample repository into your GitHub account. ACR Build uses your GitHub PAT to not only query commit status, but also create a GitHub webhook for each build task. Forking the repo ensures ACR Build has sufficient permissions to create a webhook for the repository.
 
 Sample repository: https://github.com/Azure-Samples/aci-helloworld
 
 ![Screenshot of the Fork button (highlighted) in GitHub](./media/build-task-03-fork.png)
 
-> NOTE: You can skip forking the sample repository if you have write access to a different GitHub repo. Because ACR Build needs to create webhooks in GitHub on your behalf, your account must have write access to the repo for which you'd like to create the build task.
+> NOTE: You can skip forking the sample repository if you have write access to a different GitHub repo, and wish to use that repo instead. Because ACR Build needs to create webhooks in GitHub on your behalf, your account must have write access to the repo for which you'd like to create the build task.
 
 ### Create the build task
 
@@ -158,7 +158,7 @@ You may occasionally find it useful to view the status of an ongoing build you'v
 
 In this section, you trigger a manual build, but suppress the default behavior of streaming the build log to your console. Then, you use the `az acr build-task logs` command to monitor the ongoing build.
 
-First, trigger a build manually as you've done previously, but specify the `--no-logs` argument to suppress logging to your console.
+First, trigger a build manually as you've done previously, but specify the `--no-logs` argument to suppress logging to your console:
 
 ```sh
 az acr build-task run -r $ACR_NAME --name buildhelloworld --no-logs
@@ -170,7 +170,7 @@ Next, use the `az build-task logs` command to view the log of the currently runn
 az acr build-task logs -r $ACR_NAME
 ```
 
-The log for the currently running build is streamed to your console, and should appear similar to the following output:
+The log for the currently running build is streamed to your console, and should appear similar to the following output (shown here truncated):
 
 ```console
 $ az acr build-task logs -r $ACR_NAME
