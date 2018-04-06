@@ -180,7 +180,7 @@ TODO: EXAMPLE OUTPUT HERE
 
 ## Build status command summary
 
-The following table displays several useful commands for managing build tasks and their builds. This list is not exhaustive, however, and may not list all available commands or their parameters. Use `--help` in the Azure CLI to see full usage information for any of these commands.
+The following table displays several useful commands for monitoring build tasks and their builds. This list is not exhaustive, however, and may not list all available commands or their parameters. Use `--help` in the Azure CLI to see full usage information for any of these commands.
 
 | Description | Command |
 | :---------- | :------ |
@@ -198,6 +198,12 @@ The following table displays several useful commands for managing build tasks an
 > TIP: Append `--output table` to the above commands to view their output in table format.
 
 ## Next steps
+
+### Base image update builds
+
+In addition to automated builds on source code commit, you can also create build tasks that trigger builds when a container image's base image is updated.
+
+[Base image update builds](quickstart-baseimageupdate.md)
 
 ### Feedback
 
