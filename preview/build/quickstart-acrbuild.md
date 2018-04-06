@@ -7,7 +7,7 @@ manager: timlt
 
 ms.service: container-registry
 ms.topic: article
-ms.date: 04/04/2018
+ms.date: 04/06/2018
 ms.author: marsma
 ---
 
@@ -216,9 +216,15 @@ az ad sp delete --id http://$ACR_NAME-pull
 
 ## Next steps
 
+### Build tasks
+
 Now that you've tested your inner loop, configure a **build task** that can be triggered by source code commits or base image updates:
 
 [Configure a build task](quickstart-buildtask.md)
+
+### Feedback
+
+While you're testing ACR Build, the team welcomes any and all feedback in the **#build** channel on Slack at [azurecr.slack.com](https://azurecr.slack.com).
 
 <!-- docs.microsoft.com ONLY
 > [!div class="nextstepaction"]
