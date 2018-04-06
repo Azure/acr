@@ -1,13 +1,13 @@
 ---
-title: Create a build tasks for automated container image builds in Azure Container Registry
-description: Learn how to build Docker container images in Azure with Azure Container Registry Build (ACR Build), then deploy it to Azure Container Instances.
+title: Automated container image builds in Azure Container Registry
+description: Learn how to use the Build Task in Azure Container Registry Build (ACR Build) for automated container image builds in Azure.
 services: container-registry
 author: mmacy
 manager: timlt
 
 ms.service: container-registry
 ms.topic: article
-ms.date: 04/05/2018
+ms.date: 04/06/2018
 ms.author: marsma
 ---
 
