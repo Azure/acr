@@ -54,7 +54,7 @@ To trigger a build on a commit to a Git repository, ACR Build must be able to ac
    ![Screenshot of the Personal Access Token generation page in GitHub](./media/build-task-01-new-token.png)
 
 1. Select the **Generate token** button (you may be asked to confirm your password)
-1. Copy and save the generated token in a **secure location**. You'll use the token when you define a build task in a later step.
+1. Copy and save the generated token in a **secure location** (you use this token when you define a build task in a later step)
 
    ![Screenshot of the generated Personal Access Token in GitHub](./media/build-task-02-generated-token.png)
 
@@ -129,65 +129,77 @@ az acr build-task run --name buildhelloworld -r $ACR_NAME
 
 Be default, the `az acr build-task run` command streams the log output to your console when you execute the command.
 
-```sh
-TODO: SHOW BUILD OUTPUT HERE
+```console
+$ az acr build-task run --name buildhelloworld -r mycontainerregistry
+Queued a build with build-id: eastus-3.
+Starting to stream the logs...
+time="2018-04-05T22:22:25Z" level=info msg="Running command docker login -u 00000000-0000-0000-0000-000000000000 --password-stdin mycontainerregistry.azurecr.io"
+Login Succeeded
+time="2018-04-05T22:22:30Z" level=info msg="Running command git clone https://x-access-token:*************@github.com/githubuser/aci-helloworld /root/acr-builder/src"
+Cloning into '/root/acr-builder/src'...
+time="2018-04-05T22:22:31Z" level=info msg="Running command git checkout master"
+Already on 'master'
+Your branch is up to date with 'origin/master'.
+d5ccfcedc0d81f7ca5e3dbe6e5a7705b579101f1
+time="2018-04-05T22:22:31Z" level=info msg="Running command git rev-parse --verify HEAD"
+time="2018-04-05T22:22:31Z" level=info msg="Running command docker build -f Dockerfile -t mycontainerregistry.azurecr.io/acihelloworld:v1 ."
+Sending build context to Docker daemon  131.1kB
+Step 1/6 : FROM node:8.9.3-alpine
+
+[...]
+
+Build complete
+Build ID: eastus-3 was successful after 51.751323302s
 ```
 
 ## View build status
 
-There are several commands you can use to view build tasks, the status of a particular build task, as well as its logs.
+You may occasionally find it useful to view the status of an ongoing build you've not triggered manually. For example, while troubleshooting builds that are triggered by source code commits.
 
-## Trigger a build, view the status
-Using the --no-logs, trigger a build. Then, use the `build-task logs` parameter to view the current log
+In this section, you trigger a manual build, but suppress the default behavior of streaming the build log to your console. Then, you use the `az acr build-task logs` command to monitor the ongoing build.
 
+First, trigger a build manually as you've done previously, but specify the `--no-logs` argument to suppress logging to your console.
+
+```sh
+az acr build-task run -r $ACR_NAME --name buildhelloworld --no-logs
 ```
-az acr build-task run --name helloworld --no-logs -r $ACR_NAME
+
+Next, use the `az build-task logs` command to view the log of the currently running build:
+
+```sh
 az acr build-task logs -r $ACR_NAME
 ```
 
-> Note: in a future preview, `--name buildhelloworld` will limit displaying the most recent build log to a specific build-task
+The log for the currently running build is streamed to your console, and should appear similar to the following output:
 
-## List the build-tasks For a Registry
-```
-az acr build-task list -r $ACR_NAME
-```
-
-## List the builds that have been executed, or executing for a registry
-```
-az acr build-task list-builds -r $ACR_NAME
+```console
+TODO: EXAMPLE OUTPUT HERE
 ```
 
-## List the builds for a build-task within a registry
-```
-az acr build-task list-builds --name buildhelloworld -r $ACR_NAME
-```
-> Note: preview 2 is outputting additional data in the table output that will be scrubbed in a future preview
+> NOTE: All logs for all builds are currently streamed to your console with `az acr build-task logs`. A future update is planned that will limit displaying the most recent build log to a specific build-task.
 
-## Show the last (or current) log for a build-task
-```
-az acr build-task logs -r $ACR_NAME
-```
+## Build status command summary
 
-## Show the last (or current) log for a build-task
-```
-az acr build-task logs --name buildhelloworld -r $ACR_NAME
-```
-> Note: log filtering to a build-task is not yet implemented
+The following table displays several useful commands for managing build tasks and their builds. This list is not exhaustive, however, and may not list all available commands or their parameters. Use `--help` in the Azure CLI to see full usage information for any of these commands.
 
-## Show the log for a specific build
-```
-az acr build-task logs --build-id eus-1 -r $ACR_NAME
-```
+| Description | Command |
+| :---------- | :------ |
+| List all build tasks for a registry| `az acr build-task list -r $ACR_NAME` |
+| List all builds (completed and ongoing) for a registry | `az acr build-task list-builds -r $ACR_NAME` |
+| List all builds for build task<sup>1</sup> | `az acr build-task list-builds -r $ACR_NAME --name buildhelloworld` |
+| Display the current or most recent build log data for a registry | `az acr build-task logs -r $ACR_NAME` |
+| Display the current or most recent build log data for a build task<sup>2</sup> | `az acr build-task logs -r $ACR_NAME --name buildhelloworld` |
+| Display the log for a build | `az acr build-task logs -r $ACR_NAME --build-id eus-1` |
 
-## Manually trigger the build
+<sup>1</sup> ACR Build is currently outputting extra data in table output. Scrubbing of this extra data is planned for a future update.
+<br/>
+<sup>2</sup>Filtering log output to a particular build task is not yet implemented.
 
-```
-az acr build-task run --name buildhelloworld -r $ACR_NAME
-```
+> TIP: Append `--output table` to the above commands to view their output in table format.
 
 ## Next steps
 
-Your feedback on [azurecr.slack.com](https://azurecr.slack.com) would be helpful.
+* **Feedback**: While you're testing ACR Build, we appreciate any and all feedback on [azurecr.slack.com](https://azurecr.slack.com).
 
 <!-- LINKS -->
 [azure-cli]: https://docs.microsoft.com/cli/azure/install-azure-cli
