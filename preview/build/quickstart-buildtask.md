@@ -173,7 +173,10 @@ az acr build-task logs -r $ACR_NAME
 The log for the currently running build is streamed to your console, and should appear similar to the following output:
 
 ```console
-TODO: EXAMPLE OUTPUT HERE
+$ az acr build-task logs -r $ACR_NAME
+Showing logs for the last updated build...
+Build-id: eastus-5
+[...]
 ```
 
 > NOTE: All logs for all builds are currently streamed to your console with `az acr build-task logs`. A future update is planned that will limit displaying the most recent build log to a specific build-task.
