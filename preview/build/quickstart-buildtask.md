@@ -13,7 +13,7 @@ ms.author: marsma
 
 # Automate container image builds with Azure Container Registry Build
 
-In addition to [Quick Build](quickstart-acrbuild.md), ACR Build supports automated Docker container image builds with the *Build Task*. In this article, you use the Azure CLI to configure a build task to automatically trigger container image builds in the cloud when you commit source code to a Git repository.
+In addition to [Quick Build](quickstart-acrbuild.md), ACR Build supports automated Docker container image builds with the *build task*. In this article, you use the Azure CLI to configure a build task to automatically trigger container image builds in the cloud when you commit source code to a Git repository.
 
 ## Prerequisites
 
@@ -60,7 +60,7 @@ To trigger a build on a commit to a Git repository, ACR Build must be able to ac
 
 ### Fork sample repository
 
-Next, use the GitHub UI to fork the the sample repository into your GitHub account. ACR Build uses your GitHub PAT to not only query commit status, but also create a GitHub webhook for each build task.
+Next, use the GitHub UI to fork the sample repository into your GitHub account. ACR Build uses your GitHub PAT to not only query commit status, but also create a GitHub webhook for each build task.
 
 Sample repository: https://github.com/Azure-Samples/aci-helloworld
 
@@ -70,7 +70,7 @@ Sample repository: https://github.com/Azure-Samples/aci-helloworld
 
 ### Create the build task
 
-Now that you've completed the steps required for ACR Build to be able to read the commit status and create webhooks in a repository, you can create a build task that triggers a container image build on commits to the repo.
+Now that you've completed the steps required to enable ACR Build to read commit status and create webhooks in a repository, you can create a build task that triggers a container image build on commits to the repo.
 
 Execute the following [az acr build-task create][az-acr-build-task-create] command. Replace `<your-github-username>` with your GitHub username, and `<your-access-token>` with the PAT you generated in a previous step. If you haven't previously populated the `ACR_NAME` environment variable with the name of your Azure container registry (such as in the [previous tutorial](quickstart-acrbuild.md)), replace `$ACR_NAME` with the name of your registry.
 
@@ -193,13 +193,15 @@ The following table displays several useful commands for managing build tasks an
 
 <sup>1</sup> ACR Build is currently outputting extra data in table output. Scrubbing of this extra data is planned for a future update.
 <br/>
-<sup>2</sup>Filtering log output to a particular build task is not yet implemented.
+<sup>2</sup> Filtering log output to a particular build task is not yet implemented.
 
 > TIP: Append `--output table` to the above commands to view their output in table format.
 
 ## Next steps
 
-* **Feedback**: While you're testing ACR Build, we appreciate any and all feedback on [azurecr.slack.com](https://azurecr.slack.com).
+### Feedback
+
+While you're testing ACR Build, the team welcomes any and all feedback in the **#build** channel on Slack at [azurecr.slack.com](https://azurecr.slack.com).
 
 <!-- LINKS -->
 [azure-cli]: https://docs.microsoft.com/cli/azure/install-azure-cli
