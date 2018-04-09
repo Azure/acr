@@ -35,7 +35,7 @@ Once you've installed ACR Build, you're ready to build a container image from th
     git clone https://github.com/Azure-Samples/aci-helloworld
     ```
 
-   If you don't have `git` installed, [download the .ZIP archive][sample-archive] directly.
+   If you don't have Git installed, [download the .ZIP archive][sample-archive] and extract it into `aci-helloworld`.
 
 1. Enter the directory containing the source code:
 
