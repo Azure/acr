@@ -27,7 +27,7 @@ In this quickstart, you build a container image from source code in Azure with A
 
 ## Get the sample code
 
-Once you have ACR Build, you're ready to build a container image from the sample application. Get the application by cloning the repo or downloading the [.ZIP archive][sample-archive] from GitHub.
+Once you've installed ACR Build, you're ready to build a container image from the sample application. Clone the sample's Git repository, or download the [.ZIP archive][sample-archive] from GitHub.
 
 1. Clone the repo with `git`:
 
@@ -45,7 +45,7 @@ Once you have ACR Build, you're ready to build a container image from the sample
 
 ## Build and run locally (optional)
 
-If you'd like to compare the two image build methods--local `docker build` and ACR Build--build and run the container first on your local machine.
+If you'd like to compare the two image build methods--local `docker build` versus ACR Build--build and run the container first on your local machine.
 
 > NOTE: You don't have to build images locally when you use ACR Build. It's done here only as a comparison with `az acr build`. If you don't have Docker running locally, skip this step and move directly to [Build in Azure with ACR Build](#build-in-azure-with-acr-build).
 
