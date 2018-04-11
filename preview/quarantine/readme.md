@@ -9,16 +9,21 @@ When a registries policy is set to Quarantine Enabled, all images pushed to that
 ## Configure Quarantine on a registry
 
 > The quarantine flag is not yet exposed. Contact SteveLas@Microsoft.com to have your subscription/registry enabled. 
+## name your registry
+```bash
+export ACR_NAME=quarantine
+export REGISTRY_NAME=$ACR_NAME.azurecr-test.io
+```
 
 ## Login to the dogfood registry
-`docker login [registry].azurecr-test.io`
+`docker login $REGISTRY_NAME`
 
 > For this early preview, use the username/password and registry provided.
 
 ## Push an image
 
 ```
-docker push  [registry].azurecr-test.io/helloworld:1
+docker push  ${REGISTRY_NAME}helloworld:1
  96c922e98de8: Pushed
  digest: sha256:80f0d5cxxxxXxxXxxxxece0db56d11cdc624ad20da9fe62d7d size: 524
 ```
@@ -28,14 +33,14 @@ The image is now quarantined
 ## Attempt to pul the quarantined image
 
 ```
-docker pull  [registry].azurecr-test.io/helloworld:1
+docker pull  ${REGISTRY_NAME}helloworld:1
 Error response from daemon: manifest for quarantinetest1.azurecr-test.io/helloworld:1 not found
 ```
 
 ## Attempt to pull the image by its digest
 
 ```
-docker pull [registry].azurecr-test.io/helloworld@sha256:80f0d5cxxxxXxxXxxxxece0db56d11cdc624ad20da9fe62d7d
+docker pull ${REGISTRY_NAME}helloworld@sha256:80f0d5cxxxxXxxXxxxxece0db56d11cdc624ad20da9fe62d7d
 		Error response from daemon: unknown: The operation is disallowed.
 ```
 
@@ -66,7 +71,7 @@ Once the image is pushed and in quarantine state, you will receive a notificatio
 
 Once the image is quarantined, you will need user with the **AcrQuarantineReader** role. The presumption here is the Vulnerability Scanning solution is configured to use this account.
 
-`docker login [registry].azurecr-test.io -u` **[quarantinedServicePrincpalUsr]**` -p `**[quarantinedServicePrincpalPwd]**
+`docker login ${REGISTRY_NAME} -u` **[quarantinedServicePrincpalUsr]**` -p `**[quarantinedServicePrincpalPwd]**
 
 Now the user can pull the quarantined image by digest
 
@@ -192,8 +197,8 @@ Based on the registry policy, once the image has been set to **ScanSucceeded**, 
 With the quarantine removed, a user with standard **reader** role can pull the image, using the tag
 
 ```
-docker login [registry].azurecr-test.io
-docker pull [registry].azurecr-test.io/helloworld:1
+docker login ${REGISTRY_NAME}
+docker pull ${REGISTRY_NAME}helloworld:1
 ```
 
 # More Info
