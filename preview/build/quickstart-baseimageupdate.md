@@ -43,10 +43,10 @@ Using the az cli, run the following commands.
 Throughout the rest of this tutorial, we use `$ACR_NAME` as a placeholder for the **container registry name** that you chose. Replace jengademos with a globally unique name.
 
 ```bash
-    export ACR_NAME=jengademos
-    export REGISTRY_NAME=$ACR_NAME.azurecr.io/
-    az group create -l eastus -g $ACR_NAME
-    az acr create -g $ACR_NAME --sku Standard -n $ACR_NAME
+export ACR_NAME=jengademos
+export REGISTRY_NAME=$ACR_NAME.azurecr.io/
+az group create -l eastus -g $ACR_NAME
+az acr create -g $ACR_NAME --sku Standard -n $ACR_NAME
 ```
 
 ## Create a base image
@@ -72,12 +72,12 @@ docker push ${REGISTRY_NAME}baseimages/node:9
 
 Using the coprimages/node image, we'll create a helloworld sample that we'll update.
 
-```
+```bash
 docker build -t ${REGISTRY_NAME}helloworld:v1 --build-arg REGISTRY_NAME=$REGISTRY_NAME .
 ```
 
 Run the sample 
-```
+```bash
 docker run -d -p 80:5000 ${REGISTRY_NAME}helloworld:v1
 ```
 
@@ -137,23 +137,28 @@ az acr build-task run -n helloworld -r $ACR_NAME
 Make a minor change to the helloworld app
 
 Change server.js from:
-```
+```bash
 response.write('Hello World\n')
 ```
 to
-```
+```bash
 response.write('Hello World now\n')
 ```
 
 Push the change github
 
-```
+```bash
 git push 
 ```
 
-View the logs as **acr build** begins
-
+## List the tags for the image
+```bash
+az acr repository show-tags --repository helloworld -n $ACR_NAME
 ```
+
+## View the logs as **acr build** begins
+
+```bash
 az acr build-task logs -r $ACR_NAME
 ```
 
@@ -163,7 +168,7 @@ az acr build-task logs -r $ACR_NAME
 
 Edit **nodeDockerfile** to bump the version with an **a**
 
-```
+```bash
 ENV NODE_VERSION 9.10.0a
 ```
 
@@ -171,13 +176,13 @@ Build a base image, that you maintain and push to the registry. Note, we continu
 
 > See [Docker Tagging: Best practices for tagging and versioning docker imagese](https://blogs.msdn.microsoft.com/stevelasker/2018/03/01/docker-tagging-best-practices-for-tagging-and-versioning-docker-images/) for info on stable and unique tagging.
 
-```
+```bash
 docker build -t ${REGISTRY_NAME}baseimages/node:9 -f nodeDockerfile .
 docker push ${REGISTRY_NAME}baseimages/node:9
 ```
 
 View the logs as the base image update triggers the **helloworld** build task. Watch the build-id as it may take a moment for the notification to trigger the build.
-```
+```bash
 az acr build-task logs -r $ACR_NAME
 ```
 ## Base image updates from other locations
