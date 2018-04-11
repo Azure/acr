@@ -122,7 +122,7 @@ With the git PAT, execute the following command replacing the context with your 
 
 ```
 az acr build-task create --name helloworld -r $ACR_NAME \
-    -t helloworld:v1 \
+    -t helloworld:{{.Build.Id}} \
     --build-args REGISTRY_NAME=$REGISTRY_NAME \
     --context https://github.com/[yourAccount]]/acrbuild-helloworld --git-access-token $PAT
 ```
@@ -185,6 +185,15 @@ View the logs as the base image update triggers the **helloworld** build task. W
 ```bash
 az acr build-task logs -r $ACR_NAME
 ```
+
+## Run the newly built image
+Once the image is built using `acr build`, run the image locally to see the change.
+Paste the value of build id from the log into the docker run command
+
+```bash
+docker run -d -p 80:5000 ${REGISTRY_NAME}helloworld:[build id]
+```
+
 ## Base image updates from other locations
 ACR Build will support base image update notifications from Docker Hub as well as other Azure Container Registries. The current preview is limited to base image update notifications from the same registry.
 
