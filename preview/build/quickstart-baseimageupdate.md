@@ -42,12 +42,12 @@ Using the az cli, run the following commands.
 
 Throughout the rest of this tutorial, we use `$ACR_NAME` as a placeholder for the **container registry name** that you chose. Replace jengademos with a globally unique name.
 
-    ```
+```bash
     export ACR_NAME=jengademos
     export REGISTRY_NAME=$ACR_NAME.azurecr.io/
     az group create -l eastus -g $ACR_NAME
     az acr create -g $ACR_NAME --sku Standard -n $ACR_NAME
-	```
+```
 
 ## Create a base image
 
