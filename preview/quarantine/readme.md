@@ -142,13 +142,12 @@ Once a scan completes, a user with the **AcrQuarantineWriter** role can update t
     - Encode using the following format: **[username]**:**[password]**
     - Copy the encoded value
 
-### Get an  access token for the user
+### Get a Push access token for the user
+Using a REST client, like Postman, query for the OAuth token:
 
-- Using a REST client, like Postman, query for the OAuth token:
+**REST format:** `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`&scope=repository:`**[image]**`:pull,push`
 
-    REST format: `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`&scope=repository:`**[image]**`:pull,push`
-
-- Set the header for Authorization, setting the 'Basic' word followed by a space and the encoded usr:pwd value
+Set the header for Authorization, setting the 'Basic' word followed by a space and the encoded usr:pwd value
 
     |Header | Value |
     |-------|-------|
@@ -164,6 +163,7 @@ Once a scan completes, a user with the **AcrQuarantineWriter** role can update t
 
 - Update manifest attributes using the access token.    
     REST format: `PATCH https://`**[login-url]**`acr/v1`**[image]**`/_manifests/`**[digest]**
+
     Payload:
     ```json
         {
