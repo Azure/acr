@@ -39,7 +39,7 @@ az acr create -g $RES_GROUP -n $ACR_NAME --sku Basic
 
 ## Configure Vulnerability Scanning
 
-ACR has partnered with [Aqua](https://www.aquasec.com/) and [Twistlock](https://www.twistlock.com/)
+ACR has partnered with [Aqua](https://www.aquasec.com/) and [Twistlock](https://www.twistlock.com/) to iterate on the Quarantine pattern. 
 
 * [Configuring Aqua for the Quarantine Pattern](https://www.aquasec.com)
 * [Configuring Twistlock for the Quarantine Pattern](https://docs.twistlock.com)
@@ -119,7 +119,6 @@ ACR has partnered with [Aqua](https://www.aquasec.com/) and [Twistlock](https://
 
 1.  Build the image:
 
-    Based on the movie Outbreak, we'll use the name of the book Hotzone for our image name
     ```sh
     docker build -t ${REGISTRY_NAME}hotzone:bad .
     ```
