@@ -126,7 +126,7 @@ With the git PAT, execute the following command replacing the context with your 
 ```
 az acr build-task create --name helloworld -r $ACR_NAME \
     -t helloworld:{{.Build.Id}} \
-    --build-args REGISTRY_NAME=$REGISTRY_NAME \
+    --build-arg REGISTRY_NAME=$REGISTRY_NAME \
     --context https://github.com/$REPO/acrbuild-helloworld --git-access-token $PAT
 ```
 
