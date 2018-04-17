@@ -56,16 +56,14 @@ Clone the sample, which includes:
 - A dockerfile representing a base image
 - A sample hellowworld app used for demonstrating base image updates
 
-```bash
+```sh
 git clone https://github.com/SteveLasker/acrbuild-node-helloworld.git
 ```
 
 Build the base image, then push to the registry
 
-```bash
-docker build -t ${REGISTRY_NAME}baseimages/node:9 -f nodeDockerfile .
-az acr login -n $ACR_NAME
-docker push ${REGISTRY_NAME}baseimages/node:9
+```sh
+az acr build -t baseimages/node:9 -f nodeDockerfile .
 ```
 
 ## Create the hello world image, from the base image
@@ -73,12 +71,16 @@ docker push ${REGISTRY_NAME}baseimages/node:9
 Using the coprimages/node image, we'll create a helloworld sample that we'll update.
 
 ```bash
-docker build -t ${REGISTRY_NAME}helloworld:v1 --build-arg REGISTRY_NAME=$REGISTRY_NAME .
+az acr build -t helloworld:{{.Build.Id}} --build-arg REGISTRY_NAME=$REGISTRY_NAME -c . -r $ACR_NAME 
+```
+Get the build id
+```sh
+BUILD_ID=[value from above]
 ```
 
 Run the sample 
-```bash
-docker run -d -p 80:5000 ${REGISTRY_NAME}helloworld:v1
+```sh
+docker run -d -p 80:5000 ${REGISTRY_NAME}helloworld:[buildId]
 ```
 
 We can now see our sample outputs a version environment variable from the base image
