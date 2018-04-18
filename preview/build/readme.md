@@ -7,7 +7,7 @@ We're happy to release Preview 4 which includes:
 with base image updates... 
 - build-task logs: which lists the logs, their status and can connect to currently running build
 - Tags now support {{.Build.Id}} to tag your newly built image with a unique tag. For more info: [Docker Tagging: Best practices for tagging and versioning docker images](https://blogs.msdn.microsoft.com/stevelasker/2018/03/01/docker-tagging-best-practices-for-tagging-and-versioning-docker-images/)
-- Perf improvements - we've imporved the streamling log scenarios that have had a big impact on the overal build time. This turned out to be more of a bug, and isn't the perf enhancements we'll enable *soon*. 
+- Perf improvements - we've improved the streaming log scenarios that have had a big impact on the overal build time. This turned out to be more of a bug, and isn't the perf enhancements we'll enable *soon*. 
 
 ## Getting access to ACR Build Preview
 
