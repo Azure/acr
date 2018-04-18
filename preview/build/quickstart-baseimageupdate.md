@@ -63,7 +63,7 @@ git clone https://github.com/SteveLasker/acrbuild-node-helloworld.git
 Build the base image, then push to the registry
 
 ```sh
-az acr build -t baseimages/node:9 -f nodeDockerfile .
+az acr build -t baseimages/node:9 -f nodeDockerfile -c . -r $ACR_NAME
 ```
 
 ## Create the hello world image, from the base image
