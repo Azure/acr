@@ -8,7 +8,7 @@ The `az acr build` CLI is in preview, and must be installed manually.
 
 ```
 az extension remove -n acrbuildext
-az extension add --source https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.2-py2.py3-none-any.whl -y
+az extension add --source https://acrbuild.blob.core.windows.net/cli/acrbuildext-0.0.4-py2.py3-none-any.whl -y
 az acr build --help
 ```
 
