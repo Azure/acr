@@ -44,12 +44,18 @@ With the `az cli` or the Azure Portal, customers will be able to simply migrate 
 ### Vulnerability Scanning Integration ###
 We've heard customers tell us that vulnerability scanning is table stakes for container registries. We agree. With partners like Aqua and TwistLock, customers can get the must-haves complete. ACR provides launch points to the Azure Marketplace, helping customers integrate vulnerability scanning. Over time, we will make this more integrated into ACR. This is one of those features we can unblock customers wih an experience, while focusing our engineering efforts on things only our engineering team can complete - like geo replication and perf & scale. 
 
-
-## Backlog ##
-
 ### Auto-Build with OS & Framework Patching ###
 Containers include a portion of the base OS & Development Framework. As base image updates are available, customers need a means to be notified, having their images rebuilt. This involves a number of primitives, such as web hooks and base image caching. It also requires a scalable, multi-tenant infrastructure to build images as they get updated. Using multi-stage dockerfiles, a connection to your git repo, customers will be able to hook automated builds, which can also trigger tests to enable automated workflows. 
 Check out progress on ACR builder at https://github.com/azure/acr-builder 
+***UPDATE***
+We've released a [preview of ACR Build](https://aka.ms/acr/build), which supports the beginning of OS & Framework patching. 
+There are many additions that will come, including perf improvements and the ability to branch off production workloads while developers continue to iterate.  
+
+
+## Backlog ##
+
+### Trusted Registries ###
+As customers sign their images, ACR must support docker content trust. `$env:DOCKER_CONTENT_TRUST="1"` Today, this isn't yet supported, but we know we need to enable this core scenario.
 
 ### Limit Endpoint Access /VNet Support ###
 Customers have asked for limitations on their registry, based on the IP, not just authentication. As a shared registry API, this does present some challenges that we'll need to address. 
@@ -70,9 +76,6 @@ Through an `az acr xxx --source-registry -- destination-registry`, and/or throug
 
 ### User Telemetry ###
 As your registry usage increases through automation, providing visibility into the usage and image size utilization.
-
-### Trusted Registries ###
-As customers sign their images, ACR must support docker content trust. `$env:DOCKER_CONTENT_TRUST="1"` Today, this isn't yet supported, but we know we need to enable this core scenario.
 
 ### Multi-Arch Support ###
 Building multi-arch images is typically associated with a few set of images that framework vendors must maintain, such as dotnetcore which supports both Linux and Windows. However, as IoT expands, the average developer will need to build multi-arch images to deal with the vast number of architectures supported by devices. ACR will support the automated building and maintaining of multi-arch manifests. 
