@@ -43,7 +43,8 @@ Please make sure admin is enabled.
 
 ```
 {
-    "password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-10-01').passwords[0].value]"
+
+"password": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', 'myRegistry'), '2017-10-01').passwords[0].value]"
 }
 ```
 
@@ -113,3 +114,7 @@ In order to access full daemon log, you may need some extra steps:
     ```
 
     Now you have access to all the files of the VM running dockerd. The log is at `/var/log/docker.log`.
+    
+## Does Azure Container Registry offer TLS v1.2 only configuration and how to enable TLS v1.2?
+
+Yes. By using any latest docker client (version 18.03.0 and above). 
