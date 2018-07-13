@@ -132,3 +132,13 @@ In order to access full daemon log, you may need some extra steps:
 ## Does Azure Container Registry offer TLS v1.2 only configuration and how to enable TLS v1.2?
 
 Yes. By using any latest docker client (version 18.03.0 and above). 
+
+## Does Azure Container Registry support Content Trust?
+
+Yes, you can use trusted images in Azure Container Registry as the [Docker Notary](https://docs.docker.com/notary/getting_started/) has been integrited into ACR as a Premium SKU feature.
+
+* To push trusted images, you need to add yourself or related service principles as the `AcrImageSigner` role to your registry in addition to the `Owner`, `Contributor` roles for signing. This can be done via the Azure Portal: Your registry -> Access Control (IAM) -> Add (Select `AcrImageSigner` for the Role).
+* To pull trusted images, a `Reader` role is enough for normal users. No additional roles like an `AcrImageSigner` role are required.
+
+You can use Dokcer Client and Notary Client to interact trusted images with ACR.
+Detailed documentation can be found at [Content trust in Docker](https://docs.docker.com/engine/security/trust/content_trust/).
