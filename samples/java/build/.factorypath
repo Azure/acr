@@ -1,6 +1,6 @@
 <factorypath>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/reactivex/rxjava/1.2.4/rxjava-1.2.4.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/com/microsoft/azure/containerregistry/v2018_02_01_preview/azure-mgmt-containerregistry/1.0.0-beta/azure-mgmt-containerregistry-1.0.0-beta.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/microsoft/azure/containerregistry/v2018_02_01_preview/azure-mgmt-containerregistry/1.0.0-beta-1/azure-mgmt-containerregistry-1.0.0-beta-1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/microsoft/azure/azure-client-authentication/1.5.0/azure-client-authentication-1.5.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/microsoft/azure/adal4j/1.1.2/adal4j-1.1.2.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/nimbusds/oauth2-oidc-sdk/4.5/oauth2-oidc-sdk-4.5.jar" enabled="true" runInBatchMode="false"/>
