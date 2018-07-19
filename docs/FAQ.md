@@ -68,6 +68,20 @@ Your can find `myStorageAccount` to your registry by the following command
 az acr show -n myRegistry --query storageAccount
 ```
 
+## How to delete all manifests that are not referenced by any tag in a repository?
+
+If you are on bash
+```
+az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags==null].digest" -o tsv  | xargs -I% az acr repository delete -n myRegistry -t myRepository@%
+```
+
+For Powershell
+```
+az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags==null].digest" -o tsv | %{ az acr repository delete -n myRegistry -t myRepository@$_ }
+```
+
+Note: You can add `-y` in the delete command to skip confirmation
+
 ## How to log into my registry when running the CLI in a container?
 
 You need to run the CLI container by mounting the Docker socket
