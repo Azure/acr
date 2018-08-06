@@ -153,5 +153,5 @@ Yes, you can use trusted images in Azure Container Registry as the [Docker Notar
         ```
 * To pull trusted images, a `Reader` role is enough for normal users. No additional roles like an `AcrImageSigner` role are required.
 
-You can use Dokcer Client and Notary Client to interact trusted images with ACR.
+You can use Docker Client and Notary Client to interact trusted images with ACR.
 Detailed documentation can be found at [Content trust in Docker](https://docs.docker.com/engine/security/trust/content_trust/).
