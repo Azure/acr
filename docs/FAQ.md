@@ -86,26 +86,26 @@ Note: You can add `-y` in the delete command to skip confirmation
 
 This can happen if the underlying layers are still being referenced by other container images. If you delete an image with no references, the registry usage will be updated after a few minutes. Here are the steps for verifying the quota usage.
 
-        Download a test image from DockerHub
-        ```
-        docker pull sivag/1gbimage
-        ```
-        Tag the image to push to acr 
-        ```
-        docker tag sivag/1gbimage myregistry.azurecr.io/1gbimage
-        ```
-        push the image to acr
-        ```
-        docker push sbanalaacr.azurecr.io/1gbimage
-        ```
-        Verify the increased Registry quota usage on Azure Portal.
-        
-        Delete the image by 
-        ```
-        az acr repository delete -n MyRegistry --image 1gbimage
-        ```
-        Verify the Registry quota usage on Azure Portal after few minutes and the usage should be updated. 
-        
+Download a test image from DockerHub
+```
+docker pull sivag/1gbimage
+```
+Tag the image to push to acr 
+```
+docker tag sivag/1gbimage myregistry.azurecr.io/1gbimage
+```
+push the image to acr
+```
+docker push sbanalaacr.azurecr.io/1gbimage
+```
+Verify the increased Registry quota usage on Azure Portal.
+
+Delete the image by 
+```
+az acr repository delete -n MyRegistry --image 1gbimage
+```
+Verify the Registry quota usage on Azure Portal after few minutes and the usage should be updated. 
+
 ## How to log into my registry when running the CLI in a container?
 
 You need to run the CLI container by mounting the Docker socket
