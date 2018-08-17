@@ -82,29 +82,30 @@ az acr repository show-manifests -n myRegistry --repository myRepository --query
 
 Note: You can add `-y` in the delete command to skip confirmation
 
-## I deleted images to free up registry quota usage but the available quota doesn't get updated
+## How do I validate storage quota changes?
 
-This can happen if the underlying layers are still being referenced by other container images. If you delete an image with no references, the registry usage will be updated after a few minutes. Here are the steps for verifying the quota usage.
+Create an image with a 1GB layer using the following docker file. This ensures that the image has has a layer that is not shared by any other image in the registry.
 
-Download a test image from DockerHub
 ```
-docker pull sivag/1gbimage
-```
-Tag the image to push to acr 
-```
-docker tag sivag/1gbimage myregistry.azurecr.io/1gbimage
-```
-push the image to acr
-```
-docker push myregistry.azurecr.io/1gbimage
-```
-Verify the increased Registry quota usage on Azure Portal.
+FROM alpine
+RUN dd if=/dev/urandom of=1GB.bin  bs=32M  count=32
+RUN ls -lh 1GB.bin
 
-Delete the image by 
 ```
-az acr repository delete -n MyRegistry --image 1gbimage
+Build and push the image to your registry using the docker CLI.
 ```
-Verify the Registry quota usage on Azure Portal after few minutes and the usage should be updated. 
+docker build -t myregistry.azurecr.io/1gb:latest .
+docker push myregistry.azurecr.io/1gb:latest
+
+```
+You should be able to see that the storage used, has increased in the portal or you can query usage using the CLI.
+```
+az acr show-usage -n myregistry
+```
+Delete the image using the Azure CLI or portal and check the updated usage in a few minutes.
+```
+az acr repository delete -n myregistry --image 1gb
+```
 
 ## How to log into my registry when running the CLI in a container?
 
