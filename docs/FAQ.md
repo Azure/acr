@@ -82,6 +82,10 @@ az acr repository show-manifests -n myRegistry --repository myRepository --query
 
 Note: You can add `-y` in the delete command to skip confirmation
 
+## I deleted some images to free up registry quota usage but the available quota doesn't get updated.
+
+This can happen if the underlying layers are still being referenced by other container images. If you delete an image with no references, the registry usage will be updated in a few minutes.
+
 ## How do I validate storage quota changes?
 
 Create an image with a 1GB layer using the following docker file. This ensures that the image has has a layer that is not shared by any other image in the registry.
