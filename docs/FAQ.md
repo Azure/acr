@@ -90,13 +90,11 @@ Create an image with a 1GB layer using the following docker file. This ensures t
 FROM alpine
 RUN dd if=/dev/urandom of=1GB.bin  bs=32M  count=32
 RUN ls -lh 1GB.bin
-
 ```
 Build and push the image to your registry using the docker CLI.
 ```
 docker build -t myregistry.azurecr.io/1gb:latest .
 docker push myregistry.azurecr.io/1gb:latest
-
 ```
 You should be able to see that the storage used, has increased in the portal or you can query usage using the CLI.
 ```
