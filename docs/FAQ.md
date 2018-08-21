@@ -164,7 +164,7 @@ Yes. By using any latest docker client (version 18.03.0 and above).
 
 Yes, you can use trusted images in Azure Container Registry as the [Docker Notary](https://docs.docker.com/notary/getting_started/) has been integrited into ACR and can be enabled.
 
-* To push trusted images, you need to add yourself or related service principles as the `AcrImageSigner` role to your registry in addition to the `Owner`, `Contributor` roles for signing. Role assignment can be done by the following methods.
+* To push trusted images, you need to grant yourself or related service principles the `AcrImageSigner` role scoped to your registry, in addition to the `Contributor` (or `Owner`) role for signing. Role assignment can be done by the following methods.
     * Azure Portal: Your registry -> Access Control (IAM) -> Add (Select `AcrImageSigner` for the Role).
     * Azure CLI: Find the resource id `id` of the registry by running
         ```
