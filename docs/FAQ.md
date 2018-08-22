@@ -182,3 +182,10 @@ Yes, you can use trusted images in Azure Container Registry as the [Docker Notar
 
 You can use Docker Client and Notary Client to interact trusted images with ACR.
 Detailed documentation can be found at [Content trust in Docker](https://docs.docker.com/engine/security/trust/content_trust/).
+
+## docker pull fails with error: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+
+ - If this error is a transient issue, then retry will succeed. 
+ - If it is failing continuously then there could be a problem with the docker daemon, which can be mitigated by restarting the docker daemon. We have seen such issues before and restarting daemon generally works.
+ - If you continue to see this issue after restarting docker daemon, then the problem could be some network connectivity issues with the machine. To check if general network on the machine is healthy, try pinging www.bing.com and see if it works.
+ - You should always have a retry mechanism on all docker client operations.
