@@ -196,18 +196,41 @@ az acr build -f build-run-hello-world.yaml https://github.com/AzureCR/acr-tasks-
 # Step Properties
 
 ## detach:
+`detach` determines whether or not the container should be detached when running.
 ## entryPoint:
+`entryPoint` overrides the entry point of a step's container.
 ## env:
+`env` is a list of strings in `key=val` format which define environment variables for a step.
+
 ## exitedWith:
+`exitedWith` can be used to trigger a task when previous steps exited with one or more of the specified exit codes.
+
 ## exitedWithout:
+`exitedWithout` can be used to trigger a task when previous steps exited without one or more of the specified exit codes.
 ## id:
+
+The `id` property is a unique identifier to reference the step throughout the task.
+
 ## ignoreErrors:
+If `ignoreErrors` is set to `true`, the step will be marked as complete regardless of whether or not an error occurred during its execution. Defaults to false.
+
 ## keep:
+`keep` determines whether or not the step's container should be kept after execution.
 ## ports:
+`ports` is a list of ports to publish to the host.
 ## startDelay:
+`startDelay` can be used to delay a step's execution. This is an integer value measured in seconds.
 ## timeout:
+`timeout` is the maximum duration for a step to execute in seconds.
 ## when:
+`when` is used to block a Step's execution until one or more other Steps have been completed.
+### when examples
+- when: ["-"]
+- when: ["id1", "id2"]
+
 ## workingDirectory
+`workingDirectory` can be used to set a working directory when executing a step. By default, Azure Container Builder will produce a default root directory as the working directory. However, if your build has more than one step, you can share the artifacts created from previous steps.
+
 
 
 # Run Properties
@@ -216,19 +239,23 @@ ACR Tasks supports a set of build in properties. Using a dot notation, you can n
 
 The following variables can be accessed using `{{.Run.VariableName}}`, where `VariableName` equals one of the following:
 
-## Run.ID
+## `Run.ID`
 
-## Run.Commit
+## `Run.Commit`
 
-## Run.Repository
+## `Run.Repository`
 
-## Run.Branch
+## `Run.Branch`
 
-## Run.TriggeredBy
-## Run.Registry
-## Run.GitTag
-## Run.Date
-## Run.SharedContextDirectory
+## `Run.TriggeredBy`
+
+## `Run.Registry`
+
+## `Run.GitTag`
+
+## `Run.Date`
+
+## `Run.SharedContextDirectory`
 
 > [!div class="nextstepaction"]
 * TBD:
