@@ -20,8 +20,8 @@ ACR Tasks are a series of steps representing execution of one or more containers
 Through ACR Tasks, developers can:
 
 - **[build](container-registry-task-ref-build.md)** containers using familiar syntax of `docker build`
-- **[cmd](container-registry-task-ref-cmd.md)** to run a container as a function, enabling parameters passed to the container [ENTRYPOINT]. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
 - **[push](container-registry-task-ref-push.md)** newly built images to a registry, including ACR, Docker hub and other private registries.
+- **[cmd](container-registry-task-ref-cmd.md)** to run a container as a function, enabling parameters passed to the container [ENTRYPOINT]. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
 
 ## ACR Task Common Scenarios
 
