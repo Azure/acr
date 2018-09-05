@@ -30,7 +30,7 @@ ACR Tasks take advantage of the container execution and isolation model, enablin
 ```yaml
 version: 1.0-preview-1
 steps:
-    - [cmd]: [containerImage] [cmdParameters to the image]
+    - [cmd]: [containerImage]:[tag (optional)] [cmdParameters to the image]
       [propety]: [value]
 ```
 Using cmd, ACR Tasks run an image as a function. 
@@ -70,7 +70,7 @@ az acr task run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.gi
 
 ### Versioning
 
-To version the function, use version specific tags. The following example executes the [bash:3.0] (https://hub.docker.com/_/bash/) image:
+To version the function, use version specific tags. The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
 ```yaml
 version: 1.0-preview-1
 steps:
@@ -104,18 +104,15 @@ steps:
 az acr task run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.git
 ```
 
-### Run Properties
-
-ACR Tasks supports a set of [built-in properties](#properties). Using a dot notation, you can navigate read-only properties and values passed in.
-
 To generalize a task.yaml file for your registry, change specific registry references to use the `.Run.Registry` syntax.
+
 ```yaml
 version: 1.0-preview-1
 steps:
     - cmd: {{.Run.Registry}}/bash:3.0 echo hello world
 ```
 
-### cmd Properties
+## cmd Properties
 Supported cmd properties include:
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
@@ -153,8 +150,8 @@ steps:
 az acr task run -f build-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
 ```
 
-
 ### -t | --image (optional)
+
 Define the fully qualified image:tag
 As images may be used for inner task validations, not all images may be pushed. If 
 Note, tagging a
@@ -174,6 +171,7 @@ Supported cmd properties include:
 - [timeout: int (in seconds) (optional)](#timeout)
 - [when: [string, string, ...] (optional)](#when)
 - [workingDirectory: string (optional)](#workingDirectory)
+
 ## push
 
 
@@ -195,7 +193,8 @@ az acr build -f build-run-hello-world.yaml https://github.com/AzureCR/acr-tasks-
 
 
 
-# ACR Task Step Properties
+# Step Properties
+
 ## detach:
 ## entryPoint:
 ## env:
@@ -208,22 +207,28 @@ az acr build -f build-run-hello-world.yaml https://github.com/AzureCR/acr-tasks-
 ## startDelay:
 ## timeout:
 ## when:
+## workingDirectory
 
-## workingDirectory:
-        
-## Build variables
 
-The following variables can be accessed using `{{ .Run.VariableName }}`, where `VariableName` equals one of the following:
+# Run Properties
 
-- ID
-- Commit
-- Repository
-- Branch
-- TriggeredBy
-- Registry
-- GitTag
-- Date
-- SharedContextDirectory
+ACR Tasks supports a set of build in properties. Using a dot notation, you can navigate read-only properties and values passed in.
+
+The following variables can be accessed using `{{.Run.VariableName}}`, where `VariableName` equals one of the following:
+
+## Run.ID
+
+## Run.Commit
+
+## Run.Repository
+
+## Run.Branch
+
+## Run.TriggeredBy
+## Run.Registry
+## Run.GitTag
+## Run.Date
+## Run.SharedContextDirectory
 
 > [!div class="nextstepaction"]
 * TBD:
