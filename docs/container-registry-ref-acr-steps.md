@@ -116,7 +116,7 @@ steps:
 ```
 
 ### cmd Properties
-Supported cmd parameters include:
+Supported cmd properties include:
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
 - [env: [string, string, ...] (optional)](#env)
@@ -160,7 +160,7 @@ As images may be used for inner task validations, not all images may be pushed. 
 Note, tagging a
 
 ### Build Properties
-Supported cmd parameters include:
+Supported cmd properties include:
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
 - [env: [string, string, ...] (optional)](#env)
@@ -195,7 +195,7 @@ az acr build -f build-run-hello-world.yaml https://github.com/AzureCR/acr-tasks-
 
 
 
-# ACR Task Step Parameters
+# ACR Task Step Properties
 ## detach:
 ## entryPoint:
 ## env:
