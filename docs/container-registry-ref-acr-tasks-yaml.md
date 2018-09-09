@@ -1,6 +1,6 @@
 ---
-title: ACR Task Reference
-description: Reference for ACR task.yaml
+title: ACR task.yaml Reference
+description: Reference for ACR task.yaml formatting
 services: container-registry
 author: stevelas
 manager: balans
@@ -18,10 +18,12 @@ This doc covers the commands and parameter syntax for tasks.yaml.
 See [Task Overview](./container-registry-tasks-overview.md) for an overview of Tasks and how to execute `task.yaml`
 
 ## task.yaml Format
-Task.yaml supports:
-- [Task Properties](#task-properties) which apply to the entire task execution, including [version](#version), [stepTimeout](#stepTimeout) and [totalTimeout](#totalTimeout). 
+ACR Tasks supports multi-step declaration through standard yaml syntax. 
+
+task.yaml supports:
+- [Task Properties](#task-properties) which apply to the entire task execution, including [version](#version), [stepTimeout](#steptimeout) and [totalTimeout](#totaltimeout). 
 - [Task Step Types](#task-step-types) which represent executing a container, [cmd](#cmd), [build](#build) a container and [push](#push)ing to push a newly built or retagged image.
-- [Task Step Properties](#task-step-properties) are parameters applicable to each step, such as [startDelay](#startDelay) and [when](#when)
+- [Task Step Properties](#task-step-properties) are parameters applicable to each step, such as [startDelay](#startdelay) and [when](#when)
 
 ```yaml
 version: [task.yaml format version]
