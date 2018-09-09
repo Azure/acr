@@ -19,6 +19,14 @@ This doc cover the basic commands, parameters, syntax and brief examples.
 
 ACR Tasks take advantage of the container execution and isolation model, enabling customers to run any series of containers as functions across a common directory. ACR Tasks provide a common context and conditional/dependency flow between steps providing primitive, yet robust scenarios. By deferring the execution to containers you provide, ACR Tasks has minimal dependencies between the Task execution environment and your code. Using this pattern, developers may use any language or framework they desire, running on Linux or Windows operating systems, minimizing version dependency situations. 
 
+## ACR Task Execution Model
+
+ACR Tasks take advantage of the container execution and isolation model, enabling customers to run any series of containers as functions across a common directory. ACR Tasks provide a common context and conditional/dependency flow between steps providing primitive, yet robust scenarios. By deferring the execution to containers, ACR Tasks has minimal dependencies between the Task execution environment and the code within a container.
+
+ Using this pattern, developers may use any language or framework they desire, running on Linux or Windows operating systems, minimizing version dependency. 
+
+## Steps
+ACR Tasks executes a series of steps, with parralel or dependent execution. Steps can build, push or simply run a container as it's execution environment. 
 
 - **[cmd](#cmd)** to run a container as a function, enabling parameters passed to the container [ENTRYPOINT]. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
 - **[build](#build)** containers using familiar syntax of `docker build`
