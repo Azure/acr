@@ -26,19 +26,20 @@ task.yaml supports:
 - [Task Step Properties](#task-step-properties) are parameters applicable to each step, such as [startDelay](#startdelay) and [when](#when)
 
 ```yaml
-version: [task.yaml format version]
-stepTimeout: [seconds each step may take]
-totalTimeout: [total seconds all steps must complete within.]
-steps:
-    cmd:
-      startDelay:
-    build:
-    push:
-      when: 
+version: # task.yaml format version
+stepTimeout: # seconds each step may take
+totalTimeout: # total seconds all steps must complete within.]
+steps: # collection of executed container capabilities 
+    cmd: # executes a cotnainer, using the [ENTRYPOINT] and parameters
+      startDelay: # properties of the step, with this being the number of seconds to wait before beginning
+    build: # equivalent to docker build, in a multi-tenant environment
+    push: # push a newly built image
+      when: # a means to defined parallel or dependent execution
 ```
 > Note: **taska.yaml** follows strict yaml formating, including multi-line capabilities like `>` and `|`. If task execution fails, check the validity of the formatting, including nesting and usage of `:` to define each identifier. 
 
 # Task Properties
+Tasks have root properties that apply to the entire execution of the Task. Some properties may be overriden in a specific step. 
 
 ## version:
 The version of the task.yaml file, as parsed by the ACR Tasks service.  
@@ -61,7 +62,7 @@ The maximum number of seconds all steps must execute within.
 ACR Tasks supports three step types:
 - **[cmd](#cmd)** to run a container as a function, enabling parameters passed to the containers `[ENTRYPOINT]`. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
 - **[build](#build)** containers using familiar syntax of `docker build`
-- **[push](#push)** supports docker push of newly built or retagged images to a registry, including ACR, Docker hub and other private registries.
+- **[push](#push)** supports `docker push` of newly built or retagged images to a registry, including ACR, Docker hub and other private registries.
 
 ## cmd
 `cmd` is the basic execution of a container. `cmd` follows the following format:
@@ -70,45 +71,57 @@ version: 1.0-preview-1
 steps:
     - [cmd]: [containerImage]:[tag (optional)] [cmdParameters to the image]
 ```
-Using cmd, ACR Tasks runs the referenced image as a function. 
+Using cmd, `az acr run -f ...` executes the referenced image as a function. 
 
-The most basic hello-world example would be:
-```sh
-az acr task run -f hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
-```
+- Hello World docker hub image
+    
+    The most basic hello-world example would be:
+    ```sh
+    az acr run -f hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    ```
+    This runs a quick build of the hell-world.yaml file which references the [hello-world image on docker hub](https://hub.docker.com/_/hello-world/). 
 
-**hello-world.yaml**
-```yaml
-version: 1.0-preview-1
-steps:
-    cmd: hello-world
-```
+    **hello-world.yaml**
+    ```yaml
+    version: 1.0-preview-1
+    steps:
+        cmd: hello-world
+    ```
 
-The following task.yaml will instance the [bash](https://hub.docker.com/_/bash/) image, hosted on docker hub, executing `echo hello world`
-```sh
-az acr task run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.git
-```
-**bash-echo.yaml**
-```yaml
-version: 1.0-preview-1
-steps:
-    - cmd: bash echo hello world
-```
+- echo hello world 
+
+    The following **bash-echo.yaml** will instance the [docker hub bash](https://hub.docker.com/_/bash/) image, executing `echo hello world`
+
+    ```sh
+    az acr run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    ```
+
+    **bash-echo.yaml**
+    ```yaml
+    version: 1.0-preview-1
+    steps:
+        - cmd: bash echo hello world
+    ```
 
 
-### Versioning
+### `cmd` Versioning
 
-To version the function, use version specific tags. The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
-```yaml
-version: 1.0-preview-1
-steps:
-    - cmd: bash:3.0 echo hello world
-```
-To test this example
+Versioning of containers run within a `cmd` uses the version specific tags. 
 
-```sh
-az acr task run -f bash-echo-3.yaml https://github.com/AzureCR/acr-tasks-sample.git
-```
+- Versioned bash
+    
+    The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
+
+    ```sh
+    az acr run -f bash-echo-3.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    ```
+    **bash-echo-3.yaml**
+    ```yaml
+    version: 1.0-preview-1
+    steps:
+        - cmd: bash:3.0 echo hello world
+    ```
+
 
 ### Custom Images
 
@@ -119,26 +132,33 @@ steps:
     - cmd: docker.io/bash:3.0 echo hello world
 ```
 
-By using docker run conventions, you can run any image, in any registry, private or public. Images referenced in the same registry ACR Task is executing will not require additional credentials. 
+By using docker run conventions, any image, in any registry, private or public may be referenced in `cmd`. Images referenced in the same registry ACR Task is executing will not require additional credentials. 
 
-To run the bash image from your ACR. Replace [yourregistry] with the name of your registry. 
-```yaml
-version: 1.0-preview-1
-steps:
-    - cmd: [yourregistry].azurecr.io/bash:3.0 echo hello world
-```
+- Run the bash image from your ACR. 
 
-```sh
-az acr task run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.git
-```
+    Create a `bash-echo.yaml` file locally.
+    
+    Replace [yourregistry] with the name of your registry. 
 
-To generalize a task.yaml file for your registry, change specific registry references to use the `.Run.Registry` syntax.
+    ```yaml
+    version: 1.0-preview-1
+    steps:
+        - cmd: [yourregistry].azurecr.io/bash:3.0 echo hello world
+    ```
+    Run the following from the same directory as `bash-echo-yaml`
+    ```sh
+    az acr run -f bash-echo.yaml .
+    ```
 
-```yaml
-version: 1.0-preview-1
-steps:
-    - cmd: {{.Run.Registry}}/bash:3.0 echo hello world
-```
+- Generalize Registry References
+
+    To generalize a task.yaml file for your registry, change specific registry references to use the `.Run.Registry` syntax.
+
+    ```yaml
+    version: 1.0-preview-1
+    steps:
+        - cmd: {{.Run.Registry}}/bash:3.0 echo hello world
+    ```
 
 ### cmd Properties
 Supported cmd properties include:
@@ -158,7 +178,9 @@ Supported cmd properties include:
 - [workingDirectory: string (optional)](#workingDirectory)
 
 ## build
-`build` lifts `cmd: docker build` as as a first class primitive. `build:` follows the following syntax:
+`build` represents a multi-tenant secure means of running `docker build` as a first-class primitive. 
+
+`build:` follows the following syntax:
 
 ```yaml
 version: 1.0-preview-1
@@ -171,7 +193,9 @@ steps:
 
 Defines the fully qualified image:tag of the built image.
 
-As images may be used for inner task validations, such as functional tests, not all images may require `push` to a registry. However, to instance an image within a Task execution, the image does need a name to reference. 
+As images may be used for inner task validations, such as functional tests, not all images require `push` to a registry. However, to instance an image within a Task execution, the image does need a name to reference. 
+
+Unlike `az acr build`, running ACR Tasks does not provide default push behavior. With ACR Tasks, the default scenario assumes the ability to build, validate, then push an image. See [push](#push) for how to optionally push built images. 
 
 ### `-f` | `--file` (optional)
 References the Dockerfile passed to `docker build`. If not specified, the default Dockerfile will be searched within the root of the context. To specify an alternative Dockerfile, pass the filename, in reference to the context.
@@ -179,21 +203,31 @@ References the Dockerfile passed to `docker build`. If not specified, the defaul
 ### context
 The root directory passed to `docker build`. The root directory of each task is set to a shared [workingDirectory](#workingDirectory). This includes the root of the associated git cloned directory. 
 
-To build a hello world image:
-```sh
-az acr task run -f build-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
-```
+- Building an image from the root
 
-**build-hello-world.yaml**
-```yaml
-version: 1.0-preview-1
-steps:
-  - build: -t {{.Run.Registry}}/hello-world -f hello-world.dockerfile .
-```
+    To build a hello world image:
+    ```sh
+    az acr run -f build-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    ```
+
+    **build-hello-world.yaml**
+    ```yaml
+    version: 1.0-preview-1
+    steps:
+    - build: -t {{.Run.Registry}}/hello-world -f hello-world.dockerfile .
+    ```
+
+- Building an image form a sub directory
+
+    ```yaml
+    version: 1.0-preview-1
+    steps:
+    - build: -t {{.Run.Registry}}/hello-world -f hello-world.dockerfile ./subDirectory
+    ```
 
 
 ### Build Properties
-Supported cmd properties include:
+Supported build properties include:
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
 - [env: [string, string, ...] (optional)](#env)
@@ -211,7 +245,7 @@ Supported cmd properties include:
 ## push
 Push newly built or re-tagged images to a specified registry.
 ```sh
-az acr task run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
 ```
 **build-push-hello-world.yaml**
 ```yaml
@@ -237,7 +271,7 @@ Supported push properties include:
 
 To build and run hello-world:
 ```sh
-az acr task run -f build-run-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f build-run-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
 ```
 
 ```yaml
@@ -275,7 +309,7 @@ The id is also used as a DNS host name, when referencing images currently runnin
 ### id: Example
 - Build two images, instancing a functional test image
     ```sh
-    az acr task run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
     ```
     **when-parallel-dependent.yaml**
     ```yaml
@@ -352,7 +386,7 @@ If `when:` isn't provided, the step is dependent on the previous step in the yam
 ### `when:` examples
 - Sequential execution without declaring `"-"`
     ```sh
-    az acr task run -f when-sequential-default.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    az acr run -f when-sequential-default.yaml https://github.com/AzureCR/acr-tasks-sample.git
     ```
     **when-sequential-default.yaml**
     ```yaml
@@ -364,7 +398,7 @@ If `when:` isn't provided, the step is dependent on the previous step in the yam
     ```
 - Sequential execution, referencing step id's
     ```sh
-    az acr task run -f when-sequential-id.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    az acr run -f when-sequential-id.yaml https://github.com/AzureCR/acr-tasks-sample.git
     ```
     **when-sequential-id.yaml**
     ```yaml
@@ -381,7 +415,7 @@ If `when:` isn't provided, the step is dependent on the previous step in the yam
     ```
 - Parallel Builds
     ```sh
-    az acr task run -f when-parallel.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    az acr run -f when-parallel.yaml https://github.com/AzureCR/acr-tasks-sample.git
     ```
     **when-parallel-dependent.yaml**
     ```yaml
@@ -398,7 +432,7 @@ If `when:` isn't provided, the step is dependent on the previous step in the yam
 
 - Parallel Builds, with Dependent Testing
     ```sh
-    az acr task run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
+    az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
     ```
     **when-parallel-dependent.yaml**
     ```yaml
@@ -449,7 +483,7 @@ steps:
 ```
 
 ## Run.Commit
-The git-commit id of the underlying git repository. Commit should not be used as a unique identifier of image builds as images may be built based on a base image update, or manual trigger through `az acr task run`.
+The git-commit id of the underlying git repository. Commit should not be used as a unique identifier of image builds as images may be built based on a base image update, or manual trigger through `az acr run`.
 
 ### Run.Commit Example
 ```yaml
@@ -468,7 +502,7 @@ The git branch of the underlying git repository
 ## Run.TriggeredBy
 Task runs can be triggered in multiple ways:
 
-- Manual: using `az acr task run` or `az acr run`. 
+- Manual: using `az acr run` or `az acr run`. 
 - Git Commit: when triggered by a git commit
 - Image Update: when triggered by a base image update.
 
