@@ -38,6 +38,20 @@ steps: # collection of executed container capabilities
 ```
 > Note: **taska.yaml** follows strict yaml formating, including multi-line capabilities like `>` and `|`. If task execution fails, check the validity of the formatting, including nesting and usage of `:` to define each identifier. 
 
+# Running Samples
+
+Samples referenced use `az acr run` and assume a default registry is configured.
+
+- Configure a default registry
+
+    Assuming your registry is named yourRegistry.azurecr.io, run the following
+    ```sh
+    az configure --defaults acr=yourRegistry
+    ```
+
+> **Note:** As of 9/9/18, `az acr run` is not yet public. Replace `az acr run` with `az acr build`, using the `-f` parameter to reference the `task.yaml` file.
+
+
 # Task Properties
 Tasks have root properties that apply to the entire execution of the Task. Some properties may be overriden in a specific step. 
 
