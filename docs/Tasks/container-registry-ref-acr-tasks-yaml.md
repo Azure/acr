@@ -87,54 +87,54 @@ steps:
 ```
 Using cmd, `az acr run -f ...` executes the referenced image as a command. 
 
-- Hello World docker hub image
+### cmd example: Hello World docker hub image
     
-    The most basic hello-world example would be:
-    ```sh
-    az acr run -f hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
-    This runs a quick build of the hell-world.yaml file which references the [hello-world image on docker hub](https://hub.docker.com/_/hello-world/). 
+The most basic hello-world example would be:
+```sh
+az acr run -f hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
+This runs a quick build of the hell-world.yaml file which references the [hello-world image on docker hub](https://hub.docker.com/_/hello-world/). 
 
-    **hello-world.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        cmd: hello-world
-    ```
+**hello-world.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    cmd: hello-world
+```
 
-- echo hello world 
+### cmd example: echo hello world 
 
-    The following **bash-echo.yaml** will instance the [docker hub bash](https://hub.docker.com/_/bash/) image, executing `echo hello world`
+The following **bash-echo.yaml** will instance the [docker hub bash](https://hub.docker.com/_/bash/) image, executing `echo hello world`
 
-    ```sh
-    az acr run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
+```sh
+az acr run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
 
-    **bash-echo.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        - cmd: bash echo hello world
-    ```
+**bash-echo.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    - cmd: bash echo hello world
+```
 
 
 ### `cmd` Versioning
 
 Versioning of containers run within a `cmd` uses the version specific tags. 
 
-- Versioned bash
+### cmd: versioned bash
     
-    The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
+The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
 
-    ```sh
-    az acr run -f bash-echo-3.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
-    **bash-echo-3.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        - cmd: bash:3.0 echo hello world
-    ```
+```sh
+az acr run -f bash-echo-3.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
+**bash-echo-3.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    - cmd: bash:3.0 echo hello world
+```
 
 
 ### Custom Images
@@ -217,28 +217,27 @@ References the Dockerfile passed to `docker build`. If not specified, the defaul
 ### context
 The root directory passed to `docker build`. The root directory of each task is set to a shared [workingDirectory](#workingDirectory). This includes the root of the associated git cloned directory. 
 
-- Building an image from the root
+### build example: Building an image from the root
 
-    To build a hello world image:
-    ```sh
-    az acr run -f build-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
+To build a hello world image:
+```sh
+az acr run -f build-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
 
-    **build-hello-world.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-    - build: -t {{.Run.Registry}}/hello-world -f hello-world.dockerfile .
-    ```
+**build-hello-world.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+- build: -t {{.Run.Registry}}/hello-world -f hello-world.dockerfile .
+```
 
-- Building an image form a sub directory
+### build example: Building an image form a sub directory
 
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-    - build: -t {{.Run.Registry}}/hello-world -f hello-world.dockerfile ./subDirectory
-    ```
-
+```yaml
+version: 1.0-preview-1
+steps:
+- build: -t {{.Run.Registry}}/hello-world -f hello-world.dockerfile ./subDirectory
+```
 
 ### Build Properties
 Supported build properties include:
@@ -321,31 +320,31 @@ The `id` property is a unique identifier to reference the step throughout the ta
 The id is also used as a DNS host name, when referencing images currently running. 
 
 ### id: Example
-- Build two images, instancing a functional test image
-    ```sh
-    az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
-    **when-parallel-dependent.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        # build website and func-test images, concurrently
-        - id: build-hello-world
-          build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
-          when: ["-"]
-        - id: build-hello-world-test
-          build: -t hello-world-test .
-          when: ["-"]
-        # run built images to be tested
-        - id: hello-world
-          cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-          ports: ["80:80"]
-          when: ["build-hello-world"]
-        - id: func-tests
-          cmd: hello-world-func-test
-          env: TEST_TARGET_URL=hello-world
-          when: ["hello-world"]
-    ```
+ Build two images, instancing a functional test image
+```sh
+az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
+**when-parallel-dependent.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    # build website and func-test images, concurrently
+    - id: build-hello-world
+        build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
+        when: ["-"]
+    - id: build-hello-world-test
+        build: -t hello-world-test .
+        when: ["-"]
+    # run built images to be tested
+    - id: hello-world
+        cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+        ports: ["80:80"]
+        when: ["build-hello-world"]
+    - id: func-tests
+        cmd: hello-world-func-test
+        env: TEST_TARGET_URL=hello-world
+        when: ["hello-world"]
+```
 
 ## ignoreErrors:
 If `ignoreErrors` is set to `true`, the step will be marked as complete regardless of whether or not an error occurred during its execution. Defaults to false.
@@ -402,81 +401,80 @@ steps:
 
 If `when:` isn't provided, the step is dependent on the previous step in the yaml file.
 
-### `when:` examples
-- Sequential execution without declaring `"-"`
-    ```sh
-    az acr run -f when-sequential-default.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
-    **when-sequential-default.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        - cmd: bash echo one
-        - cmd: bash echo two
-        - cmd: bash echo three
-    ```
-- Sequential execution, referencing step id's
-    ```sh
-    az acr run -f when-sequential-id.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
-    **when-sequential-id.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        - id: step1
-          cmd: bash echo one
-        - id: step2
-          cmd: bash echo two
-          when: ["step1"]
-        - id: step3
-          cmd: bash echo three
-          when: ["step2"]
-    ```
-- Parallel Builds
-    ```sh
-    az acr run -f when-parallel.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
-    **when-parallel-dependent.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        # build website and func-test images, concurrently
-        - id: build-hello-world
-          build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
-          when: ["-"]
-        - id: build-hello-world-test
-          build: -t hello-world-test .
-          when: ["-"]
-    ```
+### when example: Sequential execution without declaring `"-"`
+```sh
+az acr run -f when-sequential-default.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
+**when-sequential-default.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    - cmd: bash echo one
+    - cmd: bash echo two
+    - cmd: bash echo three
+```
+### when example: Sequential execution, referencing step id's
+```sh
+az acr run -f when-sequential-id.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
+**when-sequential-id.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    - id: step1
+        cmd: bash echo one
+    - id: step2
+        cmd: bash echo two
+        when: ["step1"]
+    - id: step3
+        cmd: bash echo three
+        when: ["step2"]
+```
+### when example: Parallel Builds
+```sh
+az acr run -f when-parallel.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
+**when-parallel-dependent.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    # build website and func-test images, concurrently
+    - id: build-hello-world
+        build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
+        when: ["-"]
+    - id: build-hello-world-test
+        build: -t hello-world-test .
+        when: ["-"]
+```
 
-- Parallel Builds, with Dependent Testing
-    ```sh
-    az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
-    ```
-    **when-parallel-dependent.yaml**
-    ```yaml
-    version: 1.0-preview-1
-    steps:
-        # build website and func-test images, concurrently
-        - id: build-hello-world
-          build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
-          when: ["-"]
-        - id: build-hello-world-test
-          build: -t hello-world-test .
-          when: ["-"]
-        # run built images to be tested
-        - id: hello-world
-          cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-          ports: ["80:80"]
-          when: ["build-hello-world"]
-        - id: func-tests
-          cmd: hello-world-func-test
-          env: TEST_TARGET_URL=hello-world
-          when: ["hello-world"]
-        # push hello-world if func-tests are successful  
-        - push: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-          when: ["func-tests"]
-    ```
+### when example: Parallel Builds, with Dependent Testing
+```sh
+az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
+```
+**when-parallel-dependent.yaml**
+```yaml
+version: 1.0-preview-1
+steps:
+    # build website and func-test images, concurrently
+    - id: build-hello-world
+        build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
+        when: ["-"]
+    - id: build-hello-world-test
+        build: -t hello-world-test .
+        when: ["-"]
+    # run built images to be tested
+    - id: hello-world
+        cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+        ports: ["80:80"]
+        when: ["build-hello-world"]
+    - id: func-tests
+        cmd: hello-world-func-test
+        env: TEST_TARGET_URL=hello-world
+        when: ["hello-world"]
+    # push hello-world if func-tests are successful  
+    - push: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+        when: ["func-tests"]
+```
 
 
 ## workingDirectory
@@ -527,6 +525,7 @@ Task runs can be triggered in multiple ways:
 
 ## Run.Registry
 The fully qualified login name of the registry. 
+
 ### Run.Registry Example
 Typically used to generically reference the registry where the task is being run.
 ```yaml
