@@ -13,7 +13,7 @@ ms.author: stevelas
 
 # Automate OS & Framework Patching with ACR Tasks
 
-ACR Tasks provide a container centric compute primitive, focused on building and patching container workloads.
+ACR Tasks provide a container centric compute primitive, focused on building and patching container workloads. 
 
 ACR Tasks are a series of steps representing execution of one or more containers, using the container as the execution environment. ACR Tasks are defined with a `.yaml` file, identifying the steps and the dependencies each steps has upon another. 
 
@@ -22,6 +22,11 @@ Through ACR Tasks, developers can:
 - **[build](container-registry-task-ref-build.md)** containers using familiar syntax of `docker build`
 - **[push](container-registry-task-ref-push.md)** newly built images to a registry, including ACR, Docker hub and other private registries.
 - **[cmd](container-registry-task-ref-cmd.md)** to run a container as a function, enabling parameters passed to the container [ENTRYPOINT]. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
+
+## ACR Build and ACR Tasks
+[ACR Build](https://aka.ms/acr/build), (generally available September 2018), is the pre-cursor of ACR Tasks, focusing on a single step that builds and optionally pushes the built image.
+
+ACR Tasks adds the ability to break up the building of an image into more composable steps. With ACR Task steps, users have more granular control over building their images, while adding testing capabilities, all within the ACR Task compute environment. 
 
 ## ACR Task Common Scenarios
 

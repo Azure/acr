@@ -30,7 +30,7 @@ version: # task.yaml format version
 stepTimeout: # seconds each step may take
 totalTimeout: # total seconds all steps must complete within.]
 steps: # collection of executed container capabilities 
-    cmd: # executes a cotnainer, using the [ENTRYPOINT] and parameters
+    cmd: # executes a container, using the [ENTRYPOINT] and parameters
       startDelay: # properties of the step, with this being the number of seconds to wait before beginning
     build: # equivalent to docker build, in a multi-tenant environment
     push: # push a newly built image
@@ -74,9 +74,9 @@ The maximum number of seconds all steps must execute within.
 
 # Task Step Types
 ACR Tasks supports three step types:
-- **[cmd](#cmd)** to run a container as a function, enabling parameters passed to the containers `[ENTRYPOINT]`. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
+- **[cmd](#cmd)** to run a container as a command, enabling parameters passed to the containers `[ENTRYPOINT]`. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
 - **[build](#build)** containers using familiar syntax of `docker build`
-- **[push](#push)** supports `docker push` of newly built or retagged images to a registry, including ACR, Docker hub and other private registries.
+- **[push](#push)** supports `docker push` of newly built or re-tagged images to a registry, including ACR, Docker hub and other private registries.
 
 ## cmd
 `cmd` is the basic execution of a container. `cmd` follows the following format:
@@ -85,7 +85,7 @@ version: 1.0-preview-1
 steps:
     - [cmd]: [containerImage]:[tag (optional)] [cmdParameters to the image]
 ```
-Using cmd, `az acr run -f ...` executes the referenced image as a function. 
+Using cmd, `az acr run -f ...` executes the referenced image as a command. 
 
 - Hello World docker hub image
     
@@ -339,7 +339,7 @@ The id is also used as a DNS host name, when referencing images currently runnin
         # run built images to be tested
         - id: hello-world
           cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-          ports: 80:80
+          ports: ["80:80"]
           when: ["build-hello-world"]
         - id: func-tests
           cmd: hello-world-func-test
@@ -355,7 +355,12 @@ If `ignoreErrors` is set to `true`, the step will be marked as complete regardle
 
 ## ports:
 `ports` is a list of ports to publish to the host.
-
+```yaml
+    version: 1.0-preview-1
+    steps:
+      cmd: nginx
+        ports: ["80:80"]
+```
 ## retry:
 The number of retry attempts to be made before failure
 
