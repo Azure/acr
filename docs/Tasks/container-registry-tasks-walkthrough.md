@@ -73,5 +73,6 @@ az acr run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-s
 
 
 > [!div class="nextstepaction"]
+* [ACR Task Overview](./container-registry-tasks-overview.md)
 * [ACR task.yaml Reference](./container-registry-ref-acr-tasks-yaml.md)
 

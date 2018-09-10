@@ -119,7 +119,7 @@ steps:
 
 
 
-### cmd: versioned bash
+### cmd version example: versioned bash
 To run a specific version, uses the image version specific tags. 
     
 The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
@@ -540,6 +540,10 @@ The current date time the run began.
 
 ## Run.SharedContextDirectory
 [TODO:]
+
+To learn more about ACR Tasks, drill into the following topics:
+* [ACR Task Overview](./container-registry-tasks-overview.md)
+* [ACR Task Walkthrough](./container-registry-tasks-walkthrough.md)
 
 > [!div class="nextstepaction"]
 * TBD:
