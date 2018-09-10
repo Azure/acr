@@ -467,7 +467,7 @@ If `when:` isn't provided, the step is dependent on the previous step in the yam
         # run built images to be tested
         - id: hello-world
           cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-          ports: 80:80
+          ports: ["80:80"]
           when: ["build-hello-world"]
         - id: func-tests
           cmd: hello-world-func-test

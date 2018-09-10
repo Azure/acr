@@ -60,12 +60,12 @@ The task.yaml version does the following:
 
 - breaks up build and push into separate steps
 - changes `Build.ID` to [Run.ID](./container-registry-ref-acr-tasks-yaml.md#runid) to better represent a run, which may do many things, in addition to `docker build`
-- provides a fully qualified refernce to the target registry using [Run.Registry](./container-registry-ref-acr-tasks-yaml.md#run.registry)
+- provides a fully qualified reference to the target registry using [Run.Registry](./container-registry-ref-acr-tasks-yaml.md#run.registry). ACR Tasks supports pushing images to other registries.
 
 To test the above yaml, run the following command in [cloud shell](https://shell.azure.com) or any other bash environment. 
 
 ```sh
-
+az acr run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
 ```
 
 If the scenario required building a secondary test container, executing the test container before pushing the image, 
