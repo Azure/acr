@@ -118,11 +118,9 @@ steps:
 ```
 
 
-### `cmd` Versioning
-
-Versioning of containers run within a `cmd` uses the version specific tags. 
 
 ### cmd: versioned bash
+To run a specific version, uses the image version specific tags. 
     
 The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
 
