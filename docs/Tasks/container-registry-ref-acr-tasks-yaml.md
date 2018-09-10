@@ -65,7 +65,7 @@ ACR Tasks will make every reasonable attempt to maintain backwards compatibility
 - `1.0-preview-1` - Pre-release, preview 1. As this is the first public version of ACR Tasks, based on feedback, we may make breaking changes. However, this version will be supported with a yet to be determined time frame, as the 1.0 public release is made. 
 
 ## stepTimeout: 
-Default Value: 10 minutes.
+Default Value: 600 seconds (10 minutes)
 
 The maximum number of seconds an individual step has to execute. This property can be overridden by setting the [timeout](#timeout) property on a specific step.
 
@@ -116,8 +116,6 @@ version: 1.0-preview-1
 steps:
     - cmd: bash echo hello world
 ```
-
-
 
 ### cmd version example: versioned bash
 To run a specific version, uses the image version specific tags.
@@ -174,13 +172,11 @@ By using docker run conventions, any image, in any registry, private or public m
 
 ### cmd Properties
 Supported cmd properties include:
-- [id: string (optional)](#id)
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
 - [env: [string, string, ...] (optional)](#env)
-- [exitedWith: [int, int, ...] (optional)](#exitedWith)
-- [exitedWithout: [int, int, ...] (optional)](#exitedWithout)
 - [ignoreErrors: bool (optional)](#ignoreErrors)
+- [id: string (optional)](#id)
 - [keep: bool (optional)](#keep)
 - [ports: [string, string, ...] (optional)](#ports)
 - [startDelay: int (in seconds) (optional)](#startDelay)
@@ -238,10 +234,10 @@ steps:
 
 ### Build Properties
 Supported build properties include:
-- [id: string (optional)](#id)
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
 - [env: [string, string, ...] (optional)](#env)
+- [id: string (optional)](#id)
 - [ignoreErrors: bool (optional)](#ignoreErrors)
 - [keep: bool (optional)](#keep)
 - [ports: [string, string, ...] (optional)](#ports)
