@@ -1,6 +1,6 @@
 ---
-title: ACR Task Walk Through
-description: Walk through, using ACR Tasks
+title: ACR Task Walkthrough
+description: Walkthrough, using ACR Tasks
 services: container-registry
 author: stevelas
 manager: balans
@@ -10,10 +10,10 @@ ms.topic: article
 ms.date: 08/31/2018
 ms.author: stevelas
 ---
-# ACR Task Walk Through
+# ACR Task Walkthrough
 
 ACR Tasks provide a container centric compute primitive, focused on building and patching containers.
-This doc covers a walk through to understand the capabilities of ACR Tasks. 
+This doc covers a walkthrough to understand the capabilities of ACR Tasks. 
 
 ## ACR Task Execution Model
 
@@ -68,10 +68,10 @@ To test the above yaml, run the following command in [cloud shell](https://shell
 az acr run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
 ```
 
-If the scenario required building a secondary test container, executing the test container before pushing the image, 
+### WORK IN PROGRESS ---
 
 
-ACR Build supports multi-stage dockerfiles, however they 
 
 > [!div class="nextstepaction"]
-* TBD:
+* [ACR task.yaml Reference](./container-registry-ref-acr-tasks-yaml.md)
+

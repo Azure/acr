@@ -103,6 +103,7 @@ ACR Tasks evolved from the container life cycle management efforts, focusing on 
 To learn more about ACR Tasks, drill into the following topics:
 
 > [!div class="nextstepaction"]
-* [ACR Task Step Reference](container-registry-ref-acr-steps.md)
+* [ACR Task Walkthrough](./container-registry-tasks-walkthrough.md)
+* [ACR task.yaml Reference](./container-registry-ref-acr-tasks-yaml.md)
 
 
