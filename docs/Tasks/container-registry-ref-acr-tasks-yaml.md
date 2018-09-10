@@ -36,7 +36,7 @@ steps: # collection of executed container capabilities
     push: # push a newly built image
       when: # a means to defined parallel or dependent execution
 ```
-> Note: **taska.yaml** follows strict yaml formating, including multi-line capabilities like `>` and `|`. If task execution fails, check the validity of the formatting, including nesting and usage of `:` to define each identifier. 
+> Note: **taska.yaml** follows strict yaml formating, including multi-line capabilities like `>` and `|`. If task execution fails, check the validity of the formatting, including nesting and usage of `:` to define each identifier.
 
 # Running Samples
 
@@ -65,7 +65,7 @@ ACR Tasks will make every reasonable attempt to maintain backwards compatibility
 - `1.0-preview-1` - Pre-release, preview 1. As this is the first public version of ACR Tasks, based on feedback, we may make breaking changes. However, this version will be supported with a yet to be determined time frame, as the 1.0 public release is made. 
 
 ## stepTimeout: 
-Default Value: ___ [TODO:]
+Default Value: 10 minutes.
 
 The maximum number of seconds an individual step has to execute. This property can be overridden by setting the [timeout](#timeout) property on a specific step.
 
@@ -74,7 +74,7 @@ The maximum number of seconds all steps must execute within.
 
 # Task Step Types
 ACR Tasks supports three step types:
-- **[cmd](#cmd)** to run a container as a command, enabling parameters passed to the containers `[ENTRYPOINT]`. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
+- **[cmd](#cmd)** to run a container as a command, enabling parameters passed to the containers `[ENTRYPOINT]`. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution.
 - **[build](#build)** containers using familiar syntax of `docker build`
 - **[push](#push)** supports `docker push` of newly built or re-tagged images to a registry, including ACR, Docker hub and other private registries.
 
@@ -102,7 +102,7 @@ steps:
     cmd: hello-world
 ```
 
-### cmd example: echo hello world 
+### cmd example: echo hello world
 
 The following **bash-echo.yaml** will instance the [docker hub bash](https://hub.docker.com/_/bash/) image, executing `echo hello world`
 
@@ -120,7 +120,7 @@ steps:
 
 
 ### cmd version example: versioned bash
-To run a specific version, uses the image version specific tags. 
+To run a specific version, uses the image version specific tags.
     
 The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
 
@@ -144,13 +144,13 @@ steps:
     - cmd: docker.io/bash:3.0 echo hello world
 ```
 
-By using docker run conventions, any image, in any registry, private or public may be referenced in `cmd`. Images referenced in the same registry ACR Task is executing will not require additional credentials. 
+By using docker run conventions, any image, in any registry, private or public may be referenced in `cmd`. Images referenced in the same registry ACR Task is executing will not require additional credentials.
 
-- Run the bash image from your ACR. 
+- Run the bash image from your ACR.
 
     Create a `bash-echo.yaml` file locally.
     
-    Replace [yourregistry] with the name of your registry. 
+    Replace [yourregistry] with the name of your registry.
 
     ```yaml
     version: 1.0-preview-1
@@ -174,23 +174,22 @@ By using docker run conventions, any image, in any registry, private or public m
 
 ### cmd Properties
 Supported cmd properties include:
+- [id: string (optional)](#id)
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
 - [env: [string, string, ...] (optional)](#env)
 - [exitedWith: [int, int, ...] (optional)](#exitedWith)
 - [exitedWithout: [int, int, ...] (optional)](#exitedWithout)
-- [id: string (optional)](#id)
 - [ignoreErrors: bool (optional)](#ignoreErrors)
 - [keep: bool (optional)](#keep)
 - [ports: [string, string, ...] (optional)](#ports)
-- [retry: [int] (optional)](#retry)
 - [startDelay: int (in seconds) (optional)](#startDelay)
 - [timeout: int (in seconds) (optional)](#timeout)
 - [when: [string, string, ...] (optional)](#when)
 - [workingDirectory: string (optional)](#workingDirectory)
 
 ## build
-`build` represents a multi-tenant secure means of running `docker build` as a first-class primitive. 
+`build` represents a multi-tenant secure means of running `docker build` as a first-class primitive.
 
 `build:` follows the following syntax:
 
@@ -205,9 +204,9 @@ steps:
 
 Defines the fully qualified image:tag of the built image.
 
-As images may be used for inner task validations, such as functional tests, not all images require `push` to a registry. However, to instance an image within a Task execution, the image does need a name to reference. 
+As images may be used for inner task validations, such as functional tests, not all images require `push` to a registry. However, to instance an image within a Task execution, the image does need a name to reference.
 
-Unlike `az acr build`, running ACR Tasks does not provide default push behavior. With ACR Tasks, the default scenario assumes the ability to build, validate, then push an image. See [push](#push) for how to optionally push built images. 
+Unlike `az acr build`, running ACR Tasks does not provide default push behavior. With ACR Tasks, the default scenario assumes the ability to build, validate, then push an image. See [push](#push) for how to optionally push built images.
 
 ### `-f` | `--file` (optional)
 References the Dockerfile passed to `docker build`. If not specified, the default Dockerfile will be searched within the root of the context. To specify an alternative Dockerfile, pass the filename, in reference to the context.
@@ -239,12 +238,10 @@ steps:
 
 ### Build Properties
 Supported build properties include:
+- [id: string (optional)](#id)
 - [detach: bool (optional)](#detach)
 - [entryPoint: string (optional)](#entryPoint)
 - [env: [string, string, ...] (optional)](#env)
-- [exitedWith: [int, int, ...] (optional)](#exitedWith)
-- [exitedWithout: [int, int, ...] (optional)](#exitedWithout)
-- [id: string (optional)](#id)
 - [ignoreErrors: bool (optional)](#ignoreErrors)
 - [keep: bool (optional)](#keep)
 - [ports: [string, string, ...] (optional)](#ports)
@@ -269,11 +266,8 @@ steps:
 ### push Properties
 Supported push properties include:
 - [env: [string, string, ...] (optional)](#env)
-- [exitedWith: [int, int, ...] (optional)](#exitedWith)
-- [exitedWithout: [int, int, ...] (optional)](#exitedWithout)
 - [id: string (optional)](#id)
 - [ignoreErrors: bool (optional)](#ignoreErrors)
-- [retry: [int] (optional)](#retry)
 - [startDelay: int (in seconds) (optional)](#startDelay)
 - [timeout: int (in seconds) (optional)](#timeout)
 - [when: [string, string, ...] (optional)](#when)
@@ -293,7 +287,6 @@ steps:
   - cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
 ```
 
-
 # Task Step Properties
 Each step type supports a collection of relevant step properties. See [cmd](#cmd), [build](#build), [push](#push) step reference for which properties apply.
 
@@ -305,13 +298,6 @@ Each step type supports a collection of relevant step properties. See [cmd](#cmd
 
 ## env:
 `env` is a list of strings in `key=val` format which define environment variables for a step.
-
-## exitedWith:
-`exitedWith` can be used to trigger a task when previous steps exited with one or more of the specified exit codes.
-
-## exitedWithout:
-`exitedWithout` can be used to trigger a task when previous steps exited without one or more of the specified exit codes.
-[TODO: Example]
 
 ## id:
 The `id` property is a unique identifier to reference the step throughout the task.
@@ -357,31 +343,6 @@ If `ignoreErrors` is set to `true`, the step will be marked as complete regardle
     steps:
       cmd: nginx
         ports: ["80:80"]
-```
-## retry:
-The number of retry attempts to be made before failure
-
-### retry example
-```yaml
-version: 1.0-preview-1
-steps:
-    - cmd: bash ping azurecr.io
-        retry: 3
-```
-
-## retryDelay:
-The number of seconds to pause after a failed attempt has been made before retrying to execute a step.
-
-### retryDelay example
-
-Ping a url 3 times, with a 2 second delay
-
-```yaml
-version: 1.0-preview-1
-steps:
-    - cmd: bash ping azurecr.io
-        retry: 3
-        retryDelay: 2
 ```
 
 ## startDelay:
@@ -497,32 +458,9 @@ steps:
     - build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
 ```
 
-## Run.Commit
-The git-commit id of the underlying git repository. Commit should not be used as a unique identifier of image builds as images may be built based on a base image update, or manual trigger through `az acr run`.
-
-### Run.Commit Example
-```yaml
-version: 1.0-preview-1
-steps:
-    - build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}}-{{Run.Commit}} .
-```
-
-## Run.Repository
-[TODO:]
-??Is this the git repository, or the ACR Repository??
-
-## Run.Branch
-The git branch of the underlying git repository
-
-## Run.TriggeredBy
-Task runs can be triggered in multiple ways:
-
-- Manual: using `az acr run` or `az acr run`. 
-- Git Commit: when triggered by a git commit
-- Image Update: when triggered by a base image update.
 
 ## Run.Registry
-The fully qualified login name of the registry. 
+The fully qualified login name of the registry.
 
 ### Run.Registry Example
 Typically used to generically reference the registry where the task is being run.
@@ -532,14 +470,11 @@ steps:
     - build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
 ```
 
-## Run.GitTag
-[TODO:]
-
 ## Run.Date
-The current date time the run began.
+The current UTC date time the run began.
 
 ## Run.SharedContextDirectory
-[TODO:]
+The name of the shared volume being used across steps.
 
 To learn more about ACR Tasks, drill into the following topics:
 * [ACR Task Overview](./container-registry-tasks-overview.md)
