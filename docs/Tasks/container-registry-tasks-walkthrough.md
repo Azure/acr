@@ -65,7 +65,7 @@ The task.yaml version does the following:
 To test the above yaml, run the following command in [cloud shell](https://shell.azure.com) or any other bash environment. 
 
 ```sh
-az acr run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f build-push-hello-world.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 
 ### WORK IN PROGRESS ---
