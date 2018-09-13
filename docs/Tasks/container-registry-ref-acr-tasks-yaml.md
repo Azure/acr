@@ -178,7 +178,6 @@ Supported cmd properties include:
 - [ignoreErrors: bool (optional)](#ignoreErrors)
 - [id: string (optional)](#id)
 - [keep: bool (optional)](#keep)
-- [ports: [string, string, ...] (optional)](#ports)
 - [startDelay: int (in seconds) (optional)](#startDelay)
 - [timeout: int (in seconds) (optional)](#timeout)
 - [when: [string, string, ...] (optional)](#when)
@@ -240,7 +239,6 @@ Supported build properties include:
 - [id: string (optional)](#id)
 - [ignoreErrors: bool (optional)](#ignoreErrors)
 - [keep: bool (optional)](#keep)
-- [ports: [string, string, ...] (optional)](#ports)
 - [startDelay: int (in seconds) (optional)](#startDelay)
 - [timeout: int (in seconds) (optional)](#timeout)
 - [when: [string, string, ...] (optional)](#when)
@@ -318,7 +316,6 @@ steps:
     # run built images to be tested
     - id: hello-world
         cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-        ports: ["80:80"]
         when: ["build-hello-world"]
     - id: func-tests
         cmd: hello-world-func-test
@@ -331,15 +328,6 @@ If `ignoreErrors` is set to `true`, the step will be marked as complete regardle
 
 ## keep:
 `keep` determines whether or not the step's container should be kept after execution.
-
-## ports:
-`ports` is a list of ports to publish to the host.
-```yaml
-    version: 1.0-preview-1
-    steps:
-      cmd: nginx
-        ports: ["80:80"]
-```
 
 ## startDelay:
 `startDelay:` The number of seconds used to delay a step's execution. 
@@ -420,7 +408,6 @@ steps:
     # run built images to be tested
     - id: hello-world
         cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-        ports: ["80:80"]
         when: ["build-hello-world"]
     - id: func-tests
         cmd: hello-world-func-test
