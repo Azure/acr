@@ -25,7 +25,7 @@ Using containers as a collection of commands; developers may use any language or
 ACR Tasks supports three step types:
 - **[build](#build)** containers using familiar syntax of `docker build`
 - **[push](#push)** supports `docker push` of newly built or re-tagged images to a registry, including ACR, Docker hub and other private registries.
-- **[cmd](#cmd)** to run a container as a command, enabling parameters passed to the containers `[ENTRYPOINT]`. `cmd` supports  run parameters including ports, volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
+- **[cmd](#cmd)** to run a container as a command, enabling parameters passed to the containers `[ENTRYPOINT]`. `cmd` supports  run parameters including volumes and other familiar `docker run` parameters, enabling unit and functional testing with concurrent container execution. 
 
 # Running Samples
 
@@ -65,7 +65,7 @@ The task.yaml version does the following:
 To test the above yaml, run the following command in [cloud shell](https://shell.azure.com) or any other bash environment. 
 
 ```sh
-az acr run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f build-push-hello-world.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 
 ### WORK IN PROGRESS ---

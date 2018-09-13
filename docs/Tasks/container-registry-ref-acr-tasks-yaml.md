@@ -91,7 +91,7 @@ Using cmd, `az acr run -f ...` executes the referenced image as a command.
     
 The most basic hello-world example would be:
 ```sh
-az acr run -f hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f hello-world.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 This runs a quick build of the hell-world.yaml file which references the [hello-world image on docker hub](https://hub.docker.com/_/hello-world/). 
 
@@ -107,7 +107,7 @@ steps:
 The following **bash-echo.yaml** will instance the [docker hub bash](https://hub.docker.com/_/bash/) image, executing `echo hello world`
 
 ```sh
-az acr run -f bash-echo.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f bash-echo.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 
 **bash-echo.yaml**
@@ -123,7 +123,7 @@ To run a specific version, uses the image version specific tags.
 The following example executes the [bash:3.0](https://hub.docker.com/_/bash/) image:
 
 ```sh
-az acr run -f bash-echo-3.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f bash-echo-3.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 **bash-echo-3.yaml**
 ```yaml
@@ -178,7 +178,6 @@ Supported cmd properties include:
 - [ignoreErrors: bool (optional)](#ignoreErrors)
 - [id: string (optional)](#id)
 - [keep: bool (optional)](#keep)
-- [ports: [string, string, ...] (optional)](#ports)
 - [startDelay: int (in seconds) (optional)](#startDelay)
 - [timeout: int (in seconds) (optional)](#timeout)
 - [when: [string, string, ...] (optional)](#when)
@@ -214,7 +213,7 @@ The root directory passed to `docker build`. The root directory of each task is 
 
 To build a hello world image:
 ```sh
-az acr run -f build-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f build-hello-world.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 
 **build-hello-world.yaml**
@@ -240,7 +239,6 @@ Supported build properties include:
 - [id: string (optional)](#id)
 - [ignoreErrors: bool (optional)](#ignoreErrors)
 - [keep: bool (optional)](#keep)
-- [ports: [string, string, ...] (optional)](#ports)
 - [startDelay: int (in seconds) (optional)](#startDelay)
 - [timeout: int (in seconds) (optional)](#timeout)
 - [when: [string, string, ...] (optional)](#when)
@@ -271,7 +269,7 @@ steps:
 
 
 ```sh
-az acr run -f build-push-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f build-push-hello-world.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 **build-push-hello-world.yaml**
 ```yaml
@@ -296,7 +294,7 @@ Supported push properties include:
 
 To build and run hello-world:
 ```sh
-az acr run -f build-run-hello-world.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f build-run-hello-world.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 
 ```yaml
@@ -326,7 +324,7 @@ The id is also used as a DNS host name, when referencing images currently runnin
 ### id: Example
  Build two images, instancing a functional test image
 ```sh
-az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f when-parallel-dependent.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 **when-parallel-dependent.yaml**
 ```yaml
@@ -342,7 +340,6 @@ steps:
     # run built images to be tested
     - id: hello-world
         cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-        ports: ["80:80"]
         when: ["build-hello-world"]
     - id: func-tests
         cmd: hello-world-func-test
@@ -355,15 +352,6 @@ If `ignoreErrors` is set to `true`, the step will be marked as complete regardle
 
 ## keep:
 `keep` determines whether or not the step's container should be kept after execution.
-
-## ports:
-`ports` is a list of ports to publish to the host. Similar to [push:](#push), ports supports a collection.
-```yaml
-    version: 1.0-preview-1
-    steps:
-      cmd: nginx
-        ports: ["80:80"]
-```
 
 ## startDelay:
 `startDelay:` The number of seconds used to delay a step's execution. 
@@ -382,7 +370,7 @@ If `when:` isn't provided, the step is dependent on the previous step in the yam
 
 ### when example: Sequential execution without declaring `"-"`
 ```sh
-az acr run -f when-sequential-default.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f when-sequential-default.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 **when-sequential-default.yaml**
 ```yaml
@@ -394,7 +382,7 @@ steps:
 ```
 ### when example: Sequential execution, referencing step id's
 ```sh
-az acr run -f when-sequential-id.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f when-sequential-id.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 **when-sequential-id.yaml**
 ```yaml
@@ -411,7 +399,7 @@ steps:
 ```
 ### when example: Parallel Builds
 ```sh
-az acr run -f when-parallel.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f when-parallel.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 **when-parallel-dependent.yaml**
 ```yaml
@@ -428,7 +416,7 @@ steps:
 
 ### when example: Parallel Builds, with Dependent Testing
 ```sh
-az acr run -f when-parallel-dependent.yaml https://github.com/AzureCR/acr-tasks-sample.git
+az acr run -f when-parallel-dependent.yaml https://github.com/azure-samples/acr-tasks.git
 ```
 **when-parallel-dependent.yaml**
 ```yaml
@@ -444,7 +432,6 @@ steps:
     # run built images to be tested
     - id: hello-world
         cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
-        ports: ["80:80"]
         when: ["build-hello-world"]
     - id: func-tests
         cmd: hello-world-func-test
