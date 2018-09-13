@@ -53,7 +53,7 @@ The equivalent ACR task would involve:
 version: 1.0-preview-1
 steps:
   - build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
-  - push: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+  - push: ["{{.Run.Registry}}/hello-world:{{.Run.ID}}"]
 ```
 
 The task.yaml version does the following:

@@ -245,7 +245,29 @@ Supported build properties include:
 - [workingDirectory: string (optional)](#workingDirectory)
 
 ## push
-Push newly built or re-tagged images to a specified registry.
+Push one more more newly built, or re-tagged images to a specified registry.
+
+Push supports a collection of images. .yaml collection syntax supports inline and nested syntax:
+When pushing a single image, inline may be more productive:
+
+```yaml
+version: 1.0-preview-1
+steps:
+  - push: ["{{.Run.Registry}}/hello-world:{{.Run.ID}}"]
+```
+
+When pushing a collection, inline may cause line wrapping, where the collection syntax is more readable. 
+```yaml
+version: 1.0-preview-1
+steps:
+  - push: ["{{.Run.Registry}}/hello-world:{{.Run.ID}}", "{{.Run.Registry}}/hello-world:latest"]
+  - push: 
+    - {{.Run.Registry}}/hello-world:{{.Run.ID}}
+    - {{.Run.Registry}}/hello-world:latest
+```
+
+
+
 ```sh
 az acr run -f build-push-hello-world.yaml https://github.com/azure-samples/acr-tasks.git
 ```
@@ -254,7 +276,9 @@ az acr run -f build-push-hello-world.yaml https://github.com/azure-samples/acr-t
 version: 1.0-preview-1
 steps:
   - build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} -f hello-world.dockerfile .
-  - push: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+  - push: 
+    - {{.Run.Registry}}/hello-world:{{.Run.ID}}
+    - {{.Run.Registry}}/hello-world:latest
 ```
 
 ### push Properties
@@ -277,7 +301,7 @@ az acr run -f build-run-hello-world.yaml https://github.com/azure-samples/acr-ta
 version: 1.0-preview-1
 steps:
   - build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} -f hello-world.dockerfile .
-  - push: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+  - push: ["{{.Run.Registry}}/hello-world:{{.Run.ID}}"]
   - cmd: {{.Run.Registry}}/hello-world:{{.Run.ID}}
 ```
 
@@ -414,7 +438,7 @@ steps:
         env: TEST_TARGET_URL=hello-world
         when: ["hello-world"]
     # push hello-world if func-tests are successful  
-    - push: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+    - push: ["{{.Run.Registry}}/hello-world:{{.Run.ID}}"]
         when: ["func-tests"]
 ```
 

@@ -43,7 +43,7 @@ ACR Tasks can be as simple as building a single image:
 version: 1.0.0
 steps:
   - build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
-  - push: {{.Run.Registry}}/hello-world:{{.Run.ID}}
+  - push: ["{{.Run.Registry}}/hello-world:{{.Run.ID}}"]
 ```
 
 To more complex build, test, helm package, helm deploy scenarios:
@@ -57,7 +57,7 @@ steps:
     build -t {{.Run.Registry}}/hello-world-tests ./funcTests
     when: ["-"]
   - id: push
-    push: {{.Run.Registry}}/helloworld:{{.Run.ID}}
+    push: ["{{.Run.Registry}}/helloworld:{{.Run.ID}}"]
     when: ["build", "build-tests"]
   - id: hello-world-web
     cmd: {{.Run.Registry}}/helloworld:{{.Run.ID}} 
