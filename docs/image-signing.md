@@ -19,5 +19,5 @@ To push signed images to ACR, the following configuration is required:
         ```
 * To pull trusted images, a `Reader` role is enough for normal users. No additional roles like an `AcrImageSigner` role are required.
 
-You can use Dokcer Client and Notary Client to interact trusted images with ACR.
+You can use Docker Client and Notary Client to interact trusted images with ACR.
 Detailed documentation can be found at [Content trust in Docker](https://docs.docker.com/engine/security/trust/content_trust/).
