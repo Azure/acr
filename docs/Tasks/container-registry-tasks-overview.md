@@ -54,7 +54,7 @@ steps:
     build: -t {{.Run.Registry}}/hello-world:{{.Run.ID}} .
     when: ["-"]
   - id: build-tests
-    build -t {{.Run.Registry}}/hello-world-tests ./funcTests
+    build: -t {{.Run.Registry}}/hello-world-tests ./funcTests
     when: ["-"]
   - id: push
     push: ["{{.Run.Registry}}/helloworld:{{.Run.ID}}"]
