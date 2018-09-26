@@ -214,6 +214,60 @@ The outcome of this operation will be a response with status 200 OK and a body w
 ```
 This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry
 
+## Calling `POST /oauth2/token` to get an ACR access token for Helm repository
+
+In this example, we'll try to obtain an ACR access token from existing ACR refresh token to access Helm repository, and this access token will only work for the operation we're trying to perform, which is a call to the `GET /helm/v1/repo/index.yaml` API. Assume you have the following:
+  1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
+  2. A valid ACR refresh token.
+
+The first thing you want is to obtain an authentication challenge for the operation you want to on the Azure Container Registry. That can be done by targetting the API you want to call without any authentication. Here's how to do that via `curl`:
+```bash
+export registry="contosoregistry.azurecr.io"
+curl -v https://$registry/helm/v1/repo/index.yaml
+```
+Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
+
+This will output the following payload, with `...` used to shorten it for illustrative purposes:
+
+```
+< HTTP/1.1 401 Unauthorized
+...
+< Www-Authenticate: Bearer realm="https://contosoregistry.azurecr.io/oauth2/token",service="contosoregistry.azurecr.io",scope="artifact-repository:repo:pull"
+...
+{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":[{"Type":"artifact-repository","Name":"repo","Action":"pull"}]}]}
+```
+
+Notice the response payload has a header called `Www-Authenticate` that gives us the following information:
+  - The type of challenge: `Bearer`.
+  - The realm of the challenge: `https://contosoregistry.azurecr.io/oauth2/token`.
+  - The service of the challenge: `contosoregistry.azurecr.io`.
+  - The scope of the challenge: `artifact-repository:repo:pull`.
+
+The body of the payload might provide additional details, but all the information you need is contained in the `Www-Authenticate` header.
+
+With this information we're now ready to call `POST /oauth2/token` to obtain an ACR access token that will allow us to use the `GET /helm/v1/repo/index.yaml` API. Here's how such a call looks when done via `curl`:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+export acr_refresh_token="eyJ...L7a"
+export scope="artifact-repository:repo:pull"
+curl -v -X POST -H "Content-Type: application/x-www-form-urlencoded" -d \
+"grant_type=refresh_token&service=$registry&scope=$scope&refresh_token=$acr_refresh_token" \
+https://$registry/oauth2/token
+```
+
+The body of the POST message is a querystring-like text that specifies the following values:
+  - `grant_type` which is expected to be `refresh_token`.
+  - `service`, which must indicate the name of your Azure container registry. You obtained this from the `Www-Authenticate` response header from the challenge.
+  - `scope`, which is expected to be a `artifact-repository:repo:pull` for read operations and `artifact-repository:repo:*` for write operations, and can be specified more than once for multiple scope requests. You obtained this from the `Www-Authenticate` response header from the challenge.
+  - `refresh_token`, which must be a valid ACR refresh token, as obtained by calling `POST /oauth2/exchange`.
+
+The outcome of this operation will be a response with status 200 OK and a body with the following JSON payload:
+```json
+{"access_token":"eyJ...xcg"}
+```
+This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry
+
 ## Calling an Azure Container Registry API
 
 In this example we'll call the `GET /v2/_catalog` API on an Azure Container Registry. Assume you have the following:
