@@ -155,7 +155,7 @@ In order to access full daemon log, you may need some extra steps:
     ```
 
     Now you have access to all the files of the VM running dockerd. The log is at `/var/log/docker.log`.
-    
+  
 ## Does Azure Container Registry offer TLS v1.2 only configuration and how to enable TLS v1.2?
 
 Yes. By using any latest docker client (version 18.03.0 and above). 
@@ -189,3 +189,34 @@ Detailed documentation can be found at [Content trust in Docker](https://docs.do
  - If it is failing continuously then there could be a problem with the docker daemon, which can be mitigated by restarting the docker daemon. We have seen such issues before and restarting daemon generally works.
  - If you continue to see this issue after restarting docker daemon, then the problem could be some network connectivity issues with the machine. To check if general network on the machine is healthy, try pinging www.bing.com and see if it works.
  - You should always have a retry mechanism on all docker client operations.
+
+## docker push succeeds but docker pull fails with error: unauthorized: authentication required
+
+This error usually happens with the Red Hat version of docker daemon where `--signature-verification` is enabled by default. You can check the docker daemon options for Red Hat Enterprise Linux (RHEL) or Fedora by running
+```
+grep OPTIONS /etc/sysconfig/docker
+```
+
+For instance, **Fedora 28 Server** has the docker daemon options
+```
+OPTIONS='--selinux-enabled --log-driver=journald --live-restore'
+```
+
+With `--signature-verification=false` missing, you will experience docker pull failures like
+```
+Using default tag: latest
+Trying to pull repository myregistry.azurecr.io/myimage ...
+unauthorized: authentication required
+```
+
+To resolve the error,
+1. Add the option `--signature-verification=false` to the docker daemon configuration file `/etc/sysconfig/docker`. For example,
+   ```
+   OPTIONS='--selinux-enabled --log-driver=journald --live-restore --signature-verification=false'
+   ```
+2. Restart docker daemon service by running
+   ```
+   sudo systemctl restart docker.service
+   ```
+
+Details of `--signature-verification` can be found by running `man dockerd`.
