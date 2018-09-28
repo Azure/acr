@@ -204,7 +204,6 @@ OPTIONS='--selinux-enabled --log-driver=journald --live-restore'
 
 With `--signature-verification=false` missing, you will experience docker pull failures like
 ```
-Using default tag: latest
 Trying to pull repository myregistry.azurecr.io/myimage ...
 unauthorized: authentication required
 ```
