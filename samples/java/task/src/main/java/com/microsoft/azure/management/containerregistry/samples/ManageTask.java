@@ -66,7 +66,7 @@ public class ManageTask
                 .withImageNames(Arrays.asList("java-sample:{{.Run.ID}}"))
                 .withIsPushEnabled(true)
                 .withPlatform(new PlatformProperties().withOs(OS.LINUX).withArchitecture(Architecture.AMD64))
-                .withSourceLocation("https://github.com/Azure/acr.git#master:samples/java/build")
+                .withSourceLocation("https://github.com/Azure/acr.git#master:samples/java/task")
                 .withDockerFilePath("Dockerfile")
                 .withTimeout(60*10)
                 .withAgentConfiguration(new AgentProperties().withCpu(2));
@@ -101,7 +101,7 @@ public class ManageTask
 
         // Create a task to automatically schedule run based on push commit and pull request
         String githubRepoUrl = "Replace with your github repository url, eg: https://github.com/Azure/acr.git";
-        String githubContext = "Replace with your github repository url with context, eg: https://github.com/Azure/acr.git#master:samples/java/build";
+        String githubContext = "Replace with your github repository url with context, eg: https://github.com/Azure/acr.git#master:samples/java/task";
         String githubBranch = "Replace with your github repositoty branch, eg: master";
         String githubPAT = "Replace with your github personal access token which should have the scopes: admin:repo_hook and repo";
         String dockerFilePath = "Replace with your docker file path relative to githubContext, eg: Dockerfile";
@@ -153,7 +153,7 @@ public class ManageTask
         // Schedule a multi-step task run
         runRequest = new FileTaskRunRequest()
                 .withPlatform(new PlatformProperties().withOs(OS.LINUX))
-                .withSourceLocation("https://github.com/Azure/acr.git#master:samples/java/build")
+                .withSourceLocation("https://github.com/Azure/acr.git#master:samples/java/task")
                 .withTaskFilePath("acb.yaml")
                 .withTimeout(60*10)
                 .withAgentConfiguration(new AgentProperties().withCpu(2));
