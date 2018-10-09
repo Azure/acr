@@ -1,10 +1,11 @@
-## Getting Started with Container Registry - Manage Container Registry Build - in Java ##
+## Getting Started with Container Registry - Manage Container Registry Task - in Java ##
 
 * Create an Azure Container Registry.
-* Queue a new build to build a container image and push it to the registry.
-* Wait for the build completion and download the build log.
-* Create a build task and queue a new build using the build task.
-* List builds in the registry.
+* Schedule a new run to build a container image and push it to the registry.
+* Wait for the run completion and download the run log.
+* Create a task and queue a new run using the task.
+* Schedule a new multi-step task run.
+* List runs in the registry.
 
 ## Running this Sample ##
 
