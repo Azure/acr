@@ -1,0 +1,5 @@
+version: 0.0.1
+steps:
+  - build: -t {{.Run.Registry}}/java-sample:{{.Run.ID}} .
+  - push: 
+    - {{.Run.Registry}}/java-sample:{{.Run.ID}}

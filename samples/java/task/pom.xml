@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.microsoft.azure</groupId>
-    <artifactId>containerrregistry-build-sample</artifactId>
+    <artifactId>containerrregistry-task-sample</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>containerregistry-build-sample</name>
+    <name>containerregistry-task-sample</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -36,7 +36,7 @@
             <version>1.2.4</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.azure.containerregistry.v2018_02_01_preview</groupId>
+            <groupId>com.microsoft.azure.containerregistry.v2018_09_01</groupId>
             <artifactId>azure-mgmt-containerregistry</artifactId>
             <version>1.0.0-beta-1</version>
         </dependency>
