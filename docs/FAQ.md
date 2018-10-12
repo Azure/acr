@@ -220,7 +220,7 @@ To resolve the error,
 
 Details of `--signature-verification` can be found by running `man dockerd`.
 
-## Delete of replication fails with Forbidden status , although the replication gets deleted using CLI or Remove-Azure. 
+## Delete of replication fails with Forbidden status , although the replication gets deleted using CLI or Remove-AzureRmContainerRegistryReplication. 
 
 The error is usually seen when the user has permissions on a Registry but doesn't have reader level permission on the subscription. To resolve this issue
 
