@@ -220,12 +220,12 @@ To resolve the error,
 
 Details of `--signature-verification` can be found by running `man dockerd`.
 
-## Delete of replication fails with Forbidden status , although the replication gets deleted. 
+## Delete of replication fails with Forbidden status , although the replication gets deleted using CLI or Remove-Azure. 
 
-When customer initiates a replication delete, we create an async operation and return immediately to the customer with the operation ID to poll. This is done because DELETE replication is a long running operation and we don’t block the request until it is done. The client should continuously polls the operation for completion. The polling is done by making an GET and a sample request looks like 
-https://management.azure.com/subscriptions/<subscriptionId>/providers/Microsoft.ContainerRegistry/locations/northeurope/operationResults/<operationId>?api-version=2017-10-01 
+The error is usually seen when the user has permissions on a Registry but doesn't have reader level permission on the subscription. To resolve this issue
 
-This GET request for polling the operation is failing with “Forbidden” on Azure resource manager side. This can result because of lack of permission to make that call. There are two options to resolve this issue
+Assign the user the reader permission on the subscription. 
 
-1. Assign the user the reader permission on the subscription. Sometimes, the user that initiated the DELETE operation has permission on the Registry but didn’t have permission on the subscription.
-2. Instead of the subscription read permission, one can add the action **Microsoft.ContainerRegistry/locations/operationResults/read** to the customer role to be able to perform this GET operation. This is recommended in cases where you don’t want to give subscription level permissions.
+    
+    az role assignment create --role "Reader" --assignee user@contoso.com --scope /subscriptions/<subscription_id> 
+    
