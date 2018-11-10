@@ -8,4 +8,4 @@
 
 **Anything else we need to know?**:
 
-**Environment (if applicable to the issue)**:
+**Environment (if applicable to the issue, eg, Azure CLI/Powershell/SDK version, Docker version, OS version, etc)**:
