@@ -8,4 +8,11 @@
 
 **Anything else we need to know?**:
 
-**Environment (if applicable to the issue, eg, Azure CLI/Powershell/SDK version, Docker version, OS version, etc)**:
+**Environment (if applicable to the issue)**:
+ - Azure CLI/Powershell/SDK version
+ - Docker version
+ - OS version
+ - Datetime (UTC) when the issue occured
+ - Registry and image names
+   
+   If any information is a concern to post here, you can create a [support ticket](https://azure.microsoft.com/en-us/support/create-ticket/) or send email to acrsup@microsoft.com.
