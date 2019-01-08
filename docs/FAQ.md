@@ -118,8 +118,7 @@ docker run -it -v /var/run/docker.sock:/var/run/docker.sock azuresdk/azure-cli-p
 
 In the container, you can install `docker` by
 ```
-apk update
-apk add docker
+apk --update add docker
 ```
 
 Then you can log into your registry by
@@ -229,3 +228,37 @@ Assign the user the reader permission on the subscription.
     
     az role assignment create --role "Reader" --assignee user@contoso.com --scope /subscriptions/<subscription_id> 
     
+## How to grant access to pull or push images without the permission to manage the registry resource
+
+ACR supports [custom roles](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-roles) that provide different levels of permissions. Specifically, `AcrPull` and `AcrPush` roles allow users to pull and/or push images without the permission to manage the registry resource in Azure.
+
+* Azure Portal: Your registry -> Access Control (IAM) -> Add (Select `AcrPull` or `AcrPush` for the Role).
+* Azure CLI: Find the resource id `id` of the registry by running
+    ```
+    az acr show -n myRegistry
+    ```
+    Then you can assign the `AcrPull` or `AcrPush` role to a user (the following example uses `AcrPull`)
+    ```
+    az role assignment create --scope resource_id --role AcrPull --assignee user@example.com
+    ```
+    or a service principle identified by its application ID
+    ```
+    az role assignment create --scope resource_id --role AcrPull --assignee 00000000-0000-0000-0000-000000000000
+    ```
+
+The assignee is then able to login and access images in the registry.
+
+* To login to a registry:
+    ```
+    az acr login -n myRegistry
+    ```
+* To list repositories:
+    ```
+    az acr repository list -n myRegistry
+    ```
+* To pull an image:
+    ```
+    docker pull myregistry.azurecr.io/hello-world
+    ```
+
+Note that with the use of only `AcrPull` or `AcrPush` roles, the assignee doesn't have the permission to manage the registry resource in Azure. For example, `az acr list` or `az acr show -n myRegistry` won't show the registry.
