@@ -77,7 +77,7 @@ az acr repository show-manifests -n myRegistry --repository myRepository --query
 
 For Powershell
 ```
-az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags==null].digest" -o tsv | %{ az acr repository delete -n myRegistry -t myRepository@$_ }
+az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags==null].digest" -o tsv | %{ az acr repository delete -n myRegistry --image myRepository@$_ }
 ```
 
 Note: You can add `-y` in the delete command to skip confirmation
