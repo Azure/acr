@@ -279,7 +279,7 @@ The outcome of this operation will be a response with status 200 OK and a body w
 {"access_token":"eyJ...xcg"}
 ```
 
-This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry. Refer the full script to [fetch the helm index.yaml](#fetch-helm-index.yaml).
+This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry. Refer the full script to [fetch the helm index.yaml](#fetch-helm-indexyaml).
 
 ## Calling an Azure Container Registry API
 
