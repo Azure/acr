@@ -72,12 +72,12 @@ az acr show -n myRegistry --query storageAccount
 
 If you are on bash
 ```
-az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags==null].digest" -o tsv  | xargs -I% az acr repository delete -n myRegistry -t myRepository@%
+az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags[0]==null].digest" -o tsv  | xargs -I% az acr repository delete -n myRegistry -t myRepository@%
 ```
 
 For Powershell
 ```
-az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags==null].digest" -o tsv | %{ az acr repository delete -n myRegistry -t myRepository@$_ }
+az acr repository show-manifests -n myRegistry --repository myRepository --query "[?tags[0]==null].digest" -o tsv | %{ az acr repository delete -n myRegistry -t myRepository@$_ }
 ```
 
 Note: You can add `-y` in the delete command to skip confirmation
