@@ -9,7 +9,8 @@ Under the hood Azure Container Service utilizes the [oauth2](https://oauth.net/2
 ## Authenticating to a registry with Azure CLI
 
 The process to log in to the registry, from the user's perspective, is simple. The user will use the Microsoft Azure CLI 2.0:
-```
+
+```bash
 az acr login -n contosoregistry
 ```
 
@@ -46,12 +47,14 @@ When listing the tags of a repository, every step above is the same except for t
 # Azure Container Registry refresh tokens and access tokens
 
 Let's follow an example call to list a repository:
-```
+
+```bash
 az acr repository list -n contosoregistry
 ```
 
 This will produce a JWT refresh token with the following payload:
-```
+
+```json
 {
   "jti": "365e3b5b-844e-4a21-a38c-4d8aebdd6a06",
   "sub": "user@contoso.com"
@@ -74,7 +77,8 @@ This will produce a JWT refresh token with the following payload:
 ```
 
 Followed by an access token with the following payload:
-```
+
+```json
 {
   "jti": "ec425c1e-7eda-4f70-adb5-19f927e34a41",
   "sub": "user@contoso.com"
@@ -94,6 +98,7 @@ Followed by an access token with the following payload:
   ]
 }
 ```
+
 # Getting credentials programatically
 
 In order to sign in to a container you'll need to exchange AAD credentials for ACR credentials. The accepted form of credential exchange are:
@@ -137,14 +142,17 @@ The body of the POST message is a querystring-like text that specifies the follo
   - `access_token`, the AAD access token, mandatory when `grant_type` is `access_token_refresh_token` or `access_token`.
 
 The outcome of this operation will be a response with status 200 OK and a body with the following JSON payload:
+
 ```json
 {"refresh_token":"eyJ...L7a"}
 ```
+
 This response is the ACR refresh token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to obtain an ACR access token programmatically or simply send it to the `docker login` command to get docker talking to the Azure Container Registry.
 
 ## Authenticating docker with an ACR refresh token
 
 Once you have obtained an ACR refresh token, you can use the docker CLI to sign in to your registry like this:
+
 ```bash
 export registry="contosoregistry.azurecr.io"
 export acr_username="00000000-0000-0000-0000-000000000000"
@@ -167,15 +175,17 @@ In this example, we'll try to obtain an ACR access token from existing ACR refre
   2. A valid ACR refresh token.
 
 The first thing you want is to obtain an authentication challenge for the operation you want to on the Azure Container Registry. That can be done by targetting the API you want to call without any authentication. Here's how to do that via `curl`:
+
 ```bash
 export registry="contosoregistry.azurecr.io"
 curl -v https://$registry/v2/_catalog
 ```
+
 Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
 
 This will output the following payload, with `...` used to shorten it for illustrative purposes:
 
-```
+```html
 < HTTP/1.1 401 Unauthorized
 ...
 < Www-Authenticate: Bearer realm="https://contosoregistry.azurecr.io/oauth2/token",service="contosoregistry.azurecr.io",scope="registry:catalog:*"
@@ -214,6 +224,63 @@ The outcome of this operation will be a response with status 200 OK and a body w
 ```
 This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry
 
+## Calling `POST /oauth2/token` to get an ACR access token for Helm repository
+
+In this example, we'll try to obtain an ACR access token from existing ACR refresh token to access Helm repository, and this access token will only work for the operation we're trying to perform, which is a call to the `GET /helm/v1/repo/index.yaml` API. Assume you have the following:
+  1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
+  2. A valid ACR refresh token.
+
+The first thing you want is to obtain an authentication challenge for the operation you want to on the Azure Container Registry. That can be done by targetting the API you want to call without any authentication. Here's how to do that via `curl`:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+curl -v https://$registry/helm/v1/repo/index.yaml
+```
+
+Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
+
+This will output the following payload, with `...` used to shorten it for illustrative purposes:
+
+```bash
+< HTTP/1.1 401 Unauthorized
+...
+< Www-Authenticate: Bearer realm="https://contosoregistry.azurecr.io/oauth2/token",service="contosoregistry.azurecr.io",scope="artifact-repository:repo:pull"
+...
+{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":[{"Type":"artifact-repository","Name":"repo","Action":"pull"}]}]}
+```
+
+Notice the response payload has a header called `Www-Authenticate` that gives us the following information:
+  - The type of challenge: `Bearer`.
+  - The realm of the challenge: `https://contosoregistry.azurecr.io/oauth2/token`.
+  - The service of the challenge: `contosoregistry.azurecr.io`.
+  - The scope of the challenge: `artifact-repository:repo:pull`.
+
+The body of the payload might provide additional details, but all the information you need is contained in the `Www-Authenticate` header.
+
+With this information we're now ready to call `POST /oauth2/token` to obtain an ACR access token that will allow us to use the `GET /helm/v1/repo/index.yaml` API. Here's how such a call looks when done via `curl`:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+export acr_refresh_token="eyJ...L7a"
+export scope="artifact-repository:repo:pull"
+curl -v -X POST -H "Content-Type: application/x-www-form-urlencoded" -d \
+"grant_type=refresh_token&service=$registry&scope=$scope&refresh_token=$acr_refresh_token" \
+https://$registry/oauth2/token
+```
+
+The body of the POST message is a querystring-like text that specifies the following values:
+  - `grant_type` which is expected to be `refresh_token`.
+  - `service`, which must indicate the name of your Azure container registry. You obtained this from the `Www-Authenticate` response header from the challenge.
+  - `scope`, which is expected to be a `artifact-repository:repo:pull` for read operations and `artifact-repository:repo:*` for write operations, and can be specified more than once for multiple scope requests. You obtained this from the `Www-Authenticate` response header from the challenge.
+  - `refresh_token`, which must be a valid ACR refresh token, as obtained by calling `POST /oauth2/exchange`.
+
+The outcome of this operation will be a response with status 200 OK and a body with the following JSON payload:
+```json
+{"access_token":"eyJ...xcg"}
+```
+
+This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry. Refer the full script to [fetch the helm index.yaml](#fetch-helm-indexyaml).
+
 ## Calling an Azure Container Registry API
 
 In this example we'll call the `GET /v2/_catalog` API on an Azure Container Registry. Assume you have the following:
@@ -236,9 +303,11 @@ This should result in a status 200 OK, and a body with a JSON payload listing th
 ```
 
 ### Full script to call Azure Container Registry API
+
 This is a summary script of the points discussed above. The first three variables have to be filled out.
-  - Variable `registry` can be something like `"contosoregistry.azurecr.io"`.
-  - The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running az login check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
+
+- Variable `registry` can be something like `"contosoregistry.azurecr.io"`.
+- The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running az login check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
 
 Note that stale AAD tokens will result in this script failing to obtain an ACR refresh token, and therefore it won't succeed in obtaining an ACR access token or in executing the operation against the registry.
 
@@ -255,8 +324,6 @@ export acr_refresh_token=$(curl -s -X POST -H "Content-Type: application/x-www-f
 echo "ACR Refresh Token"
 echo $acr_refresh_token
 
-export acr_username="00000000-0000-0000-0000-000000000000"
-
 export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
 echo "Challenge"
 echo $challenge
@@ -272,4 +339,87 @@ echo $acr_access_token
 export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
 echo "Catalog"
 echo $catalog
+```
+
+Here's an equivalent set of scripts that will allow you to execute an operation against an Azure Container Registry, but this time using only the admin credentials, and not AAD.
+
+If you'd like to use basic auth, you can do a direct call to the registry like this:
+
+```bash
+#!/bin/bash
+ 
+export registry=" --- you have to fill this out --- "
+export user=" --- you have to fill this out --- "
+export password=" --- you have to fill this out --- "
+ 
+export operation="/v2/_catalog"
+ 
+export credentials=$(echo -n "$user:$password" | base64 -w 0)
+ 
+export catalog=$(curl -s -H "Authorization: Basic $credentials" https://$registry$operation)
+echo "Catalog"
+echo $catalog
+```
+
+If you'd like to use bearer auth, you have to first convert your admin credentials to an ACR access token like this:
+
+```bash
+#!/bin/bash
+ 
+export registry=" --- you have to fill this out --- "
+export user=" --- you have to fill this out --- "
+export password=" --- you have to fill this out --- "
+ 
+export operation="/v2/_catalog"
+ 
+export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
+echo "Challenge"
+echo $challenge
+ 
+export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
+echo "Scope"
+echo $scope
+
+export credentials=$(echo -n "$user:$password" | base64 -w 0)
+ 
+export acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" -H "Authorization: Basic $credentials" "https://$registry/oauth2/token?service=$registry&scope=$scope" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+echo "ACR Access Token"
+echo $acr_access_token
+ 
+export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
+echo "Catalog"
+echo $catalog
+```
+### Fetch helm index.yaml 
+
+```bash
+#!/bin/bash
+
+export registry=" --- you have to fill this out --- "
+export user=" --- you have to fill this out --- "
+export password=" --- you have to fill this out --- "
+
+export operation="/helm/v1/repo/index.yaml"
+ 
+export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
+echo "Challenge"
+echo $challenge
+ 
+export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
+echo "Scope"
+echo $scope
+ 
+export credentials=$(echo -n "$user:$password" | base64 )
+ 
+export acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" \
+ -H "Authorization: Basic $credentials" "https://$registry/oauth2/token?service=$registry&scope=$scope" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+echo "ACR Access Token"
+echo $acr_access_token
+ 
+#Retrieve the location header and strip the trailing \r for curl
+export URL=$(curl -sD - -H "Authorization: Bearer $acr_access_token" https://$registry$operation  | grep -Fi Location | awk '{print $2}' | tr -d '\r')
+echo Location=$URL
+echo index.yaml
+echo ----------
+curl $URL
 ```
