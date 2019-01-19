@@ -262,3 +262,7 @@ The assignee is then able to login and access images in the registry.
     ```
 
 Note that with the use of only `AcrPull` or `AcrPush` roles, the assignee doesn't have the permission to manage the registry resource in Azure. For example, `az acr list` or `az acr show -n myRegistry` won't show the registry.
+
+## How to enable automatic image quarantine for a registry
+
+Image quarantine is currently a preview feature of ACR. You can enable the Quarantine mode of a registry so that only those images which have successfully passed security scan can be visible to normal users. You can find more details [here](https://github.com/Azure/acr/tree/master/docs/preview/quarantine)
