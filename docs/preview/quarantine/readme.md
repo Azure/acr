@@ -41,9 +41,9 @@ Before Quarantine is configured on the registry, both "quarantine" and "push" we
 
 ## Configure Quarantine on a registry
 
-Once the user decides to enable Quarantine on a registry, he can use our [management Policy API](https://docs.microsoft.com/en-us/rest/api/containerregistry/registries/updatepolicies).
+Once a user decides to enable Quarantine on a registry, he can use our [management Policy API](https://docs.microsoft.com/en-us/rest/api/containerregistry/registries/updatepolicies).
 
-Once Quarantine is enabled on a registry, for newly pushed image, it will enter quarantine state automatically and only a special user can see it. Meanwhile, the same "quarantine" webhook will be raised, but no "push" notification anymore. This gives the scanner a chance to scan the image first before making it available to other users. 
+Once Quarantine is enabled on a registry, for newly pushed image, it will enter quarantine state automatically and only a user with quarantine reader permissions can see the image. Meanwhile, the same "quarantine" webhook will be raised, but no "push" notification anymore. This gives the scanner a chance to scan the image first before making it available to other users. 
 
 Once scanner finishes scanning the image, it can mark the image as good, which will make this image available to all other users. Meanwhile a "push" notification is generated so that other users are notified.
 
@@ -113,23 +113,9 @@ To query attributes via REST, use the following workflow:
 1. get an access token
 1. query acr metadata for the attributes of a given digest
 
-### Encode the username and password 
-  - using a tool like https://www.base64encode.org/
-    - Encode using the following format: **[username]**:**[password]**
-    - Copy the encoded value
+### Get an ACR access token for the user
 
-### Get an  access token for the user
-
-- Using a REST client, like Postman, query for the OAuth token:
-
-    REST format: `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`&scope=repository:`**[image]**`:pull`
-
-- Set the header for Authorization, setting the 'Basic' word followed by a space and the encoded usr:pwd value
-
-    |Header | Value |
-    |-------|-------|
-    | Authorization | Basic [base64 encoded usr:pwd] |
-    | Host | [login-url] |
+Please refer to [this document](https://github.com/Azure/acr/tree/master/docs/Token-BasicAuth.md) on how to get an access token.
 
     example: 
     ```
@@ -158,22 +144,9 @@ To query attributes via REST, use the following workflow:
 
 Once a scan completes, a user with the **AcrQuarantineWriter** role can update the manifest attribute to removed the quarantined flag.
 
-### Encode the username and password 
-  - using a tool like https://www.base64encode.org/
-    - Encode using the following format: **[username]**:**[password]**
-    - Copy the encoded value
+### Get an ACR Push access token for the user
 
-### Get a Push access token for the user
-Using a REST client, like Postman, query for the OAuth token:
-
-**REST format:** `https://`**[login-url]**`/oauth2/token?service=`**[login-url]**`&scope=repository:`**[image]**`:pull,push`
-
-Set the header for Authorization, setting the 'Basic' word followed by a space and the encoded usr:pwd value
-
-    |Header | Value |
-    |-------|-------|
-    | Authorization | Basic [base64 encoded usr:pwd] |
-    | Host | [login-url] |
+Please refer to [this document](https://github.com/Azure/acr/tree/master/docs/Token-BasicAuth.md) on how to get an access token.
 
     example: 
     ```
@@ -192,7 +165,7 @@ Set the header for Authorization, setting the 'Basic' word followed by a space a
             "quarantineDetails": "[json string of detailed results]"}
         }
     ```
-	> Note: the quarantineDetails schema is defined at [here](https://github.com/sajayantony/image-scanner-specs/blob/master/summary/schema.json)
+	> Note: the quarantineDetails schema is defined at [here](https://github.com/Azure/acr/tree/master/docs/preview/quarantine/quarantine-details/schema.json)
 
     |Header | Value |
     |-------|-------|

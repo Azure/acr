@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Azure Container Registry Quarantine Details object",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "state": {
+      "description": "state of the scan result",
+      "type": "string"
+    },
+    "result": {
+      "description": "summary of the scan result",
+      "$ref": "#/definitions/summary"
+    },
+    "link": {
+      "description": "link to the scan report",
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "summary": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$id": "/properties/version",
+          "type": "string",
+          "title": "Scan Summary Version",
+          "default": "",
+          "examples": [
+            "0.0.1"
+          ]
+        },
+        "summary": {
+          "$id": "/properties/summary",
+          "type": "array",
+          "maxItems": 5,
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "properties": {
+              "severity": {
+                "$id": "/properties/summary/items/properties/severity",
+                "title": "The Severity Schema",
+                "default": "",
+                "examples": [
+                  "Critical"
+                ],
+                "enum": [
+                  "Critical",
+                  "High",
+                  "Medium",
+                  "Low",
+                  "None"
+                ]
+              },
+              "count": {
+                "$id": "/properties/summary/items/properties/count",
+                "type": "integer",
+                "title": "count",
+                "default": 0,
+                "examples": [
+                  10
+                ]
+              }
+            }
+          }
+        },
+        "description": {
+          "$id": "/properties/description",
+          "type": "string",
+          "title": "Description",
+          "default": "",
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "version",
+        "summary"
+      ]
+    }
+  }
+}

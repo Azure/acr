@@ -1,0 +1,21 @@
+{
+  "state": "ScanState",
+  "link": "https://testresult/summary",
+  "result": {
+    "version": "0.0.1",
+    "summary": [
+      {
+        "severity": "Critical",
+        "count": 10
+      },
+      {
+        "severity": "High",
+        "count": 10
+      },
+      {
+        "severity": "Low",
+        "count": 10
+      }
+    ]
+  }
+}
