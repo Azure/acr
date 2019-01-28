@@ -263,6 +263,17 @@ The assignee is then able to login and access images in the registry.
 
 Note that with the use of only `AcrPull` or `AcrPush` roles, the assignee doesn't have the permission to manage the registry resource in Azure. For example, `az acr list` or `az acr show -n myRegistry` won't show the registry.
 
+## New user permissions may not be effective immediately after updating
+
+When you grant new permissions (new roles) to a Service Principal, you may find out that the change is not effective immediately. There are two possible reasons:
+
+* AAD role assignment delay. Normally it's fast; but it could take minutes due to propagation delay.
+* Permission delay on ACR token server. This could take up to 10 minutes. To mitigate, user can do a logout and then login again with the same user after 1 minute:
+    ```
+    docker logout myregistry.azurecr.io
+    docker login myregistry.azurecr.io
+    ```
+
 ## How to enable automatic image quarantine for a registry
 
 Image quarantine is currently a preview feature of ACR. You can enable the Quarantine mode of a registry so that only those images which have successfully passed security scan can be visible to normal users. You can find more details [here](https://github.com/Azure/acr/tree/master/docs/preview/quarantine)
