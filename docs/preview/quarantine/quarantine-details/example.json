@@ -1,4 +1,5 @@
 {
+  "scanner": "SecurityCenter",
   "state": "ScanState",
   "link": "https://testresult/summary",
   "result": {

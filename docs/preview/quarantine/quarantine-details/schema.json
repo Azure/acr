@@ -4,6 +4,10 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "scanner": {
+      "description": "the name of the scanner",
+      "type": "string"
+    },
     "state": {
       "description": "state of the scan result",
       "type": "string"
