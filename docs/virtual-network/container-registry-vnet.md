@@ -34,7 +34,7 @@ The following limitations currently apply to the preview:
 
 * Make sure that your request for preview access is approved and your Azure subscription is whitelisted.
 
-* Only an Azure virtual machine or Azure AKS cluster can be used as a host to access a container registry in a virtual network. Other Azure services including Azure Container Instances aren't currently supported.
+* Only an Azure virtual machine or Azure AKS cluster can be used as a host to access a container registry in a virtual network. **Other Azure services including Azure Container Instances aren't currently supported.**
 
 * Currently, you can only use the Azure portal to manage default network access rules for a container registry.
 
