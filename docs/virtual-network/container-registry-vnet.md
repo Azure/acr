@@ -34,7 +34,6 @@ The following limitations currently apply to the preview:
 
 * Only an Azure virtual machine or Azure AKS cluster can be used as a host to access a container registry in a virtual network. Other Azure services including Azure Container Instances aren't currently supported.
 * You can only use the Azure portal to manage default network access rules for a container registry.
-* IP network rules for access from specific public IP address ranges are not currently supported.
 
 ## Virtual network configuration overview
 
@@ -42,18 +41,16 @@ The following general steps configure a container registry to allow access only 
 
 1. Configure the virtual network with a [service endpoint](https://docs.microsoft.com/azure/virtual-network/virtual-network-service-endpoints-overview) for the Azure Container Registry service. 
 
-   A service endpoint represents a range of IP addresses in Azure regions that make resources for an Azure service available only from a virtual network. This endpoint gives traffic an optimal route to the service over the Azure backbone network. The identities of the virtual network and the subnet are also transmitted with each request.
+   Multi-tenant services, like Azure Container Registry, use a singular set of IP addresses for all customers. A service endpoint assigns a endpoint to configure access to a registry. This endpoint gives traffic an optimal route to the service over the Azure backbone network. The identities of the virtual network and the subnet are also transmitted with each request.
 
 1. Configure network rules for a specific container registry that allow requests to be received from specific subnets in each virtual network. 
 
 
    Clients granted access via these network rules must continue to [authenticate to the container registry](https://docs.microsoft.com/azure/container-registry/container-registry-authentication) and be authorized to access the data.
 
-### Virtual network deployment limitations
+### ACR Virtual network (preview) deployment limitations
 
-* Only a **Premium** container registry can be deployed to a virtual network. For information about registry service tiers, see [Azure Container Registry SKUs](https://docs.microsoft.com/azure/container-registry/container-registry-skus).
-
-* The container registry and virtual network must be in the same Azure subscription and region.
+* During preview, on **Premium** container registries can be deployed to a virtual network. For information about registry service tiers, see [Azure Container Registry SKUs](https://docs.microsoft.com/azure/container-registry/container-registry-skus).
 
 * Each registry supports up to 100 virtual network rules.
 
