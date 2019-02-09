@@ -277,3 +277,20 @@ When you grant new permissions (new roles) to a Service Principal, you may find 
 ## How to enable automatic image quarantine for a registry
 
 Image quarantine is currently a preview feature of ACR. You can enable the Quarantine mode of a registry so that only those images which have successfully passed security scan can be visible to normal users. You can find more details [here](https://github.com/Azure/acr/tree/master/docs/preview/quarantine)
+
+## ACR Geo replication create using ARM deployment template with Complete mode hangs with repeated ```HomeReplicationCannotBeDeleted ``` errors
+
+Currently ACR doesn't support home replication deletion by the users. The workaround is to include the home replication create in the template but skip its creation by using the **condition:false** as shown below
+```
+{
+    "name": "[concat(parameters('acrName'), '/', parameters('location'))]",
+    "condition": false,
+    "type": "Microsoft.ContainerRegistry/registries/replications",
+    "apiVersion": "2017-10-01",
+    "location": "[parameters('location')]",
+    "properties": {},
+    "dependsOn": [
+        "[concat('Microsoft.ContainerRegistry/registries/', parameters('acrName'))]"
+     ]
+},
+  ```
