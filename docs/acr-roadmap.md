@@ -25,6 +25,19 @@ While there are a set of features that require deeper integration, such as ` az 
 ## Completed Items ##
 Since posting our backlog, we wanted to provide an update on completed work, and updated priorities.
 
+
+### Image Promotion ###
+We're starting to see a pattern where teams use multiple registries that align to their environments. The Dev team has a registry they develop, build, test within. The entire development team has full access to push and pull. The production environment is locked down to a subset of users and service accounts. It has only the images that have passed quality testing. It may be the registry that gets geo-replicated, where the dev registry is limited to the region(s) where developers work/deploy to. 
+
+Through [ACR Import](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-import) teams can now promote an image from one registry to another. 
+
+### Sovereign and Government Clouds ###
+ACR Preview is now available in [Azure China](https://www.azure.cn/home/features/container-registry/) and [Azure Government Clouds](https://azure.microsoft.com/en-us/global-infrastructure/government/). 
+
+### Trusted Registries ###
+As customers sign their images, [ACR now supports docker content trust.](https://aka.ms/acr/content-trust)
+
+
 ### General Availability of Managed Registries ###
 Basic, Standard and Premium SKUs went GA the week of October 16th, 2017. Managed registries include Individual Identity, Web Hook Notifications and Delete capabilities. 
 A new [SKUs](http://aka.ms/acr/skus) doc explains the various SKUs.
@@ -36,31 +49,35 @@ A new [SKUs](http://aka.ms/acr/skus) doc explains the various SKUs.
 
 
 ### Sku Migration ###
-In-flight. Please see [Migration from Classic to Basic/Standard/Premium takes a long time and/or fails](https://github.com/Azure/acr/issues/67)
+Classic Container Registries are being deprecated on March 1st 2019. 
 
-With the release managed registries, customers need a means to move their **Classic** registries to managed. This has turned out to be a blocker for many customers that already have classic registries, with a large collection of images, using a URI they want to maintain. 
-With the `az cli` or the Azure Portal, customers will be able to simply migrate their registry classic registry from their own storage account to a managed registry, maintaining their URI.
+Please see [Migration from Classic to Basic/Standard/Premium takes a long time and/or fails](https://github.com/Azure/acr/issues/67)
 
 ### Vulnerability Scanning Integration ###
-We've heard customers tell us that vulnerability scanning is table stakes for container registries. We agree. With partners like Aqua and TwistLock, customers can get the must-haves complete. ACR provides launch points to the Azure Marketplace, helping customers integrate vulnerability scanning. Over time, we will make this more integrated into ACR. This is one of those features we can unblock customers wih an experience, while focusing our engineering efforts on things only our engineering team can complete - like geo replication and perf & scale. 
+We've heard customers tell us that vulnerability scanning is table stakes for container registries. We agree. We will have an [Azure Security Center](https://azure.microsoft.com/services/security-center/) container solution in time. The exact timeline is not yet confirmed. Just as Windows comes with Defender, which can be changed for other scanning solutions, ACR will also support a default and partner plug-ins. It just so happens we're leading with partners like Aqua and TwistLock. With great partners, customers can get the must-haves complete. 
+
+ACR provides launch points to the Azure Marketplace, helping customers integrate vulnerability scanning. Over time, we will make this more integrated into ACR. This is one of those features we can unblock customers wih an experience, while focusing our engineering efforts on things only our engineering team can complete - like geo replication and perf & scale. 
 
 ### Auto-Build with OS & Framework Patching ###
 Containers include a portion of the base OS & Development Framework. As base image updates are available, customers need a means to be notified, having their images rebuilt. This involves a number of primitives, such as web hooks and base image caching. It also requires a scalable, multi-tenant infrastructure to build images as they get updated. Using multi-stage dockerfiles, a connection to your git repo, customers will be able to hook automated builds, which can also trigger tests to enable automated workflows. 
-Check out progress on ACR builder at https://github.com/azure/acr-builder 
-***UPDATE***
-We've released a [preview of ACR Build](https://aka.ms/acr/build), which supports the beginning of OS & Framework patching. 
-There are many additions that will come, including perf improvements and the ability to branch off production workloads while developers continue to iterate.  
+
+[ACR Tasks](https://aka.ms/acr/tasks) are now released.
+
+
+There are many additions that will come, including perf improvements and the ability to branch off production workloads while developers continue to iterate. 
 
 
 ## Backlog ##
 
-### Trusted Registries ###
-As customers sign their images, ACR must support docker content trust. `$env:DOCKER_CONTENT_TRUST="1"` Today, this isn't yet supported, but we know we need to enable this core scenario.
-
 ### Limit Endpoint Access /VNet Support ###
 Customers have asked for limitations on their registry, based on the IP, not just authentication. As a shared registry API, this does present some challenges that we'll need to address. 
 
-*This has moved up on our priority list* as customers are moving into production, the operations and security folks are requiring limited access. We're working with the Azure Networking team to implement VNet support in the spring of 2018.
+We currently have VNet and Firewall rules available in private preview. Please contact us at acrsup@microsoft.com for being added to the VNet Private Preview. 
+
+### Auto Purge ###
+As registries are filled with automated image builds, they wind up filling with layers that never get used. Auto-purge will track image usage and move unused layers to a recycle bin, allowing subsequent purging. The feature will be configured and managed, with reasonable defaults, assuring you'll never lose anything you really wanted to keep. 
+
+For input into the Auto Purge Spec, please comment here: [Open discussion on Auto-Purge Policies design #1](https://github.com/AzureCR/specs/issues/1)
 
 ### Performance & Scalability ###
 As customers move from manual deployments to automation, we've seen a dramatic increase in usage. Some customers care using utilities like [Watch Tower](https://github.com/v2tec/watchtower) to automate ` docker pull `, keeping your deployments up to date, while others are simply doing massive scaling. 
@@ -70,25 +87,15 @@ We've also been working with a few high profile customers to scale thousands of 
 ### Portal Face Lift ###
 As we add more and more features, the current user flow is starting to suffer. We'll be reworking the flow to support a host of new enhancements we're working on over the next few months.
 
-### Image Promotion ###
-We're starting to see a pattern where teams use multiple registries that align to their environments. Dev has a registry they develop, build, test within. The entire development team has full access to push and pull. The production environment is locked down to a subset of users and service accounts. It has only the images that have passed quality testing. It may be the registry that gets geo-replicated, where the dev registry is limited to the region(s) where developers work/deploy to. 
-Through an `az acr xxx --source-registry -- destination-registry`, and/or through the Azure Portal, teams can promote/move an image from one registry to another. 
-
 ### User Telemetry ###
 As your registry usage increases through automation, providing visibility into the usage and image size utilization.
 
 ### Multi-Arch Support ###
 Building multi-arch images is typically associated with a few set of images that framework vendors must maintain, such as dotnetcore which supports both Linux and Windows. However, as IoT expands, the average developer will need to build multi-arch images to deal with the vast number of architectures supported by devices. ACR will support the automated building and maintaining of multi-arch manifests. 
 
-### Sovereign and Government Clouds ###
-As container hosts, such as Azure Container Services move into these regions, ACR will be available. The exhaustive and lengthy certification process has begun.
-
 ### Custom Domain Support ###
 Rather than using https://contoso.azurecr.io, you want https://registry.contso.com. 
 In the spirit of what can be done without direct changes to ACR, we've provided a [doc on configuring an NGINX front end](https://github.com/Azure/acr/tree/master/docs/custom-domain). Over time, we will incorporate more native support for custom domains, and likely join in the limit endpoint access request as well.  
-
-### Auto Purge ###
-As registries are filled with automated image builds, they wind up filling with layers that never get used. Auto-purge will track image usage and move unused layers to a recycle bin, allowing subsequent purging. The feature will be configured and managed, with reasonable defaults, assuring you'll never lose anything you really wanted to keep. 
 
 # Helping with Prioritization #
 We've recently enabled [UserVoice](https://feedback.azure.com/forums/903958-azure-container-registry) for ACR. Please provide your feedback and ranking to help us understand your needs and priority.
