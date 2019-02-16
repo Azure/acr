@@ -27,7 +27,7 @@ Since posting our backlog, we wanted to provide an update on completed work, and
 
 ### Helm Chart Repos
 
-ACR now supports pulling and pushing [Helm Charts](Helm.io) directly to your Azure Container Registry. By using ACR, charts are secured and geo-replicated alongside the images they reference. 
+ACR now supports pulling and pushing [Helm Charts](Helm.sh) directly to your Azure Container Registry. By using ACR, charts are secured and geo-replicated alongside the images they reference. 
 
 To get started: [ACR Helm Chart Repo documentation](https://aka.ms/acr/helm-repos)
 
