@@ -25,6 +25,22 @@ While there are a set of features that require deeper integration, such as ` az 
 ## Completed Items ##
 Since posting our backlog, we wanted to provide an update on completed work, and updated priorities.
 
+### Helm Chart Repos
+
+ACR now supports pulling and pushing [Helm Charts](Helm.io) directly to your Azure Container Registry. By using ACR, charts are secured and geo-replicated alongside the images they reference. 
+
+To get started: [ACR Helm Chart Repo documentation](https://aka.ms/acr/helm-repos)
+
+### The Donut is Dead
+
+ACR Registries used to have upper limits on the amount of images that could be pushed to each registry. While we [removed this constraint](https://stevelasker.blog/2018/02/02/relaxing-acr-storage-limits-with-tools-to-self-manage/) a while back, we were still showing a donut for the current amount of storage. 
+
+![](./media/storage-donut.png)
+
+
+This was just confusing, and we joked about making it an overflowing cupcake. We settled on simply showing just the facts:
+
+![](./media/storage-non-cupcake.png)
 
 ### Image Promotion ###
 We're starting to see a pattern where teams use multiple registries that align to their environments. The Dev team has a registry they develop, build, test within. The entire development team has full access to push and pull. The production environment is locked down to a subset of users and service accounts. It has only the images that have passed quality testing. It may be the registry that gets geo-replicated, where the dev registry is limited to the region(s) where developers work/deploy to. 
