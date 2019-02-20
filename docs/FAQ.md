@@ -182,6 +182,15 @@ Yes, you can use trusted images in Azure Container Registry as the [Docker Notar
 You can use Docker Client and Notary Client to interact trusted images with ACR.
 Detailed documentation can be found at [Content trust in Docker](https://docs.docker.com/engine/security/trust/content_trust/).
 
+### Which is the file to check the thumbprint?
+
+Under `~/.docker/trust/tuf/myregistry.azurecr.io/myrepository/metadata`,
+
+* Public keys / certificates of all roles (except delegation roles) are stored in the `root.json`.
+* Public keys / certificates of the delegation role are stored in the json file of its parent role (for example `targets.json` for the `targets/releases` role).
+
+It is suggested to verify those public keys / certificates after the overall TUF verification done by the Docker / Notary client.
+
 ## docker pull fails with error: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
 
  - If this error is a transient issue, then retry will succeed. 
