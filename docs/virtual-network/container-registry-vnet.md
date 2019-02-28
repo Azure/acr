@@ -18,7 +18,9 @@ For example, use a virtual network to permit Azure resources such as an [Azure K
 
 > [!IMPORTANT]
 > This feature is currently in preview, and some [limitations apply](#preview-limitations). Previews are made available to you on the condition that you agree to the [supplemental terms of use][terms-of-use]. Some aspects of this feature may change prior to general availability (GA).
->
+
+>To gain access, please email a request to [ACR Support](mailto:acrsup@microsoft.com?subject=VNetAccess)
+
 
 This article shows you how to access a container registry deployed in a virtual network from a virtual machine in the same network.
 
