@@ -35,9 +35,9 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 ## Providing feedback
 | Title | Link |
 |-|-|
-| [User Voice Requests](https://aka.ms/acr/uservoice) | https://aka.ms/acr/uservoice |
-| [Feedbac / StackOverflow / Community Support](https://aka.ms/acr/stack-overflow) | https://aka.ms/acr/stack-overflow |
-| [Issues](https://aka.ms/acr/issues) | https://aka.ms/acr/issues |
+| [**Stack overflow** for community support](https://aka.ms/acr/stack-overflow) | https://aka.ms/acr/stack-overflow |
+| [**User Voice** for feature requests](https://aka.ms/acr/uservoice) | https://aka.ms/acr/uservoice |
+| [**Github** for logging issues](https://aka.ms/acr/issues) | https://aka.ms/acr/issues |
 
 ## API and SDK reference
 
