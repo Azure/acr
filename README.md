@@ -38,6 +38,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [**Stack overflow** for community support](https://aka.ms/acr/stack-overflow) | https://aka.ms/acr/stack-overflow |
 | [**User Voice** for feature requests](https://aka.ms/acr/uservoice) | https://aka.ms/acr/uservoice |
 | [**Github** for logging issues](https://aka.ms/acr/issues) | https://aka.ms/acr/issues |
+| [**Slack** for collaboration](https://aka.ms/acr/slack) | https://aka.ms/acr/slack |
 
 ## API and SDK reference
 
