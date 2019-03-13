@@ -303,3 +303,12 @@ Currently ACR doesn't support home replication deletion by the users. The workar
      ]
 },
   ```
+
+## ACR Tasks: How to batch cancel runs?
+
+The following commands cancel all running runs in the specified registry.
+
+```
+az acr task list-runs -r $myregistry --run-status Running --query '[].runId' -o tsv \
+| xargs -I% az acr task cancel-run -r $myregistry --run-id %
+```
