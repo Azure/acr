@@ -15,7 +15,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 ## Links
 | Title | Link |
 | - | - |
-| [Service Overview](https://aka.ms/acr) | https://aka.ms/|
+| [Service Overview](https://aka.ms/acr) | https://aka.ms/acr |
 | [Links](https://aka.ms/acr/links) | https://aka.ms/acr/links | 
 | [Docs](https://aka.ms/acr/docs) | https://aka.ms/acr/docs |
 | [CLI Docs](https://aka.ms/acr/docs/cli) | https://aka.ms/acr/docs/cli |
