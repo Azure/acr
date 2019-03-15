@@ -15,7 +15,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 ## Links
 | Title | Link |
 | - | - |
-| [Service Overview](https://aka.ms/acr) | https://aka.ms/|
+| [Service Overview](https://aka.ms/acr) | https://aka.ms/acr |
 | [Links](https://aka.ms/acr/links) | https://aka.ms/acr/links | 
 | [Docs](https://aka.ms/acr/docs) | https://aka.ms/acr/docs |
 | [CLI Docs](https://aka.ms/acr/docs/cli) | https://aka.ms/acr/docs/cli |
@@ -27,6 +27,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
+| [Tag Locking](http://aka.ms/acr/tag-locking) | http://aka.ms/acr/tag-locking |
 | [FAQ](https://aka.ms/acr/faq) | https://aka.ms/acr/faq |
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
