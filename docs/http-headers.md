@@ -43,6 +43,7 @@ The values we ask ACR partners to use when populating the `X-Meta-Source-Client`
 | Germany                   | `germany/`                              |
 | US DOD                    | `azureusdod/`                           |
 | US Gov                    | `azureusgov/`                           |
+| On Premise                | `on-prem/                               |
 
 
 | Service name              | Header                                  |
