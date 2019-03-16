@@ -1,5 +1,26 @@
 # Azure Container Registry integration with Azure Active Directory
 
+<!-- TOC depthFrom:2 orderedList:false -->
+
+- [Overview](#overview)
+- [Authenticating to a registry with Azure CLI](#authenticating-to-a-registry-with-azure-cli)
+- [Listing a repository with Azure CLI](#listing-a-repository-with-azure-cli)
+- [Calling `POST /oauth2/exchange` to get an ACR refresh token](#calling-post-oauth2exchange-to-get-an-acr-refresh-token)
+- [Authenticating docker with an ACR refresh token](#authenticating-docker-with-an-acr-refresh-token)
+- [Calling `POST /oauth2/token` to get an ACR access token](#calling-post-oauth2token-to-get-an-acr-access-token)
+- [Calling `POST /oauth2/token` to get an ACR access token for Helm repository](#calling-post-oauth2token-to-get-an-acr-access-token-for-helm-repository)
+- [Calling an Azure Container Registry API](#calling-an-azure-container-registry-api)
+- [Samples API Call scripts](#samples-api-call-scripts)
+    - [Catalog Listing with AAD refresh token](#catalog-listing-with-aad-refresh-token)
+    - [Catalog listing using SP/Admin with Basic Auth](#catalog-listing-using-spadmin-with-basic-auth)
+    - [Catalog listing using Admin Keys with Bearer Auth](#catalog-listing-using-admin-keys-with-bearer-auth)
+    - [Docker login with ACR Access Token - Single repository scope](#docker-login-with-acr-access-token---single-repository-scope)
+    - [Fetch helm index.yaml with Admin Keys or SP with Basic Auth](#fetch-helm-indexyaml-with-admin-keys-or-sp-with-basic-auth)
+
+<!-- /TOC -->
+
+## Overview
+
 The Azure Container Registry allows users to manage a private Docker registry on the cloud. Our service enables customers to store and manage container images across all types of Azure deployments, keep container images near deployments to reduce latency and costs, maintain Windows and Linux container images in a single Docker registry, use familiar, open-source Docker command line interface (CLI) tools, and simplify registry access management with Azure Active Directory.
 
 The integration of Azure Container Registry with Azure Active Directory is crucial in order to enable transparent authentication and authorization of users and headless services using AAD credentials. In this scenario, a user will only have to use their AAD credentials to log-in to their private registry, and the Azure Container Service will take care of the authorization validation of each operation using the provided credentials.
@@ -302,14 +323,16 @@ This should result in a status 200 OK, and a body with a JSON payload listing th
 {"repositories":["alpine","hello-world","contoso-marketing"]}
 ```
 
-### Full script to call Azure Container Registry API
+## Samples API Call scripts
 
 This is a summary script of the points discussed above. The first three variables have to be filled out.
 
 - Variable `registry` can be something like `"contosoregistry.azurecr.io"`.
 - The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running az login check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
 
-Note that stale AAD tokens will result in this script failing to obtain an ACR refresh token, and therefore it won't succeed in obtaining an ACR access token or in executing the operation against the registry.
+Note that a stale AAD tokens will result in this script failing to obtain an ACR refresh token, and therefore it won't succeed in obtaining an ACR access token or in executing the operation against the registry.
+
+### Catalog Listing with AAD refresh token
 
 ```bash
 #!/bin/bash
@@ -341,6 +364,8 @@ echo "Catalog"
 echo $catalog
 ```
 
+### Catalog listing using SP/Admin with Basic Auth
+
 Here's an equivalent set of scripts that will allow you to execute an operation against an Azure Container Registry, but this time using only the admin credentials, and not AAD.
 
 If you'd like to use basic auth, you can do a direct call to the registry like this:
@@ -360,6 +385,8 @@ export catalog=$(curl -s -H "Authorization: Basic $credentials" https://$registr
 echo "Catalog"
 echo $catalog
 ```
+
+### Catalog listing using Admin Keys with Bearer Auth 
 
 If you'd like to use bearer auth, you have to first convert your admin credentials to an ACR access token like this:
 
@@ -390,7 +417,50 @@ export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$r
 echo "Catalog"
 echo $catalog
 ```
-### Fetch helm index.yaml 
+
+### Docker login with ACR Access Token - Single repository scope
+
+The following script uses an AAD token to request an 'ACR access token` which can be used as a docker login credential.
+
+```bash
+#/bin/sh
+
+set -e
+
+export REGISTRY=" --- you have to fill this out --- "
+export REPOSITORY=" --- you have to fill this out --- "
+export AAD_ACCESS_TOKEN=$(az account get-access-token --query accessToken -o tsv)
+
+export ACR_REFRESH_TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+	-d "grant_type=access_token&service=$REGISTRY&access_token=$AAD_ACCESS_TOKEN" \
+	https://$REGISTRY/oauth2/exchange \
+	| jq '.refresh_token' \
+	| sed -e 's/^"//' -e 's/"$//')
+echo "ACR Refresh Token obtained."
+
+
+# Create the repo level scope
+SCOPE="repository:$REPOSITORY:pull"
+
+# to pull multiple repositories passing in multiple scope arguments. 
+#&scope="repository:repo:pull,push"
+
+export ACR_ACCESS_TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+	-d "grant_type=refresh_token&service=$REGISTRY&scope=$SCOPE&refresh_token=$ACR_REFRESH_TOKEN" \
+	https://$REGISTRY/oauth2/token \
+	| jq '.access_token' \
+	| sed -e 's/^"//' -e 's/"$//')
+echo "ACR Access Token obtained."
+
+# Docker Login using the ACR_ACCESS_TOKEN
+echo docker login into $REGISTRY
+docker login -u 00000000-0000-0000-0000-000000000000 -p $ACR_ACCESS_TOKEN $REGISTRY
+docker pull $REGISTRY/$REPOSITORY
+
+```
+
+
+### Fetch helm index.yaml with Admin Keys or SP with Basic Auth
 
 ```bash
 #!/bin/bash
