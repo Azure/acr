@@ -35,6 +35,7 @@ http {
 		ssl_certificate_key ${PRV_LOCATION}; # The private key file
 		
 		location / {
+			client_max_body_size    1000G;
 			proxy_set_header        Host ${BACKEND_HOST};
 			proxy_set_header        X-Real-IP $remote_addr;
 			proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
