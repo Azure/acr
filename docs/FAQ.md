@@ -27,7 +27,8 @@
     - [docker push succeeds but docker pull fails with error: unauthorized: authentication required](#docker-push-succeeds-but-docker-pull-fails-with-error-unauthorized-authentication-required)
     - [New user permissions may not be effective immediately after updating](#new-user-permissions-may-not-be-effective-immediately-after-updating)
 - [Tasks](#tasks)
-    - [How to batch cancel runs ?](#how-to-batch-cancel-runs-)
+    - [How to batch cancel runs?](#how-to-batch-cancel-runs)
+    - [How to include .git folder in az acr build command?](#how-to-include-git-folder-in-az-acr-build-command)
 
 <!-- /TOC -->
 
@@ -328,11 +329,19 @@ Currently ACR doesn't support home replication deletion by the users. The workar
 ```
 ## Tasks
 
-### How to batch cancel runs ?
+### How to batch cancel runs?
 
 The following commands cancel all running runs in the specified registry.
 
 ```bash
 az acr task list-runs -r $myregistry --run-status Running --query '[].runId' -o tsv \
 | xargs -I% az acr task cancel-run -r $myregistry --run-id %
+```
+
+### How to include .git folder in az acr build command?
+
+If you pass a local source folder to `az acr build` command, `.git` folder is excluded from the uploaded package by default. You can create a `.dockerignore` file with the following setting. It will tell the command to include back all files under `.git` in the uploaded package. It also applies to `az acr run` command.
+
+```
+!.git/**
 ```
