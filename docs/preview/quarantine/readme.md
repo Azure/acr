@@ -156,7 +156,7 @@ Please refer to [this document](https://github.com/Azure/acr/tree/master/docs/To
 ### Remove the Quarantine Flag
 
 - Update manifest attributes using the access token.    
-    REST format: `PATCH https://`**[login-url]**`acr/v1`**[image]**`/_manifests/`**[digest]**
+    REST format: `PATCH https://`**[login-url]**/`acr/v1/`**[image]**`/_manifests/`**[digest]**
 
     Payload:
     ```json
