@@ -25,6 +25,7 @@
 - [Diagnostics](#diagnostics)
     - [docker pull fails with error: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)](#docker-pull-fails-with-error-nethttp-request-canceled-while-waiting-for-connection-clienttimeout-exceeded-while-awaiting-headers)
     - [docker push succeeds but docker pull fails with error: unauthorized: authentication required](#docker-push-succeeds-but-docker-pull-fails-with-error-unauthorized-authentication-required)
+    - [How to enable and get the debug logs of docker daemon?](#How to enable and get the debug logs of docker daemon?)	
     - [New user permissions may not be effective immediately after updating](#new-user-permissions-may-not-be-effective-immediately-after-updating)
 - [Tasks](#tasks)
     - [How to batch cancel runs?](#how-to-batch-cancel-runs)
@@ -300,6 +301,35 @@ To resolve the error,
 
 Details of `--signature-verification` can be found by running `man dockerd`.
 
+### How to enable and get the debug logs of docker daemon?	
+
+
+ * You need to start dockerd with debug option.	### Does Azure Container Registry offer TLS v1.2 only configuration and how to enable TLS v1.2?
+
+     First, create the docker daemon configuration file (`/etc/docker/daemon.json`) if it doesn't exist, and add the `debug` option:	
+    ```	
+    {	
+        "debug": true	
+    }	
+    ```	
+    Then, restart the daemon. For Ubuntu 14.04 user, you can do	
+    ```	
+    sudo service docker restart	
+    ```	
+    Details can be found [here](https://docs.docker.com/engine/admin/#enable-debugging).	
+
+ * The logs may be generated at different locations, depending on your system. For example, for Ubuntu 14.04, it's `/var/log/upstart/docker.log`.	
+You can refer to [the link](https://docs.docker.com/engine/admin/#read-the-logs) for details:	
+
+ * For Docker for Windows, the logs are generated under %LOCALAPPDATA%/docker/. However it may not contain all the debug information yet.	
+In order to access full daemon log, you may need some extra steps:	
+    ```	
+    docker run --privileged -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /usr/local/bin/docker:/usr/local/bin/docker alpine sh	
+    docker run --net=host --ipc=host --uts=host --pid=host -it --security-opt=seccomp=unconfined --privileged --rm -v /:/host alpine /bin/sh	
+    chroot /host	
+    ```	
+
+     Now you have access to all the files of the VM running dockerd. The log is at `/var/log/docker.log`.
 ### New user permissions may not be effective immediately after updating
 
 When you grant new permissions (new roles) to a Service Principal, you may find out that the change is not effective immediately. There are two possible reasons:
