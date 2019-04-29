@@ -304,19 +304,22 @@ Details of `--signature-verification` can be found by running `man dockerd`.
 ### How to enable and get the debug logs of docker daemon?	
 
 
- You need to start dockerd with debug option.	
+  * You need to start dockerd with debug option.	
 
 First, create the docker daemon configuration file (`/etc/docker/daemon.json`) if it doesn't exist, and add the `debug` option:	
+
     ```	
     {	
         "debug": true	
     }	
     ```	
-    Then, restart the daemon. For Ubuntu 14.04 user, you can do	
+    
+Then, restart the daemon. For Ubuntu 14.04 user, you can do	  
+
     ```	
     sudo service docker restart	
-    ```	
-    Details can be found [here](https://docs.docker.com/engine/admin/#enable-debugging).	
+    ```	    
+Details can be found [here](https://docs.docker.com/engine/admin/#enable-debugging).	
 
  * The logs may be generated at different locations, depending on your system. For example, for Ubuntu 14.04, it's `/var/log/upstart/docker.log`.	
 You can refer to [the link](https://docs.docker.com/engine/admin/#read-the-logs) for details:	
