@@ -25,7 +25,7 @@
 - [Diagnostics](#diagnostics)
     - [docker pull fails with error: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)](#docker-pull-fails-with-error-nethttp-request-canceled-while-waiting-for-connection-clienttimeout-exceeded-while-awaiting-headers)
     - [docker push succeeds but docker pull fails with error: unauthorized: authentication required](#docker-push-succeeds-but-docker-pull-fails-with-error-unauthorized-authentication-required)
-    - [How to enable and get the debug logs of docker daemon?](#How to enable and get the debug logs of docker daemon?)	
+    - [How to enable and get the debug logs of docker daemon?](#how-to-enable-and-get-the-debug-logs-of-docker-daemon)	
     - [New user permissions may not be effective immediately after updating](#new-user-permissions-may-not-be-effective-immediately-after-updating)
 - [Tasks](#tasks)
     - [How to batch cancel runs?](#how-to-batch-cancel-runs)
