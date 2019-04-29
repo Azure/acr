@@ -306,7 +306,7 @@ Details of `--signature-verification` can be found by running `man dockerd`.
 
  You need to start dockerd with debug option.	
 
-     First, create the docker daemon configuration file (`/etc/docker/daemon.json`) if it doesn't exist, and add the `debug` option:	
+First, create the docker daemon configuration file (`/etc/docker/daemon.json`) if it doesn't exist, and add the `debug` option:	
     ```	
     {	
         "debug": true	
