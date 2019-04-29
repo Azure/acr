@@ -304,7 +304,7 @@ Details of `--signature-verification` can be found by running `man dockerd`.
 ### How to enable and get the debug logs of docker daemon?	
 
 
- You need to start dockerd with debug option.	### Does Azure Container Registry offer TLS v1.2 only configuration and how to enable TLS v1.2?
+ You need to start dockerd with debug option.	
 
      First, create the docker daemon configuration file (`/etc/docker/daemon.json`) if it doesn't exist, and add the `debug` option:	
     ```	
