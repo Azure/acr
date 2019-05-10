@@ -27,6 +27,7 @@
     - [docker push succeeds but docker pull fails with error: unauthorized: authentication required](#docker-push-succeeds-but-docker-pull-fails-with-error-unauthorized-authentication-required)
     - [How to enable and get the debug logs of docker daemon?](#how-to-enable-and-get-the-debug-logs-of-docker-daemon)	
     - [New user permissions may not be effective immediately after updating](#new-user-permissions-may-not-be-effective-immediately-after-updating)
+    - [Authentication information is not given in the correct format on direct REST API calls](#authentication-information-is-not-given-in-the-correct-format-on-direct-rest-api-calls)
 - [Tasks](#tasks)
     - [How to batch cancel runs?](#how-to-batch-cancel-runs)
     - [How to include .git folder in az acr build command?](#how-to-include-git-folder-in-az-acr-build-command)
