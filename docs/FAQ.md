@@ -313,9 +313,9 @@ First, create the docker daemon configuration file (`/etc/docker/daemon.json`) i
    }
    ```
 Then, restart the daemon. For Ubuntu 14.04 user, you can do	  
-   ```	
-   sudo service docker restart	
-   ```	    
+   ```
+   sudo service docker restart
+   ```
 Details can be found [here](https://docs.docker.com/engine/admin/#enable-debugging).	
 
  * The logs may be generated at different locations, depending on your system. For example, for Ubuntu 14.04, it's `/var/log/upstart/docker.log`.	
@@ -323,13 +323,13 @@ You can refer to [the link](https://docs.docker.com/engine/admin/#read-the-logs)
 
  * For Docker for Windows, the logs are generated under %LOCALAPPDATA%/docker/. However it may not contain all the debug information yet.	
 In order to access full daemon log, you may need some extra steps:	
-    ```	
-    docker run --privileged -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /usr/local/bin/docker:/usr/local/bin/docker alpine sh	
-    docker run --net=host --ipc=host --uts=host --pid=host -it --security-opt=seccomp=unconfined --privileged --rm -v /:/host alpine /bin/sh	
-    chroot /host	
-    ```	
+    ```
+    docker run --privileged -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /usr/local/bin/docker:/usr/local/bin/docker alpine sh
+    docker run --net=host --ipc=host --uts=host --pid=host -it --security-opt=seccomp=unconfined --privileged --rm -v /:/host alpine /bin/sh
+    chroot /host
+    ```
+    Now you have access to all the files of the VM running dockerd. The log is at `/var/log/docker.log`.
 
-     Now you have access to all the files of the VM running dockerd. The log is at `/var/log/docker.log`.
 ### New user permissions may not be effective immediately after updating
 
 When you grant new permissions (new roles) to a Service Principal, you may find out that the change is not effective immediately. There are two possible reasons:
@@ -357,6 +357,31 @@ Currently ACR doesn't support home replication deletion by the users. The workar
      ]
 },
 ```
+
+### Authentication information is not given in the correct format on direct REST API calls
+
+You may encounter an `InvalidAuthenticationInfo` error, especially using the `curl` tool with the option `-L`, `--location` (follow redirects).
+
+For example, fetching the blob using `curl` with `-L` option and basic authentication.
+```bash
+curl -L -H "Authorization: basic $credential" https://$registry.azurecr.io/v2/$repository/blobs/$digest
+```
+may result in
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<Error><Code>InvalidAuthenticationInfo</Code><Message>Authentication information is not given in the correct format. Check the value of Authorization header.
+RequestId:00000000-0000-0000-0000-000000000000
+Time:2019-01-01T00:00:00.0000000Z</Message></Error>
+```
+
+The root cause that some `curl` implementations follow redirects with headers from original request, which shoud not.
+To resolve the problem, you need to follow redirects manually without the headers. It can be done using the `-D -` option of `curl`.
+Here is the full script:
+```bash
+redirect_url=$(curl -s -D - -H "Authorization: basic $credential" https://$registry.azurecr.io/v2/$repository/blobs/$digest | grep "^Location: " | cut -d " " -f2 | tr -d '\r')
+curl $redirect_url
+```
+
 ## Tasks
 
 ### How to batch cancel runs?
