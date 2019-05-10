@@ -374,7 +374,7 @@ RequestId:00000000-0000-0000-0000-000000000000
 Time:2019-01-01T00:00:00.0000000Z</Message></Error>
 ```
 
-The root cause is that some `curl` implementations follow redirects with headers from the original request, which should not.
+The root cause is that some `curl` implementations follow redirects with headers from the original request.
 To resolve the problem, you need to follow redirects manually without the headers.
 It can be done by printing the response headers with the `-D -` option of `curl` and then extracting the `Location` header.
 ```bash
