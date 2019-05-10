@@ -362,7 +362,6 @@ Currently ACR doesn't support home replication deletion by the users. The workar
 ### Authentication information is not given in the correct format on direct REST API calls
 
 You may encounter an `InvalidAuthenticationInfo` error, especially using the `curl` tool with the option `-L`, `--location` (follow redirects).
-
 For example, fetching the blob using `curl` with `-L` option and basic authentication.
 ```bash
 curl -L -H "Authorization: basic $credential" https://$registry.azurecr.io/v2/$repository/blobs/$digest
@@ -375,8 +374,9 @@ RequestId:00000000-0000-0000-0000-000000000000
 Time:2019-01-01T00:00:00.0000000Z</Message></Error>
 ```
 
-The root cause that some `curl` implementations follow redirects with headers from the original request, which should not.
-To resolve the problem, you need to follow redirects manually without the headers. It can be done by printing the response headers with the `-D -` option of `curl`.
+The root cause is that some `curl` implementations follow redirects with headers from the original request, which should not.
+To resolve the problem, you need to follow redirects manually without the headers.
+It can be done by printing the response headers with the `-D -` option of `curl` and then extracting the `Location` header.
 ```bash
 redirect_url=$(curl -s -D - -H "Authorization: basic $credential" https://$registry.azurecr.io/v2/$repository/blobs/$digest | grep "^Location: " | cut -d " " -f2 | tr -d '\r')
 curl $redirect_url
