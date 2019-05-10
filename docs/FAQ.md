@@ -375,7 +375,7 @@ RequestId:00000000-0000-0000-0000-000000000000
 Time:2019-01-01T00:00:00.0000000Z</Message></Error>
 ```
 
-The root cause that some `curl` implementations follow redirects with headers from original request, which shoud not.
+The root cause that some `curl` implementations follow redirects with headers from the original request, which should not.
 To resolve the problem, you need to follow redirects manually without the headers. It can be done by printing the response headers with the `-D -` option of `curl`.
 ```bash
 redirect_url=$(curl -s -D - -H "Authorization: basic $credential" https://$registry.azurecr.io/v2/$repository/blobs/$digest | grep "^Location: " | cut -d " " -f2 | tr -d '\r')
