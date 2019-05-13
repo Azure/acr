@@ -25,12 +25,15 @@
 - [Diagnostics](#diagnostics)
     - [docker pull fails with error: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)](#docker-pull-fails-with-error-nethttp-request-canceled-while-waiting-for-connection-clienttimeout-exceeded-while-awaiting-headers)
     - [docker push succeeds but docker pull fails with error: unauthorized: authentication required](#docker-push-succeeds-but-docker-pull-fails-with-error-unauthorized-authentication-required)
-    - [How to enable and get the debug logs of docker daemon?](#how-to-enable-and-get-the-debug-logs-of-docker-daemon)	
+    - [How to enable and get the debug logs of docker daemon?](#how-to-enable-and-get-the-debug-logs-of-docker-daemon)
     - [New user permissions may not be effective immediately after updating](#new-user-permissions-may-not-be-effective-immediately-after-updating)
     - [Authentication information is not given in the correct format on direct REST API calls](#authentication-information-is-not-given-in-the-correct-format-on-direct-rest-api-calls)
 - [Tasks](#tasks)
     - [How to batch cancel runs?](#how-to-batch-cancel-runs)
     - [How to include .git folder in az acr build command?](#how-to-include-git-folder-in-az-acr-build-command)
+- [CI/CD Integration]
+    - [CircleCI](https://github.com/Azure/acr/blob/master/docs/integration/CircleCI.md)
+    - [GitHub Actions](https://github.com/Azure/acr/blob/master/docs/integration/github-actions/github-actions.md)
 
 <!-- /TOC -->
 
@@ -105,10 +108,10 @@ az acr show -n myRegistry --query storageAccount
 
 The error is usually seen when the user has permissions on a Registry but doesn't have reader level permission on the subscription. To resolve this issue
 
-Assign the user the reader permission on the subscription. 
+Assign the user the reader permission on the subscription.
 
-```bash  
-az role assignment create --role "Reader" --assignee user@contoso.com --scope /subscriptions/<subscription_id> 
+```bash
+az role assignment create --role "Reader" --assignee user@contoso.com --scope /subscriptions/<subscription_id>
 ```
 
 ## Registry Operations
@@ -187,7 +190,7 @@ az acr login -n MyRegistry
 
 ### Does Azure Container Registry offer TLS v1.2 only configuration and how to enable TLS v1.2?
 
-Yes. By using any latest docker client (version 18.03.0 and above). 
+Yes. By using any latest docker client (version 18.03.0 and above).
 
 ### Does Azure Container Registry support Content Trust?
 
@@ -267,7 +270,7 @@ Image quarantine is currently a preview feature of ACR. You can enable the Quara
 
 ### docker pull fails with error: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
 
- - If this error is a transient issue, then retry will succeed. 
+ - If this error is a transient issue, then retry will succeed.
  - If it is failing continuously then there could be a problem with the docker daemon, which can be mitigated by restarting the docker daemon. We have seen such issues before and restarting daemon generally works.
  - If you continue to see this issue after restarting docker daemon, then the problem could be some network connectivity issues with the machine. To check if general network on the machine is healthy, try pinging www.bing.com and see if it works.
  - You should always have a retry mechanism on all docker client operations.
@@ -302,28 +305,28 @@ To resolve the error,
 
 Details of `--signature-verification` can be found by running `man dockerd`.
 
-### How to enable and get the debug logs of docker daemon?	
+### How to enable and get the debug logs of docker daemon?
 
 
-  * You need to start dockerd with debug option.	
+  * You need to start dockerd with debug option.
 
 First, create the docker daemon configuration file (`/etc/docker/daemon.json`) if it doesn't exist, and add the `debug` option:
    ```
-   {	
-      "debug": true	
+   {
+      "debug": true
    }
    ```
-Then, restart the daemon. For Ubuntu 14.04 user, you can do	  
+Then, restart the daemon. For Ubuntu 14.04 user, you can do
    ```
    sudo service docker restart
    ```
-Details can be found [here](https://docs.docker.com/engine/admin/#enable-debugging).	
+Details can be found [here](https://docs.docker.com/engine/admin/#enable-debugging).
 
- * The logs may be generated at different locations, depending on your system. For example, for Ubuntu 14.04, it's `/var/log/upstart/docker.log`.	
-You can refer to [the link](https://docs.docker.com/engine/admin/#read-the-logs) for details:	
+ * The logs may be generated at different locations, depending on your system. For example, for Ubuntu 14.04, it's `/var/log/upstart/docker.log`.
+You can refer to [the link](https://docs.docker.com/engine/admin/#read-the-logs) for details:
 
- * For Docker for Windows, the logs are generated under %LOCALAPPDATA%/docker/. However it may not contain all the debug information yet.	
-In order to access full daemon log, you may need some extra steps:	
+ * For Docker for Windows, the logs are generated under %LOCALAPPDATA%/docker/. However it may not contain all the debug information yet.
+In order to access full daemon log, you may need some extra steps:
     ```
     docker run --privileged -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /usr/local/bin/docker:/usr/local/bin/docker alpine sh
     docker run --net=host --ipc=host --uts=host --pid=host -it --security-opt=seccomp=unconfined --privileged --rm -v /:/host alpine /bin/sh
