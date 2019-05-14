@@ -2,5 +2,6 @@
     "application/vnd.docker.distribution.manifest.v2+json": "Docker images",
     "application/vnd.cncf.helm.chart.config.v1+json": "Helm charts",
     "application/vnd.oci.image.config.v1+json": "OCI images",
+    "application/vnd.cncf.openpolicyagent.config.v1+json": "Open Policy Agent bundles",
     "application/vnd.sylabs.sif.config.v1+json": "Singularity images"
 }
