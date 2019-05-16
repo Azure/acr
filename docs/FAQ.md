@@ -28,6 +28,7 @@
     - [How to enable and get the debug logs of docker daemon?](#how-to-enable-and-get-the-debug-logs-of-docker-daemon)
     - [New user permissions may not be effective immediately after updating](#new-user-permissions-may-not-be-effective-immediately-after-updating)
     - [Authentication information is not given in the correct format on direct REST API calls](#authentication-information-is-not-given-in-the-correct-format-on-direct-rest-api-calls)
+    - [Why does the Azure Portal not list all my repositories or tags?](#why-does-the-azure-portal-not-list-all-my-repositories-or-tags)
 - [Tasks](#tasks)
     - [How to batch cancel runs?](#how-to-batch-cancel-runs)
     - [How to include .git folder in az acr build command?](#how-to-include-git-folder-in-az-acr-build-command)
@@ -384,6 +385,10 @@ It can be done by printing the response headers with the `-D -` option of `curl`
 redirect_url=$(curl -s -D - -H "Authorization: basic $credential" https://$registry.azurecr.io/v2/$repository/blobs/$digest | grep "^Location: " | cut -d " " -f2 | tr -d '\r')
 curl $redirect_url
 ```
+
+### Why does the Azure Portal not list all my repositories or tags?
+
+If your registry has `more than 100` repositories/tags, please use `Firefox/Chrome` browser to list them all as `Edge` browser currently doesn't support this. You can still see atmost 100 listings on the Edge browser.
 
 ## Tasks
 
