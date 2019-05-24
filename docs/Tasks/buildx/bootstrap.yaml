@@ -1,9 +1,13 @@
 version: v1.0.0
 steps:
+  # Build buildx from source using the built-in buildkit
   - cmd: docker build -t binaries git://github.com/docker/buildx
     env: [ "DOCKER_BUILDKIT=1" ]
+  # Create a new Dockerfile to set up the entry point for buildx
   - cmd: |
       bash -c 'echo "FROM binaries
       ENTRYPOINT [ \"/buildx\" ]" > Dockerfile'
+  # Build the above Dockerfile
   - build: -t {{.Run.Registry}}/buildx .
+  # Push the resulted buildx image to the remote registry
   - push: [ {{.Run.Registry}}/buildx ]
