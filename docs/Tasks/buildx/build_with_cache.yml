@@ -4,6 +4,6 @@ steps:
       {{.Run.Registry}}/buildx
       build --push
       -t {{.Run.Registry}}/{{.Values.NAME}}:{{.Run.ID}}
-      --cache-to={{.Run.Registry}}/{{.Values.NAME}}:cache
       --cache-from={{.Run.Registry}}/{{.Values.NAME}}:cache
+      --cache-to=type=registry,ref={{.Run.Registry}}/{{.Values.NAME}}:cache,mode=max
       {{.Values.URL}}

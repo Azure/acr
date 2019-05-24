@@ -1,9 +1,0 @@
-version: v1.0.0
-steps:
-  - cmd: >-
-      {{.Run.Registry}}/buildx
-      build --push
-      -t {{.Run.Registry}}/{{.Values.NAME}}:{{.Run.ID}}
-      --cache-to=type=registry,ref={{.Run.Registry}}/{{.Values.NAME}}:cache,mode=max
-      --cache-from={{.Run.Registry}}/{{.Values.NAME}}:cache
-      {{.Values.URL}}
