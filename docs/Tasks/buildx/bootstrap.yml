@@ -1,0 +1,9 @@
+version: v1.0.0
+steps:
+  - cmd: docker build -t binaries git://github.com/docker/buildx
+    env: [ "DOCKER_BUILDKIT=1" ]
+  - cmd: |
+      bash -c 'echo "FROM binaries
+      ENTRYPOINT [ \"/buildx\" ]" > Dockerfile'
+  - build: -t {{.Run.Registry}}/buildx .
+  - push: [ {{.Run.Registry}}/buildx ]
