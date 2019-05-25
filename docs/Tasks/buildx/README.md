@@ -48,10 +48,10 @@ az acr run -r myregistry -f build.yaml \
     /dev/null
 ```
 
-It is also possible to build local repository using `buildx`. Run the following task to build using `buildx` with the context path `.`.
+It is also possible to build local repository using `buildx`. Run the following task to build using `buildx` with the context path `mypath`.
 
 ```sh
-az acr run -r myregistry -f build.yaml --set URL=. --set NAME=myrepo .
+az acr run -r myregistry -f build.yaml --set URL=. --set NAME=myrepo mypath
 ```
 
 ### Build with Cache
