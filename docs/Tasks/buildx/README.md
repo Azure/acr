@@ -32,7 +32,7 @@ Images can be built using `buildx`. An example multi-step task YAML file [build.
 
 ```sh
 az acr run -r myregistry -f build.yaml \
-	--set URL=https://github.com/myuser/myrepo.git \
+    --set URL=https://github.com/myuser/myrepo.git \
     --set NAME=myrepo \
     /dev/null
 ```
@@ -43,9 +43,9 @@ For instance, run the following task to build `oras` and push to `myregistry.azu
 
 ```sh
 az acr run -r myregistry -f build.yaml \
-	--set URL=https://github.com/deislabs/oras.git \
-	--set NAME=oras \
-	/dev/null
+    --set URL=https://github.com/deislabs/oras.git \
+    --set NAME=oras \
+    /dev/null
 ```
 
 It is also possible to build local repository using `buildx`. Run the following task to build using `buildx` with the context path `.`.
@@ -60,9 +60,9 @@ Building progress can be speeded up using caches. An example multi-step task YAM
 
 ```sh
 az acr run -r myregistry -f build_with_cache.yaml \
-	--set URL=https://github.com/myuser/myrepo.git \
-	--set NAME=myrepo \
-	/dev/null
+    --set URL=https://github.com/myuser/myrepo.git \
+    --set NAME=myrepo \
+    /dev/null
 ```
 
 The resulted image will be pushed to `myregistry.azurecr.io/myrepo`, and the cache is imported from / exported to `myregistry.azurecr.io/myrepo:cache`.
