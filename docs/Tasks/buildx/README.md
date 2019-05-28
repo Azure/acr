@@ -14,7 +14,7 @@ The overall performance comparison is presented as below while the underlying AC
 | [azure-cli](<https://github.com/Azure/azure-cli>)            | 7m33s  | 5m59s  | 6m1s                        | 1m15s             |
 | [nodejs-docker-example](<https://github.com/buildkite/nodejs-docker-example>) | 1m59s  | 1m18s  | 1m14s                       | 52s               |
 
-As shown above, `docker buildx` is generally faster than `docker build` since `buildx` builds images concurrently with multi-stage Dockerfiles. To [build with cache](#build-with-cache), the first run of `buildx` is expected to be slower since there is no cache existing and it requires extra time to export caches. The subsequent run is expected to be faster depending on the existing valid caches.
+As shown above, `docker buildx` is generally faster than `docker build` since `buildx` builds images concurrently with multi-stage Dockerfiles. To [build with cache](#build-with-cache), the first run of `buildx` is expected to be slower since there is no cache existing and it requires extra time to export caches. The subsequent run is expected to be faster, utilizing the existing caches.
 
 ## Run `buildx` in ACR Tasks
 
@@ -48,10 +48,10 @@ az acr run -r myregistry -f build.yaml \
     /dev/null
 ```
 
-It is also possible to build local repository using `buildx`. Run the following task to build using `buildx` with the context path `mypath`.
+It is also possible to build local repository using `buildx`. Run the following task to build using `buildx` with the context path `local-repository-folder-path`.
 
 ```sh
-az acr run -r myregistry -f build.yaml --set URL=. --set NAME=myrepo mypath
+az acr run -r myregistry -f build.yaml --set URL=. --set NAME=myrepo local-repository-folder-path
 ```
 
 ### Build with Cache
