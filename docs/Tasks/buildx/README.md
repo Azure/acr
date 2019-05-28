@@ -1,6 +1,6 @@
 # Build Enhancements in ACR Tasks
 
-Building images using [buildx](<https://github.com/docker/buildx>) and [buildkit](<https://github.com/moby/buildkit>) is supported by [ACR Tasks](<https://aka.ms/acr/tasks>).
+Building Linux images using [buildx](<https://github.com/docker/buildx>) and [buildkit](<https://github.com/moby/buildkit>) is supported by [ACR Tasks](<https://aka.ms/acr/tasks>).
 
 With `buildx`, build performance is enhanced with various advanced features, such as concurrent building and cache import/export support.
 
