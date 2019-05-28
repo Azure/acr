@@ -3,5 +3,5 @@ steps:
   - cmd: >-
       {{.Run.Registry}}/buildx
       build --push
-      -t {{.Run.Registry}}/{{.Values.NAME}}:{{.Run.ID}}
-      {{.Values.URL}}
+      -t {{.Run.Registry}}/{{.Values.REPOSITORY_NAME}}:{{.Run.ID}}
+      {{.Values.BUILD_CONTEXT}}

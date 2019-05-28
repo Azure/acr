@@ -32,8 +32,8 @@ Images can be built using `buildx`. An example multi-step task YAML file [build.
 
 ```sh
 az acr run -r myregistry -f build.yaml \
-    --set URL=https://github.com/myuser/myrepo.git \
-    --set NAME=myrepo \
+    --set BUILD_CONTEXT=https://github.com/myuser/myrepo.git \
+    --set REPOSITORY_NAME=myrepo \
     /dev/null
 ```
 
@@ -43,15 +43,18 @@ For instance, run the following task to build `oras` and push to `myregistry.azu
 
 ```sh
 az acr run -r myregistry -f build.yaml \
-    --set URL=https://github.com/deislabs/oras.git \
-    --set NAME=oras \
+    --set BUILD_CONTEXT=https://github.com/deislabs/oras.git \
+    --set REPOSITORY_NAME=oras \
     /dev/null
 ```
 
 It is also possible to build local repository using `buildx`. Run the following task to build using `buildx` with the context path `local-repository-folder-path`.
 
 ```sh
-az acr run -r myregistry -f build.yaml --set URL=. --set NAME=myrepo local-repository-folder-path
+az acr run -r myregistry -f build.yaml \
+    --set BUILD_CONTEXT=. \
+    --set REPOSITORY_NAME=myrepo \
+    local-repository-folder-path
 ```
 
 ### Build with Cache
@@ -60,12 +63,11 @@ Building progress can be speeded up using caches. An example multi-step task YAM
 
 ```sh
 az acr run -r myregistry -f build_with_cache.yaml \
-    --set URL=https://github.com/myuser/myrepo.git \
-    --set NAME=myrepo \
+    --set BUILD_CONTEXT=https://github.com/myuser/myrepo.git \
+    --set REPOSITORY_NAME=myrepo \
     /dev/null
 ```
 
 The resulted image will be pushed to `myregistry.azurecr.io/myrepo`, and the cache is imported from / exported to `myregistry.azurecr.io/myrepo:cache`.
 
 The first run of the building process is expected to be slower than a normal `buildx` build since it has no cache imported and it requires extra time to export the resulted cache. The subsequent runs are expected to be faster as the valid cache is imported.
-

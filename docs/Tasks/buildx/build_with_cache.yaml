@@ -3,7 +3,7 @@ steps:
   - cmd: >-
       {{.Run.Registry}}/buildx
       build --push
-      -t {{.Run.Registry}}/{{.Values.NAME}}:{{.Run.ID}}
-      --cache-from={{.Run.Registry}}/{{.Values.NAME}}:cache
-      --cache-to=type=registry,ref={{.Run.Registry}}/{{.Values.NAME}}:cache,mode=max
-      {{.Values.URL}}
+      -t {{.Run.Registry}}/{{.Values.REPOSITORY_NAME}}:{{.Run.ID}}
+      --cache-from={{.Run.Registry}}/{{.Values.REPOSITORY_NAME}}:cache
+      --cache-to=type=registry,ref={{.Run.Registry}}/{{.Values.REPOSITORY_NAME}}:cache,mode=max
+      {{.Values.BUILD_CONTEXT}}
