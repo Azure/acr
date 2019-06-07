@@ -16,12 +16,19 @@ The overall performance comparison is presented as below while the underlying AC
 
 As shown above, `docker buildx` is generally faster than `docker build` since `buildx` builds images concurrently with multi-stage Dockerfiles. To [build with cache](#build-with-cache), the first run of `buildx` is expected to be slower since there is no cache existing and it requires extra time to export caches. The subsequent run is expected to be faster, utilizing the existing caches.
 
+## Set default registry name
+
+To make it easy to copy/paste commands, and avoid having to place the registry name in each command, use the 
+```sh
+ az configure --defaults acr=myregistry
+ ```
+
 ## Run `buildx` in ACR Tasks
 
 Since `buildx` has not been integrated with ACR Tasks, it is required to build `buildx` from its source before actually using it. The `buildx` image can be built by ACR Tasks using the multi-step task YAML file [bootstrap.yaml](bootstrap.yaml) as follows.
 
 ```sh
-az acr run -r myregistry -f bootstrap.yaml /dev/null
+az acr run -f bootstrap.yaml /dev/null
 ```
 
 The resulted `buildx` image will be pushed to `myregistry.azurecr.io/buildx`. Visually, running the `buildx` image is equivalent to run the `docker buildx` command.
@@ -31,7 +38,7 @@ The resulted `buildx` image will be pushed to `myregistry.azurecr.io/buildx`. Vi
 Images can be built using `buildx`. An example multi-step task YAML file [build.yaml](build.yaml) is provided and can be run as follows.
 
 ```sh
-az acr run -r myregistry -f build.yaml \
+az acr run -f build.yaml \
     --set BUILD_CONTEXT=https://github.com/myuser/myrepo.git \
     --set REPOSITORY_NAME=myrepo \
     /dev/null
@@ -42,7 +49,7 @@ The resulted image will be pushed to `myregistry.azurecr.io/myrepo`.
 For instance, run the following task to build `oras` and push to `myregistry.azurecr.io/oras` using `buildx`.
 
 ```sh
-az acr run -r myregistry -f build.yaml \
+az acr run -f build.yaml \
     --set BUILD_CONTEXT=https://github.com/deislabs/oras.git \
     --set REPOSITORY_NAME=oras \
     /dev/null
@@ -51,7 +58,7 @@ az acr run -r myregistry -f build.yaml \
 It is also possible to build local repository using `buildx`. Run the following task to build using `buildx` with the context path `local-repository-folder-path`.
 
 ```sh
-az acr run -r myregistry -f build.yaml \
+az acr run -f build.yaml \
     --set BUILD_CONTEXT=. \
     --set REPOSITORY_NAME=myrepo \
     local-repository-folder-path
@@ -62,7 +69,7 @@ az acr run -r myregistry -f build.yaml \
 Building progress can be speeded up using caches. An example multi-step task YAML file [build_with_cache.yaml](build_with_cache.yaml) is provided and configured to export max cache. It can be run as follows.
 
 ```sh
-az acr run -r myregistry -f build_with_cache.yaml \
+az acr run -f build_with_cache.yaml \
     --set BUILD_CONTEXT=https://github.com/myuser/myrepo.git \
     --set REPOSITORY_NAME=myrepo \
     /dev/null
