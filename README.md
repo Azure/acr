@@ -21,13 +21,15 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [CLI Docs](https://aka.ms/acr/docs/cli) | https://aka.ms/acr/docs/cli |
 | [Pricing](https://aka.ms/acr/pricing) | https://aka.ms/acr/pricing |
 | [Tiers](https://aka.ms/acr/tiers) | https://aka.ms/acr/tiers |
+| [Authentication](https://aka.ms/acr/authentication) | https://aka.ms/acr/authentication |
+| [Authorization Roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
 | [Tasks](https://aka.ms/acr/tasks) | https://aka.ms/acr/tasks |
 | [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
 | [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
-| [Tag Locking](http://aka.ms/acr/tag-locking) | http://aka.ms/acr/tag-locking |
+| [Tag Locking](http://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
 | [FAQ](https://aka.ms/acr/faq) | https://aka.ms/acr/faq |
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
