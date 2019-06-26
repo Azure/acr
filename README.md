@@ -24,6 +24,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Authentication](https://aka.ms/acr/authentication) | https://aka.ms/acr/authentication |
 | [Authorization Roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
 | [Tasks](https://aka.ms/acr/tasks) | https://aka.ms/acr/tasks |
+| [Task Timer Cron Expressions](http://aka.ms/acr/tasks/cron) | http://aka.ms/acr/tasks/cron |
 | [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
 | [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
