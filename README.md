@@ -23,7 +23,9 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Tiers](https://aka.ms/acr/tiers) | https://aka.ms/acr/tiers |
 | [Authentication](https://aka.ms/acr/authentication) | https://aka.ms/acr/authentication |
 | [Authorization Roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
+| [Health Check CLI](https://aka.ms/acr/health-check) | https://aka.ms/acr//health-check |
 | [Tasks](https://aka.ms/acr/tasks) | https://aka.ms/acr/tasks |
+| [Task Scheduling](http://aka.ms/acr/tasks/scheduling) | http://aka.ms/acr/tasks/scheduling |
 | [Task Timer Cron Expressions](http://aka.ms/acr/tasks/cron) | http://aka.ms/acr/tasks/cron |
 | [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
