@@ -50,7 +50,7 @@ Azure container registries have a typical login url of the format `*.azurecr.io`
 
 To move your repositories to a newly created registry, follow [this guide](move-repositories-to-new-registry/README.md).
 
-# Failed to add a virtual network from a different Azure subscription
+## Failed to add a virtual network from a different Azure subscription
 
 If you want to restrict registry access using a virtual network in a different Azure subscription, you will see the following error if the subscription hasn't registered the `Microsoft.ContainerRegistry` resource provider:
 
