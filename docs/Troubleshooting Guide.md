@@ -54,7 +54,6 @@ To move your repositories to a newly created registry, follow [this guide](move-
 
 If you want to restrict registry access using a virtual network in a different Azure subscription, you will see the following error if the subscription hasn't registered the `Microsoft.ContainerRegistry` resource provider:
 
-
 ```
 Failed to save firewall and virtual network settings for container registry 'MyRegistry'. Error: Could not validate network rule - The client '00000000-0000-0000-0000-000000000000' with object id '00000000-0000-0000-0000-000000000000' does not have authorization to perform action 'Microsoft.Network/virtualNetworks/taggedTrafficConsumers/validate/action' over scope '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyRG/providers/Microsoft.Network/virtualNetworks/MyRegistry/taggedTrafficConsumers/Microsoft.ContainerRegistry' or the scope is invalid. If access was recently granted, please refresh your credentials.
 ```
