@@ -25,14 +25,14 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Authorization Roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
 | [Health Check CLI](https://aka.ms/acr/health-check) | https://aka.ms/acr/health-check |
 | [Tasks](https://aka.ms/acr/tasks) | https://aka.ms/acr/tasks |
-| [Task Scheduling](http://aka.ms/acr/tasks/scheduling) | http://aka.ms/acr/tasks/scheduling |
-| [Task Timer Cron Expressions](http://aka.ms/acr/tasks/cron) | http://aka.ms/acr/tasks/cron |
+| [Task Scheduling](https://aka.ms/acr/tasks/scheduling) | https://aka.ms/acr/tasks/scheduling |
+| [Task Timer Cron Expressions](https://aka.ms/acr/tasks/cron) | https://aka.ms/acr/tasks/cron |
 | [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
 | [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
-| [Tag Locking](http://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
+| [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
 | [FAQ](https://aka.ms/acr/faq) | https://aka.ms/acr/faq |
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
