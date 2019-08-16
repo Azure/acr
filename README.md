@@ -33,6 +33,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
+| [OCI Artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
 | [FAQ](https://aka.ms/acr/faq) | https://aka.ms/acr/faq |
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
