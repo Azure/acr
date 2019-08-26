@@ -49,3 +49,20 @@ Azure container registries have a typical login url of the format `*.azurecr.io`
 ## Moving repositories to a new registry 
 
 To move your repositories to a newly created registry, follow [this guide](move-repositories-to-new-registry/README.md).
+
+## Failed to add a virtual network from a different Azure subscription
+
+If you want to restrict registry access using a virtual network in a different Azure subscription, you will see the following error if the subscription hasn't registered the `Microsoft.ContainerRegistry` resource provider:
+
+```
+Failed to save firewall and virtual network settings for container registry 'MyRegistry'. Error: Could not validate network rule - The client '00000000-0000-0000-0000-000000000000' with object id '00000000-0000-0000-0000-000000000000' does not have authorization to perform action 'Microsoft.Network/virtualNetworks/taggedTrafficConsumers/validate/action' over scope '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyRG/providers/Microsoft.Network/virtualNetworks/MyRegistry/taggedTrafficConsumers/Microsoft.ContainerRegistry' or the scope is invalid. If access was recently granted, please refresh your credentials.
+```
+
+You need to register the resource provider for Azure Container Registry in that subscription. For example:
+
+Azure CLI
+
+```
+az account set --subscription <Name or ID of subscription of virtual network>
+az provider register --namespace Microsoft.ContainerRegistry
+```
