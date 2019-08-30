@@ -31,6 +31,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
 | [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
+| [Importing Containers](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
 | [OCI Artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
