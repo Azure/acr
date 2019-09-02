@@ -11,7 +11,7 @@ The Azure Container Registry ([ACR][acr]) is central to image and [artifact][art
 * [VNet and Firewall Rules][vnet], securing registries from public endpoints.
 * [Tasks][tasks] for building, patching, testing container workloads
 * [Scheduled Tasks][scheduled-tasks] for automating tasks, such as automatically purging older artifacts
-* [Webhook Nofications][webhooks] for event based notifications of content pushed and/or deleted
+* [Webhook Notifications][webhooks] for event based notifications of content pushed and/or deleted
 * [OS & Framework Patching][os-fx-patching], using [ACR Tasks][tasks]
 * [Helm Chart][helm] support, as the beginning or [OCI Artifact][artifact-docs] support.
 * [Quarantine Pattern][quarantine] (*private preview*), providing secure by default registries
