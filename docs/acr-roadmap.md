@@ -11,7 +11,7 @@ The Azure Container Registry ([ACR][acr]) is central to image and [artifact][art
 * [VNet and Firewall Rules][vnet], securing registries from public endpoints.
 * [Tasks][tasks] for building, patching, testing container workloads
 * [Scheduled Tasks][scheduled-tasks] for automating tasks, such as automatically purging older artifacts
-* [Webhook Nofications][webhooks] for event based notifications of content pushed and/or deleted
+* [Webhook Notifications][webhooks] for event based notifications of content pushed and/or deleted
 * [OS & Framework Patching][os-fx-patching], using [ACR Tasks][tasks]
 * [Helm Chart][helm] support, as the beginning or [OCI Artifact][artifact-docs] support.
 * [Quarantine Pattern][quarantine] (*private preview*), providing secure by default registries
@@ -42,7 +42,7 @@ The following items are in our backlog. Some are in active development. The majo
 
 
 * [Vulnerability Scanning Updates](#vulnerability-scanning-updates)
-* [Limit Endpoint Access /VNet Support](#limit-endpoint-access-vnet-support)
+* [Restrict Endpoint Access /VNet Support](#restrict-endpoint-access-vnet-support)
 * [When will ACR VNet support GA](#when-will-acr-vnet-support-ga)
 * [Tokens & Repository Scoped Permissions (RBAC)](#tokens--repository-scoped-permissions-rbac)
 * [Diagnostics & Monitoring](#diagnostics--monitoring)
@@ -61,11 +61,11 @@ Starting fall '19, [Azure Security Center][asc] will start offering registry sca
 
 We believe customers should have a choice for their security scanning solutions and will continue to provide extensibility, just as users can choose the security scanning of their users machines and their servers.
 
-### Limit Endpoint Access /VNet Support
+### Restrict Endpoint Access /VNet Support
 
-Customers have asked for limitations on their registry, based on the IP, not just authentication. As a shared registry API, this does present some challenges that we're incrementally addressing.
+Customers have asked for more granular IP restrictions to their registry, in addition to authentication. As a shared registry API, this does present some challenges that we're incrementally addressing.
 
-In [March of 2019 we added preview support for VNet and Firewall rules](https://azure.microsoft.com/en-us/blog/azure-container-registry-virtual-network-and-firewall-rules-preview-support/). This allows customers to limit their acr endpoint to requests from within the defined Azure VNet, or any whitelisted ip ranges. ACR VNet support is supported with AKS and VMs hosting container images. The container host infrastructure must be placed within the customers VNet as the host must be able to pull the image, from the registry that's in the VNet.
+In [March of 2019 we added preview support for VNet and Firewall rules](https://azure.microsoft.com/en-us/blog/azure-container-registry-virtual-network-and-firewall-rules-preview-support/). This allows customers to restrict their acr endpoint to requests from within the defined Azure VNet, or any whitelisted ip ranges. ACR VNet support is supported with AKS and VMs hosting container images. The container host infrastructure must be placed within the customers VNet as the host must be able to pull the image, from the registry that's in the VNet.
 
 For container hosts that are not within the customers Azure VNet, such as multi-tenant services like Azure ML, ACI, Azure DevOps hosted build agents and ACR Tasks, the host is unable to pull the image. The host can only pull the image if it's in the VNet. We refer to this as the bootstrapping problem.
 
@@ -122,7 +122,7 @@ With OCI Artifacts in place, we are working with the [Helm Community](https://gi
 As customers move from manual deployments to automation, we've seen a dramatic increase in usage. Some customers care using utilities like [Watch Tower](https://github.com/v2tec/watchtower) to automate `docker pull`, keeping your deployments up to date, while others are simply doing massive scaling.
 
 When issuing `docker pull` a manifest is returned, listing the layers required. If the local host already has the layers, no additional requests are made. However, the registry must still respond with the manifest. ACR introduced a caching layer to cache & return manifest without having to hit storage. We should mention that an alternative approach would be to use [Web Hooks][webhooks] to know when an image has been updated, rather than simply asking the registry: *"do you have anything new, do you have anything new, do you have anything new..."*.
-We've also been working with a few high profile customers to scale thousands of nodes, each pulling large images. We recently scaled 1,000 nodes in 10 minutes with 11 terabytes being deployed. This performance work has been moved into the Premium SKU to enable high scale customers a solution to their larger needs. We continue to focus on concurrent throughput and individual pull performance scenarios.
+We've also been working with a few early adopter customers to scale thousands of nodes, each pulling large images. We recently scaled 1,000 nodes in 10 minutes with 11 terabytes being deployed. This performance work has been moved into the Premium SKU to enable high scale customers a solution to their larger needs. We continue to focus on concurrent throughput and individual pull performance scenarios.
 
 ### Container Build Caching with ACR Tasks and BuildX
 
