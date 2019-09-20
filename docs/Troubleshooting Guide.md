@@ -72,4 +72,4 @@ az provider register --namespace Microsoft.ContainerRegistry
 ```
 az role assignment list --scope /subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/<registryName>
 ```
-See [here](https://docs.microsoft.com/en-us/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-list) for reference
+See [here](https://docs.microsoft.com/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-list) for reference
