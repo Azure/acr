@@ -66,3 +66,10 @@ Azure CLI
 az account set --subscription <Name or ID of subscription of virtual network>
 az provider register --namespace Microsoft.ContainerRegistry
 ```
+
+## Check role assignments on a registry
+
+```
+az role assignment list --scope /subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/<registryName>
+```
+See [here](https://docs.microsoft.com/en-us/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-list) for reference
