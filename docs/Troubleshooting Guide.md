@@ -2,7 +2,8 @@
 
 
 ## I get an error while creating a registry - "Unregistered Subscription specified"
-<a name="RegisterSub"></a>
+
+<a name="registersub"></a>
 You need to register the subscription using 
 Powershell:
 ```
@@ -16,11 +17,11 @@ az provider register –n Microsoft.ContainerRegistry
 ## I'm able to create registry in one region but not in another region
 As we add more regions, the service in new region needs to know about your subscription. So please register your subscription again so that ACR service in newer regions will know about your subscription
 
-See [here] (#RegisterSub)
+See [here](#registersub)
 
 ## Azure CLI - I get this error - No resource with type Microsoft.ContainerRegistry/registries can be found with name
 
-<a name="SetCorrectSub"></a>
+<a name="setcorrectsub"></a>
 Please run this command and check if you have set the right subscription
 ```
 az account show
@@ -33,7 +34,7 @@ az account set --subscription <correct-subscription>
 
 ## Azure CLI - Not able to use az cli to query/view my registries
 
-See [this] (#RegisterSub) and [this] (#SetCorrectSub)
+See [this](#registersub) and [this](#setcorrectsub)
 
 ## Image exists in my ACR but, docker pull returns "image not found"
 
