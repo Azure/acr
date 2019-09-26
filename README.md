@@ -48,6 +48,8 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [**User Voice** for feature requests](https://aka.ms/acr/uservoice) | https://aka.ms/acr/uservoice |
 | [**Github** for logging issues](https://aka.ms/acr/issues) | https://aka.ms/acr/issues |
 | [**Slack** for collaboration](https://aka.ms/acr/slack) | https://aka.ms/acr/slack |
+| [**Create a ticket** for general support](https://aka.ms/acr/support/create-ticket) | https://aka.ms/acr/support/create-ticket |
+
 
 ## API and SDK reference
 
