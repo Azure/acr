@@ -479,7 +479,7 @@ export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^
 echo "Scope"
 echo $scope
  
-export credentials=$(echo -n "$user:$password" | base64 )
+export credentials=$(echo -n "$user:$password" | base64 -w 0)
  
 export acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" \
  -H "Authorization: Basic $credentials" "https://$registry/oauth2/token?service=$registry&scope=$scope" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
