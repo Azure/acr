@@ -41,8 +41,12 @@ The body of the payload might provide additional details, but all the informatio
 With this information we're now ready to call `GET /oauth2/token` to obtain an ACR access token that will allow us to use the `GET /v2/hello-world/manifests/latest` API. 
 
 ### Encode the username and password 
-  - using a tool like https://www.base64encode.org/
+  - You can use Windows Powershell or `base64` command line utility in Linux/Mac
     - Encode using the following format: **[username]**:**[password]**
+    - Powershell: 
+    	- `[convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes('[username]:[password]'))`
+    - Linx/Mac Terminal: 
+    	- `echo '[username]:[password]' | base64`
     - Copy the encoded value and set it as a environment variable
 	
 ```bash
