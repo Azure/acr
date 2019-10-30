@@ -46,7 +46,7 @@ With this information we're now ready to call `GET /oauth2/token` to obtain an A
     - Powershell: 
     	- `[convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes('[username]:[password]'))`
     - Linux/Mac Terminal: 
-    	- `echo '[username]:[password]' | base64`
+    	- `echo -n '[username]:[password]' | base64`
     - Copy the encoded value and set it as a environment variable
 	
 ```bash
