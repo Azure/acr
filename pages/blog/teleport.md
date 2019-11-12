@@ -8,4 +8,4 @@ date: 2019-11-01 17:00:00
 
 # Teleport
 
-Place holder for Project Teleport
+Place holder for Project Teleport.
