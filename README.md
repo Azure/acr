@@ -39,8 +39,8 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
 | [Jobs](https://aka.ms/acr/jobs) | https://aka.ms/acr/jobs |
-| [Repository permissions](https://aka.ms/acr/repository-permissions) | https://aka.ms/acr/repository-permissions |
-| [Audit logs](https://aka.ms/acr/audit-logs) | https://docs.microsoft.com/en-us/azure/container-registry/container-registry-diagnostics-audit-logs |
+| [Repository permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repository-permissions |
+| [Audit logs](https://aka.ms/acr/audit-logs) | https://aka.ms/acr/audit-logs |
 | Twitter | #AzureContainerRegistry |
 
 ## Providing feedback
