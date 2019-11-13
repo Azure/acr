@@ -4,6 +4,7 @@ title: "Overview"
 excerpt: "project teleport"
 tags: [developers, teleport]
 date: 2019-11-01 17:00:00
+author: Steve Lasker
 ---
 
 # Azure Container Registry Adds Teleportation
@@ -146,4 +147,5 @@ The customer feedback we get with ACR Tasks will help us improve teleportation a
 *   To Help us test teleportation of your images – [sign up here](https://aka.ms/teleport/signup) for the private preview
 *   Are you just as excited with container scenarios, building teleporters and other [ACR roadmap capabilities](https://aka.ms/acr/roadmap)? Apply here for [ACR Jobs](https://aka.ms/acr/jobs)
 
-- Steve Lasker  
+---
+Steve Lasker  
