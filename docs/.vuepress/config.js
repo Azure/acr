@@ -11,7 +11,7 @@ module.exports = {
 		domain: 'http://azure.github.com',
 		displayAllHeaders: true,
 		sidebar: 'auto',
-		docsDir : 'pages',
+		docsDir : 'docs',
 		searchMaxSuggestions: 10,
 		repo: 'azure/acr',
 		repoLabel: 'Star this Repo',
@@ -27,12 +27,17 @@ module.exports = {
 					'/'
 				]
             } 
-*/            {
+*/          {
                 title: 'Teleport',
                 collapsable: true,
                 children: ['/blog/teleport'],
-            }
- 
+            },
+			{
+				title: 'Tasks',
+				collapsible: true, 
+				children: ['/Tasks/container-registry-tasks-overview']
+			}
+
             
         ]
     }
