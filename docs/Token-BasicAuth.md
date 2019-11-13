@@ -1,8 +1,13 @@
+---
+type: post
+title: "Token with Basic Auth"
+---
+
 # Azure Container Registry's support of getting Bearer token using Basic Authentication
 
 The Azure Container Registry supports both Basic Authentication and OAuth2 for getting a registry Bearer token. This document describes how to get a Bearer token using Basic Authentication. To get the token using OAuth2, please refer to the [AAD-OAuth doc](https://github.com/Azure/acr/blob/master/docs/AAD-OAuth.md).
 
-## Token API
+## Using the token API
 
 ACR has implemented the GET method on the token endpoint for user to retrieve a Bearer token using Basic Authentication:
 
