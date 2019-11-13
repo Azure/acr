@@ -1,4 +1,4 @@
-name: Node CI
+name: GH-Page Publish 
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
       run: | 
         eval "$(ssh-agent -s)"        
         ssh-add - <<< "${DEPLOY_KEY}"
-        cd pages
+        cd docs
         ./deploy.sh
       env:
         GH_REPOSITORY : ${{ github.repository }} 
