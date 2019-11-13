@@ -1,3 +1,8 @@
+---
+type: post
+title: "AAD Integration"
+---
+
 # Azure Container Registry integration with Azure Active Directory
 
 <!-- TOC depthFrom:2 orderedList:false -->

@@ -6,7 +6,6 @@ tags: [developers, teleport]
 date: 2019-11-01 17:00:00
 ---
 
-
 # Azure Container Registry Adds Teleportation
 
 ![](https://stevelaskerblog.files.wordpress.com/2019/10/image-8.png?w=132)
@@ -17,8 +16,6 @@ Instancing a custom environment within seconds is one of the many wonders of run
 > Project Teleport removes the cost of download and decompression by SMB mounting pre-expanded layers from the Azure Container Registry to Teleport enabled Azure container hosts.
 
 ## Teleportation Performance
-
-### TEst
 
 The following table represents initial performance metrics across different image sizes. The amount of time to teleport an image has less to do with the size of the image, but rather the number of layers that must be mounted. This is an area of performance we’ll continue to focus upon.
 
