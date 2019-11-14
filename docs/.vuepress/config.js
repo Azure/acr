@@ -35,6 +35,12 @@ module.exports = {
                 collapsable: true,
                 sidebarDepth : 1,
                 children : ['AAD-OAuth', 'Token-BasicAuth']
+            },
+            {
+                title: 'Integration',
+                collapsable: true,
+                sidebarDepth : 1,
+                children : ['/integration/change-analysis/', ]
             }
         ]
     }
