@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "registryName": {
+      "value": "mytaskrunregistry"
+    },
+    "taskRunName": {
+      "value": "myquickrun"
+    },
+    "taskContent": {
+        "value": "version: v1.0.0\nsteps:\n  - cmd: microsoft/azure-cli az login --identity\n  - cmd: microsoft/azure-cli az account list -o table"
+    }
+  }
+}

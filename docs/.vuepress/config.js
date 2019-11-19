@@ -28,8 +28,8 @@ module.exports = {
             {
                 title: 'Tasks',
                 collapsible: true, 
-                children: ['/Tasks/container-registry-tasks-overview']
-            }, 
+                children: ['/tasks/container-registry-tasks-overview']
+            },
             {
                 title: 'Authentication',
                 collapsable: true,
