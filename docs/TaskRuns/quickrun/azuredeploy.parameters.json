@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "registryName": {
+        "value": "mytaskrunregistry"
+      },
+      "taskRunName": {
+        "value": "myquickrun"
+      },
+      "taskContent": {
+        "value": "version: v1.0.0\nsteps:\n - cmd: microsoft/azure-cli az cloud register -n dogfood --endpoint-active-directory https://login.windows-ppe.net --endpoint-active-directory-graph-resource-id https://graph.ppe.windows.net/ --endpoint-active-directory-resource-id https://management.core.windows.net/ --endpoint-gallery https://current.gallery.azure-test.net/ --endpoint-management https://management.core.windows.net/ --endpoint-resource-manager https://api-dogfood.resources.windows-int.net/ --suffix-storage-endpoint core.test-cint.azure-test.net --suffix-acr-login-server-endpoint .azurecr-test.io --suffix-keyvault-dns .vault-int.azure-int.net\n - cmd: microsoft/azure-cli az cloud set -n dogfood\n - cmd: microsoft/azure-cli az login --identity\n - cmd: microsoft/azure-cli az account list -o table"
+      }
+    }
+  }

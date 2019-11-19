@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "registryName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Azure Container Registry"
+      }
+    },
+    "registrySku": {
+      "type": "string",
+      "metadata": {
+        "description": "Tier of your Azure Container Registry"
+      },
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "registryAdminUserEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable admin user that have push / pull permission to the registry"
+      }
+    },
+    "taskRunName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Task Run"
+      }
+    },
+    "userAssignedIdentity": {
+      "type": "string",
+      "metadata": {
+        "description": "The user assigned identity to be bound to the task run"
+      },
+      "defaultValue": ""
+    },
+    "taskContent": {
+      "type": "string",
+      "metadata": {
+        "description": "The content of multi-step task template"
+      }
+    }
+  },
+  "variables": {
+    "encodedTaskContent": "[base64(parameters('taskContent'))]",
+    "identity": {
+      "type": "UserAssigned",
+      "userAssignedIdentities": {
+        "[parameters('userAssignedIdentity')]": {}
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "name": "[parameters('registryName')]",
+      "apiVersion": "2017-10-01",
+      "location": "[parameters('location')]",
+      "comments": "Container registry for storing docker images",
+      "tags": {
+        "displayName": "Container Registry",
+        "container.registry": "[parameters('registryName')]"
+      },
+      "sku": {
+        "name": "[parameters('registrySku')]",
+        "tier": "[parameters('registrySku')]"
+      },
+      "properties": {
+        "adminUserEnabled": "[parameters('registryAdminUserEnabled')]"
+      },
+      "resources": [
+        {
+          "type": "taskRuns",
+          "name": "[parameters('taskRunName')]",
+          "location": "[parameters('location')]",
+          "apiVersion": "2019-06-01-preview",
+          "dependsOn": [
+            "[parameters('registryName')]"
+          ],
+          "identity": "[if(not(empty(parameters('userAssignedIdentity'))), variables('identity'), '')]",
+          "properties": {
+            "runRequest": {
+              "type": "EncodedTaskRunRequest",
+              "encodedTaskContent": "[variables('encodedTaskContent')]",
+              "platform": {
+                "os": "linux",
+                "architecture": "amd64"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "registry": {
+      "type": "string",
+      "value": "[parameters('registryName')]"
+    }
+  }
+}
