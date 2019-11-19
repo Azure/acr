@@ -29,7 +29,7 @@ module.exports = {
                 title: 'Tasks',
                 collapsible: true, 
                 children: ['/tasks/container-registry-tasks-overview']
-            },            
+            },
             {
                 title: 'Authentication',
                 collapsable: true,
