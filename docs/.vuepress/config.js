@@ -28,7 +28,7 @@ module.exports = {
             {
                 title: 'Tasks',
                 collapsible: true, 
-                children: ['/tasks/container-registry-tasks-overview']
+                children: ['/tasks/container-registry-tasks-overview', '/tasks/run-as-deployment/']
             },
             {
                 title: 'Authentication',
