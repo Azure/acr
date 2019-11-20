@@ -17,31 +17,12 @@
         "description": "Name of your Azure Container Registry"
       }
     },
-    "registrySku": {
-      "type": "string",
-      "metadata": {
-        "description": "Tier of your Azure Container Registry"
-      },
-      "defaultValue": "Basic",
-      "allowedValues": [
-        "Basic",
-        "Standard",
-        "Premium"
-      ]
-    },
-    "registryAdminUserEnabled": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Enable admin user that have push / pull permission to the registry"
-      }
-    },
     "taskRunName": {
       "type": "string",
       "minLength": 5,
       "maxLength": 50,
       "metadata": {
-        "description": "Name of your Task Run"
+        "description": "Name of your Task Run and tag generated"
       }
     },
     "userAssignedIdentity": {
@@ -63,51 +44,44 @@
         "description": "The relative path of the dockerfile in the source location"
       },
       "defaultValue": "Dockerfile"
+    },
+    "repository": {
+      "type": "string",
+      "metadata": {
+        "description": "Repository name for the the build output"
+      }
     }
   },
   "variables": {
-    "repository": "hello-world-node",
     "tag": "parameters('taskRunName')",
-    "imageName": "[concat(variables('repository'), ':', parameters('taskRunName'))]",
+    "imageName": "[concat(parameters('repository'), ':', parameters('taskRunName'))]",
     "identity": {
       "type": "UserAssigned",
       "userAssignedIdentities": {
-        "[parameters('userAssignedIdentity')]": {}
+        "[parameters('userAssignedIdentity')]": {
+        }
       }
     }
   },
   "resources": [
     {
-      "type": "Microsoft.ContainerRegistry/registries/taskRuns/",
+      "type": "Microsoft.ContainerRegistry/registries/taskRuns",
+      "apiVersion": "2019-06-01-preview",
       "name": "[concat(parameters('registryName'), '/', parameters('taskRunName'))]",
       "location": "[parameters('location')]",
-      "apiVersion": "2019-06-01-preview",
       "identity": "[if(not(empty(parameters('userAssignedIdentity'))), variables('identity'), '')]",
       "properties": {
-          "runRequest": {
-            "type": "DockerBuildRequest",
-            "imageNames": [
-              "mytest2:123"
-            ],
-            "sourceLocation": "https://github.com/huanwu/armtemplates.git",
-            "dockerFilePath": "Dockerfile-test",
-            "values": [],
-            "isPushEnabled": true,
-            "platform": {
-                "os": "linux",
-                "architecture": "amd64"
-            },
-            "credentials": {
-              "apiVersion": "2018-09-01",
-              "customRegistries": {
-                  "huanwudftest2.azurecr-test.io": 
-                  {
-                      "identity": "98d4358f-fd01-4255-aac4-7256f7eb5483"
-                  }
-                },
-                "sourceRegistry": {
-                  "loginMode": "Default"
-              }
+        "runRequest": {
+          "type": "DockerBuildRequest",
+          "dockerFilePath": "[parameters('dockerFilePath')]",
+          "imageNames": [
+            "[variables('imageName')]"
+          ],
+          "sourceLocation": "[parameters('sourceLocation')]",
+          "isPushEnabled": true,
+          "platform": {
+            "os": "linux",
+            "architecture": "amd64"
           }
         }
       }
@@ -120,7 +94,7 @@
     },
     "repository": {
       "type": "string",
-      "value": "[variables('repository')]"
+      "value": "[parameters('repository')]"
     },
     "tag": {
       "type": "string",
