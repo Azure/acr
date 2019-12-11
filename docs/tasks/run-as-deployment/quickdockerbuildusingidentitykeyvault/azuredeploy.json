@@ -104,15 +104,15 @@
                 "apiVersion": "2018-09-01",
                 "customRegistries": {
                     "[parameters('customRegistryName')]": {
-					  "userName":{
-						"type": "Vaultsecret",
-						"value": "[parameters('userNameUrl')]"
-					  },
-					  "passsword": {
-						"type": "Vaultsecret",
-						"value": "[parameters('userPasswordUrl')]"
-					  },
-					  "identity": "[reference(parameters('managedIdResourceId'), variables('idApiVersion'), 'Full').properties.clientId]"
+                        "userName": {
+                            "type": "Vaultsecret",
+                            "value": "[parameters('userNameUrl')]"
+                        },
+                        "passsword": {
+                            "type": "Vaultsecret",
+                            "value": "[parameters('userPasswordUrl')]"
+                        },
+                        "identity": "[reference(parameters('managedIdResourceId'), variables('idApiVersion'), 'Full').properties.clientId]"
                     }
                   },
                   "sourceRegistry": {
