@@ -23,12 +23,6 @@
         "description": "Name of your Task Run"
       }
 	},
-	"managedIdentityName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of your ManagedIdentity"
-      }
-    },
 	"userNameUrl": {
       "type": "string",
       "metadata": {
@@ -111,11 +105,11 @@
                 "customRegistries": {
                     "[parameters('customRegistryName')]": 
                     {
-						"userName": {
+					    "userName": {
 							"type": "Vaultsecret",
 							"value": "[parameters('userNameUrl')]"
 						},
-						"password": {
+					    "password": {
 							"type": "Vaultsecret",
 							"value": "[parameters('userPasswordUrl')]"
 						},
