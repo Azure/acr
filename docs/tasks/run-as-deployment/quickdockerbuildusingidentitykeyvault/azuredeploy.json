@@ -105,13 +105,13 @@
                 "customRegistries": {
                     "[parameters('customRegistryName')]": 
                     {
-					    "userName": {
-							"type": "Vaultsecret",
-							"value": "[parameters('userNameUrl')]"
+					  "userName": {
+						 "type": "Vaultsecret",
+						 "value": "[parameters('userNameUrl')]"
 						},
-					    "password": {
-							"type": "Vaultsecret",
-							"value": "[parameters('userPasswordUrl')]"
+					   "password": {
+						  "type": "Vaultsecret",
+						  "value": "[parameters('userPasswordUrl')]"
 						},
                         "identity": "[reference(parameters('managedIdResourceId'), variables('idApiVersion'), 'Full').properties.clientId]"
                     }
