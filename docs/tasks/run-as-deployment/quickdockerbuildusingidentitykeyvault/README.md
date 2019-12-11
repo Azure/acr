@@ -51,6 +51,8 @@ az group deployment create --resource-group "mytaskrunrg" --template-file azured
 	--parameters managedIdentityName="myquickdockerbuildrunwithidentity" \
 	--parameters customRegistryName="huanglitest05.azurecr-test.io" \
 	--parameters userNameUrl="https://huanglikeyvault3.vault-int.azure-int.net/secrets/UserName" 
-	--parameters userPasswordUrl="https://huanglikeyvault3.vault-int.azure-int.net/secrets/Password"
+	--parameters userPasswordUrl="https://huanglikeyvault3.vault-int.azure-int.net/secrets/Password" \
+	--parameters repository="hello-world" \
+	--parameters sourceLocation="https://github.com/Azure-Samples/acr-build-helloworld-node.git"
 ```
 

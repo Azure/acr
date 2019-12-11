@@ -44,14 +44,31 @@
 	"customRegistryName": {
       "type": "string",
       "metadata": {
-        "description": "CustomRegistry Url"
+        "description": "The full name of the Custom Registry"
       }
+    },
+	"repository": {
+      "type": "string",
+      "metadata": {
+        "description": "Repository name for the the build output"
+      }
+    },
+	"sourceLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The location of the source to build the image"
+      }
+    },
+	"dockerFilePath": {
+      "type": "string",
+      "metadata": {
+        "description": "The relative path of the dockerfile in the source location"
+      },
+	  "defaultValue": "Dockerfile"
     }
   },
  "variables": {
-	"repository": "hello-world-node",
-	"tag": "parameters('taskRunName')",
-	"imageName": "[concat(variables('repository'), ':', parameters('taskRunName'))]",
+	"imageName": "[concat(parameters('repository'), ':', parameters('taskRunName'))]",
 	"idApiVersion": "[first(providers('Microsoft.ManagedIdentity', 'userAssignedIdentities').apiVersions)]",
 	"managedIdResourceId": "[resourceId('f9d7ebed-adbd-4cb4-b973-aaf82c136138', 'huanwudfwestgroup', 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]"
 },
@@ -76,8 +93,8 @@
             "imageNames": [
                 "[variables('imageName')]"
             ],
-            "sourceLocation": "https://github.com/Azure-Samples/acr-build-helloworld-node.git",
-            "dockerFilePath": "Dockerfile",
+            "sourceLocation": "[parameters('sourceLocation')]",
+            "dockerFilePath": "[parameters('dockerFilePath')]",
             "values": [],
             "isPushEnabled": true,
             "platform": {
