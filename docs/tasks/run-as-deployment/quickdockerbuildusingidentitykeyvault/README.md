@@ -49,7 +49,7 @@ az group deployment create --resource-group "mytaskrunrg" --template-file azured
 	--parameters registryName="myreg" \
 	--parameters taskRunName="mytaskrun" \
 	--parameters managedIdentityName="myquickdockerbuildrunwithidentity" \
-	 --parameters keyvaultName="huanglikeyvault3" \
-	 --parameters customRegistryName="huanglitest05"
+	--parameters keyvaultName="huanglikeyvault3" \
+	--parameters customRegistryName="huanglitest05"
 ```
 
