@@ -65,12 +65,17 @@
         "description": "The relative path of the dockerfile in the source location"
       },
 	  "defaultValue": "Dockerfile"
+    },
+	"managedIdResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The Full Path Of ManagedIdentity"
+      }
     }
   },
  "variables": {
 	"imageName": "[concat(parameters('repository'), ':', parameters('taskRunName'))]",
-	"idApiVersion": "[first(providers('Microsoft.ManagedIdentity', 'userAssignedIdentities').apiVersions)]",
-	"managedIdResourceId": "[resourceId('f9d7ebed-adbd-4cb4-b973-aaf82c136138', 'huanwudfwestgroup', 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]"
+	"idApiVersion": "[first(providers('Microsoft.ManagedIdentity', 'userAssignedIdentities').apiVersions)]"
 },
   "resources": [
     {
@@ -83,7 +88,7 @@
         "tenantId": null,
         "type": "UserAssigned",
         "userAssignedIdentities": {
-            "[variables('managedIdResourceId')]": {
+            "[parameters('managedIdResourceId')]": {
             }
         }
 	  },
@@ -114,7 +119,7 @@
 							"type": "Vaultsecret",
 							"value": "[parameters('userPasswordUrl')]"
 						},
-                        "identity": "[reference(variables('managedIdResourceId'), variables('idApiVersion'), 'Full').properties.clientId]"
+                        "identity": "[reference(parameters('managedIdResourceId'), variables('idApiVersion'), 'Full').properties.clientId]"
                     }
                   },
                   "sourceRegistry": {

@@ -45,7 +45,10 @@ az keyvault secret set --name password --value <password> --vault-name mykeyvaul
 
 ## Grant identity access to key vault (object-id is the Object ID of managed identity)
 ```bash
-az keyvault set-policy --name mykeyvault --resource-group mytaskrunrg --object-id 452e1d96-c423-4da0-99f2-d3a1789ab69f --secret-permissions get 
+#Get principal id of the identity
+principalId=$(az identity show --resource-group huanwudfwestgroup --name huanwudfidentity3 --query principalId --output tsv)
+
+az keyvault set-policy --name mykeyvault --resource-group mytaskrunrg --object-id $principalId --secret-permissions get 
 ```
 
 ## Deploy a quick run
@@ -60,15 +63,18 @@ userNameUrl=$(az keyvault secret show --name username --vault-name mykeyvault --
 #Get the KeyVault Password Url
 passwordUrl=$(az keyvault secret show --name password --vault-name mykeyvault --query id --output tsv)
 
+#Get the ID of ManagedIdentity
+managedId=$(az identity show --resource-group huanwudfwestgroup --name myquickdockerbuildrunwithidentity --query id --output tsv)
+
 az group deployment create --resource-group "mytaskrunrg" --template-file azuredeploy.json \
 	--parameters azuredeploy.parameters.json \
 	--parameters registryName="myreg" \
 	--parameters taskRunName="mytaskrun" \
-	--parameters managedIdentityName="myquickdockerbuildrunwithidentity" \
 	--parameters customRegistryName=$customregistryName \
 	--parameters userNameUrl=$userNameUrl \
 	--parameters userPasswordUrl=$passwordUrl \
 	--parameters repository="hello-world" \
+	--parameters managedIdResourceId=$managedIdResourceId \
 	--parameters sourceLocation="https://github.com/Azure-Samples/acr-build-helloworld-node.git"
 ```
 
