@@ -11,8 +11,6 @@
     },
     "registryName": {
       "type": "string",
-      "minLength": 5,
-      "maxLength": 50,
       "metadata": {
         "description": "Name of your Azure Container Registry"
       }
@@ -27,26 +25,26 @@
 	},
 	"managedIdentityName": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 50,
       "metadata": {
         "description": "Name of your ManagedIdentity"
       }
     },
-	"keyvaultName": {
+	"userNameUrl": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 50,
       "metadata": {
         "description": "The keyvault Url to the UserName"
       }
     },
+	"userPasswordUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The keyvault Url to the Password"
+      }
+    },
 	"customRegistryName": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 50,
       "metadata": {
-        "description": "The keyvault Url to the UserName"
+        "description": "CustomRegistry Url"
       }
     }
   },
@@ -89,15 +87,15 @@
             "credentials": {
                 "apiVersion": "2018-09-01",
                 "customRegistries": {
-                    "[concat(parameters('customRegistryName'), '.azurecr-test.io')]": 
+                    "[parameters('customRegistryName')]": 
                     {
 						"userName": {
 							"type": "Vaultsecret",
-							"value": "[concat('https://', parameters('keyvaultName'), '.vault-int.azure-int.net/secrets/UserName')]"
+							"value": "[parameters('userNameUrl')]"
 						},
 						"password": {
 							"type": "Vaultsecret",
-							"value": "[concat('https://', parameters('keyvaultName'), '.vault-int.azure-int.net/secrets/Password')]"
+							"value": "[parameters('userPasswordUrl')]"
 						},
                         "identity": "[reference(variables('managedIdResourceId'), variables('idApiVersion'), 'Full').properties.clientId]"
                     }
