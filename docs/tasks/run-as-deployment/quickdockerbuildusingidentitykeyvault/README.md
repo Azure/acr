@@ -44,7 +44,12 @@ az keyvault set-policy --name mykeyvault --resource-group mytaskrunrg --object-i
 ## Deploy a quick run (Fill the right information in azuredeploy.json)
 
 ```bash
-az group deployment create --resource-group "mytaskrunrg" --template-file azuredeploy.json --parameters azuredeploy.parameters.json --parameters registryName="myreg" \
-	--parameters taskRunName="mytaskrun" --parameters managedIdentityName="myquickdockerbuildrunwithidentity"
+az group deployment create --resource-group "mytaskrunrg" --template-file azuredeploy.json \
+	--parameters azuredeploy.parameters.json \
+	--parameters registryName="myreg" \
+	--parameters taskRunName="mytaskrun" \
+	--parameters managedIdentityName="myquickdockerbuildrunwithidentity" \
+	 --parameters keyvaultName="huanglikeyvault3" \
+	 --parameters customRegistryName="huanglitest05"
 ```
 
