@@ -8,11 +8,18 @@ az group create \
   -l westus
 ```
 
-## Crate a Registry
+## Create a Registry
 
 ```bash
 az acr create \
    -n myreg -g mytaskrunrg --sku Standard
+```
+
+## Create a Custom Registry
+
+```bash
+az acr create \
+   -n mycustomreg -g mytaskrunrg --sku Standard
 ```
 
 ## Create a User Identity
@@ -41,17 +48,26 @@ az keyvault secret set --name password --value <password> --vault-name mykeyvaul
 az keyvault set-policy --name mykeyvault --resource-group mytaskrunrg --object-id 452e1d96-c423-4da0-99f2-d3a1789ab69f --secret-permissions get 
 ```
 
-## Deploy a quick run (Fill the right information in azuredeploy.json)
+## Deploy a quick run
 
 ```bash
+#Get the custom registry name
+customregistryName=$(az acr show -n mycustomreg --query loginServer --output tsv)
+
+#Get the KeyVault UserName Url
+userNameUrl=$(az keyvault secret show --name username --vault-name mykeyvault --query id --output tsv)
+
+#Get the KeyVault Password Url
+passwordUrl=$(az keyvault secret show --name password --vault-name mykeyvault --query id --output tsv)
+
 az group deployment create --resource-group "mytaskrunrg" --template-file azuredeploy.json \
 	--parameters azuredeploy.parameters.json \
 	--parameters registryName="myreg" \
 	--parameters taskRunName="mytaskrun" \
 	--parameters managedIdentityName="myquickdockerbuildrunwithidentity" \
-	--parameters customRegistryName="huanglitest05.azurecr-test.io" \
-	--parameters userNameUrl="https://huanglikeyvault3.vault-int.azure-int.net/secrets/UserName" 
-	--parameters userPasswordUrl="https://huanglikeyvault3.vault-int.azure-int.net/secrets/Password" \
+	--parameters customRegistryName=$customregistryName \
+	--parameters userNameUrl=$userNameUrl \
+	--parameters userPasswordUrl=$passwordUrl \
 	--parameters repository="hello-world" \
 	--parameters sourceLocation="https://github.com/Azure-Samples/acr-build-helloworld-node.git"
 ```
