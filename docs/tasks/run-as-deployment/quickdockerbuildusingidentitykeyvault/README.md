@@ -46,7 +46,7 @@ az keyvault secret set --name password --value <password> --vault-name mykeyvaul
 ## Grant identity access to key vault (object-id is the Object ID of managed identity)
 ```bash
 #Get principal id of the identity
-principalId=$(az identity show --resource-group huanwudfwestgroup --name myquickdockerbuildrunwithidentity --query principalId --output tsv)
+principalId=$(az identity show --resource-group mytaskrunrg --name myquickdockerbuildrunwithidentity --query principalId --output tsv)
 
 az keyvault set-policy --name mykeyvault --resource-group mytaskrunrg --object-id $principalId --secret-permissions get 
 ```
