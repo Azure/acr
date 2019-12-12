@@ -64,7 +64,7 @@ userNameUrl=$(az keyvault secret show --name username --vault-name mykeyvault --
 passwordUrl=$(az keyvault secret show --name password --vault-name mykeyvault --query id --output tsv)
 
 #Get the ID of ManagedIdentity
-managedId=$(az identity show --resource-group huanwudfwestgroup --name myquickdockerbuildrunwithidentity --query id --output tsv)
+managedId=$(az identity show --resource-group mytaskrunrg --name myquickdockerbuildrunwithidentity --query id --output tsv)
 
 az group deployment create --resource-group "mytaskrunrg" --template-file azuredeploy.json \
 	--parameters azuredeploy.parameters.json \
