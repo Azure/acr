@@ -40,7 +40,7 @@ az keyvault create --name mykeyvault --resource-group mytaskrunrg --location eas
 
 ```bash
 #Get password of admin user
-password=$(az acr credential show --name huanglitest05 --query passwords[0].value --output tsv)
+password=$(az acr credential show --name mycustomreg --query passwords[0].value --output tsv)
 
 az keyvault secret set --name username --value mycustomreg --vault-name mykeyvault
 az keyvault secret set --name password --value $password --vault-name mykeyvault
