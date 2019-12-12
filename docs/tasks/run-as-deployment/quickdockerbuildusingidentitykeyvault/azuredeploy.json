@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "registryName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of your Azure Container Registry"
+      }
+    },
+    "taskRunName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Task Run"
+      }
+    },
+    "userNameUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The keyvault Url to the UserName"
+      }
+    },
+    "userPasswordUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The keyvault Url to the Password"
+      }
+    },
+    "customRegistryName": {
+      "type": "string",
+      "metadata": {
+        "description": "The full name of the Custom Registry"
+      }
+    },
+    "repository": {
+      "type": "string",
+      "metadata": {
+        "description": "Repository name for the the build output"
+      }
+    },
+    "sourceLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The location of the source to build the image"
+      }
+    },
+    "dockerFilePath": {
+      "type": "string",
+      "metadata": {
+        "description": "The relative path of the dockerfile in the source location"
+      },
+      "defaultValue": "Dockerfile"
+    },
+    "managedIdResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The Full Path Of ManagedIdentity"
+      }
+    }
+  },
+  "variables": {
+    "imageName": "[concat(parameters('repository'), ':', parameters('taskRunName'))]",
+    "idApiVersion": "[first(providers('Microsoft.ManagedIdentity', 'userAssignedIdentities').apiVersions)]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries/taskRuns/",
+      "name": "[concat(parameters('registryName'), '/', parameters('taskRunName'))]",
+      "location": "[parameters('location')]",
+      "apiVersion": "2019-06-01-preview",
+      "identity": {
+        "principalId": null,
+        "tenantId": null,
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('managedIdResourceId')]": {}
+        }
+      },
+      "properties": {
+        "runRequest": {
+          "type": "DockerBuildRequest",
+          "imageNames": [
+            "[variables('imageName')]"
+          ],
+          "sourceLocation": "[parameters('sourceLocation')]",
+          "dockerFilePath": "[parameters('dockerFilePath')]",
+          "values": [],
+          "isPushEnabled": true,
+          "platform": {
+            "os": "linux",
+            "architecture": "amd64"
+          },
+          "credentials": {
+            "apiVersion": "2018-09-01",
+            "customRegistries": {
+              "[parameters('customRegistryName')]": {
+                "userName": {
+                  "type": "Vaultsecret",
+                  "value": "[parameters('userNameUrl')]"
+                },
+                "passsword": {
+                  "type": "Vaultsecret",
+                  "value": "[parameters('userPasswordUrl')]"
+                },
+                "identity": "[reference(parameters('managedIdResourceId'), variables('idApiVersion'), 'Full').properties.clientId]"
+              }
+            },
+            "sourceRegistry": {
+              "loginMode": "Default"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "registry": {
+      "type": "string",
+      "value": "[parameters('registryName')]"
+    },
+    "repository": {
+      "type": "string",
+      "value": "[parameters('taskRunName')]"
+    }
+  }
+}
