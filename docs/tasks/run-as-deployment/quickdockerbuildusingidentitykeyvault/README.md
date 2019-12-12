@@ -15,11 +15,11 @@ az acr create \
    -n myreg -g mytaskrunrg --sku Standard
 ```
 
-## Create a Custom Registry
+## Create a Custom Registry and enable the admin user
 
 ```bash
 az acr create \
-   -n mycustomreg -g mytaskrunrg --sku Standard
+   -n mycustomreg -g mytaskrunrg --sku Standard --admin-enabled true
 ```
 
 ## Create a User Identity
@@ -39,8 +39,11 @@ az keyvault create --name mykeyvault --resource-group mytaskrunrg --location eas
 ## Save registry username/password in the keyvault
 
 ```bash
-az keyvault secret set --name username --value <username> --vault-name mykeyvault
-az keyvault secret set --name password --value <password> --vault-name mykeyvault
+#Get password of admin user
+password=$(az acr credential show --name huanglitest05 --query passwords[0].value --output tsv)
+
+az keyvault secret set --name username --value mycustomreg --vault-name mykeyvault
+az keyvault secret set --name password --value $password --vault-name mykeyvault
 ```
 
 ## Grant identity access to key vault (object-id is the Object ID of managed identity)
