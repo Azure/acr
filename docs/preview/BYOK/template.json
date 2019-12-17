@@ -1,0 +1,101 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vault_name": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "registry_name": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "identity_name": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "kek_id": {
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2019-12-01-preview",
+      "name": "[parameters('registry_name')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Premium",
+        "tier": "Premium"
+      },
+      "identity": {
+        "type": "SystemAssigned,UserAssigned",
+        "userAssignedIdentities": {
+          "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('identity_name'))]": {}
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('identity_name'))]"
+      ],
+      "properties": {
+        "adminUserEnabled": false,
+        "encryption": {
+          "status": "enabled",
+          "keyVaultProperties": {
+            "identity": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('identity_name')), '2018-11-30').clientId]",
+            "KeyIdentifier": "[parameters('kek_id')]"
+          }
+        },
+        "networkRuleSet": {
+          "defaultAction": "Allow",
+          "virtualNetworkRules": [],
+          "ipRules": []
+        },
+        "policies": {
+          "quarantinePolicy": {
+            "status": "disabled"
+          },
+          "trustPolicy": {
+            "type": "Notary",
+            "status": "disabled"
+          },
+          "retentionPolicy": {
+            "days": 7,
+            "status": "disabled"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "apiVersion": "2018-02-14",
+      "name": "[concat(parameters('vault_name'), '/add')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('identity_name'))]"
+      ],
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('identity_name')), '2018-11-30').principalId]",
+            "permissions": {
+              "keys": [
+                "get",
+                "recover",
+                "unwrapKey",
+                "wrapKey"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2018-11-30",
+      "name": "[parameters('identity_name')]",
+      "location": "[resourceGroup().location]"
+    }
+  ]
+}
