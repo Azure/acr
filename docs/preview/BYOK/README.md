@@ -1,62 +1,81 @@
-# Bring Your Own Key (BYOK)
-Bring your own key feature will allow customers to configure customer-managed keys for Azure Container Registry (ACR) encryption. 
+# Bring your own key (BYOK)
 
-In this private preview, you can create a new container registry with BYOK enabled using Azure CLI and ARM template. See details below on how to create an Azure Container Registry with BYOK enabled.
+Bring your own key allows customers to configure customer-managed keys for Azure Container Registry (ACR) encryption. 
+
+In this private preview, you can create a new Premium container registry with BYOK enabled using an Azure ARM template. 
  
-> Note: This is an early preview release. The full CLI expereince and portal experience will light up soon. Also, note that
+> **Note:** This is an early private preview release. The full CLI expereince and portal experience will light up soon. See [details](#how-to-sign-up-for-a-private-preview) on how you can sign-up for a private preview of BYOK.
 
->Note: Some features like disabling encryption, geo- replication, content-trust are not supported in this version.
+## Limitations for private preview
 
- 
- 
-# Steps to create a registry with BYOK enabled
+* Disabling encryption for a registry is not supported in this private preview 
+* Other registry features like geo-replication, content-trust and VNet integration will also be supported in a future release
+* Do not enable this feature on production environment
 
-## 1. Create a managed identity 
+## How to sign-up for a private preview?
 
-Create a managed identity using the CLI command below.
+Inoder to try out this new feature in private preview, you will need to sign-up using the command below. Once you run the command, product team will get notified of your request and we will approve the request.
 
+You can use the feature after the request gets approved.
 
 ```json
-az identity create --name <managed-identity-name>
+az feature register --namespace Microsoft.Compute --name GalleryPreview --subscription <subscriptionId>
 ```
 
-## 2. Create a Key Vault 
-The key vault that you use to store customer-managed keys for registry encryption must have two key protection settings enabled, Soft Delete and Do Not Purge. 
+## Deploy a registry with BYOK enabled
+
+Follow these steps to create a registry with BYOK enabled using an ARM template. Note that we will create a Key Vault and Key using CLI as we do not have ARM support for these scenarios.
+
+### 1. Create a resource group
+
+Create a resource group for creating the Key Vault and Keys.
+
+```json
+az group create -g <resource-group-name> -l <location> 
+```
+
+### 2. Create a key vault
+
+Create a key vault to store customer-managed keys for registry encryption. This key vault should have two key protection settings enabled - Soft Delete and Do Not Purge. 
 
 ```json
 az keyvault create \
- –-name <key-vault> \
+ –-name <key-vault-name> \
+ -g <resource-group-name> \
  --enable-soft-delete \
  --enable-purge-protection
 ```
 
-## 3. Create a Key
-
-```json
-az keyvault key create –-name <key> --vault-name <key-vault>
-```
-## 4. Assign policy to KV
-
-Next, configure the access policy for the key vault so that the registry has permissions to access it. In this step, you'll use the managed identity that you previously assigned to the registry. Key permissions need to be set to get, recover, wrapKey and unwrapKey. 
-
-```json
-az keyvault set-policy --name <key-valut> -g <resource-gropup-name> --object-id <principalId> --key-permission get recover unwrapKey wrapKey
-
-```
-
-## 5. Create an ACR with BYOK enabled
-
-```json
-    az resource create -g reshmim -n reshmimacr --resource-type Microsoft.ContainerRegistry/registries --is-full-object --api-version 2019-12-01-preview --properties "{\"location\": \"centralus\", \"sku\": {\"name\": \"Premium\"},\"properties\": {\"encryption\": {\"status\": \"enabled\", \"keyVaultProperties\": {\"keyIdentifier\": \"https://reshmim-kv.vault-int.azure-int.net/keys/reshmim-kek/afefad2560b64a18a813295b58259b31\",\"identity\": \"1ca05082-78f6-4834-8710-4cd5c8cbad70\"}}}, \"identity\":{\"type\": \"SystemAssigned, UserAssigned\",\"userAssignedIdentities\":{\"/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/reshmim/providers/Microsoft.ManagedIdentity/userAssignedIdentities/reshmim-id\":{}}}}"
-    
-```
+### 4. Create a key and get the key ID
+	 
+ Create a key and get the key ID.
  
-# Steps to create a registry with BYOK enabled using ARM template
+ ```json
+ KEK=$(az keyvault key create --name <key-name> --vault-name <key-vault-name> --query key.kid -o tsv)
+ ```
+ 
+ ### 5. Create a registry with BYOK enabled
 
-# 1 Create a KV using CLI step above
+Download the template.json file. Run the following command to create a registry with BYOK enabled. Note that you need to provide the key vault name that you just created. Registry and managed identity will be created by the template.
+  
+```json
+az group deployment create -g <resource-group-name> --template-file <template.json> --parameters vault_name=<ey-vault-name> registry_name=<registry-name> identity_name=<managed-identity> kek_id=$KEK
+```
 
-# 2 Deploy ARM template
+## Login and use the registry
 
+### 1. Login to your registry
 
+```json
+az acr login -n myacr
+```
+Follow [this documentation](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-authentication) for authenticate your docker client to your container registry.
 
-## End
+### 2. Push images to your registry
+
+For pushing docker images on your registry, follow [this documentation](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli)
+
+## Feedback
+
+For feedback on BYOK, visit https://aka.ms/acr/issues.
+
