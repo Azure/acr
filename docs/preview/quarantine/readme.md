@@ -41,7 +41,7 @@ Before Quarantine is configured on the registry, both "quarantine" and "push" we
 
 ## Configure Quarantine on a registry
 
-Once a user decides to enable Quarantine on a registry, he can use our [management Policy API](https://docs.microsoft.com/en-us/rest/api/containerregistry/registries/updatepolicies).
+Once a user decides to enable Quarantine on a registry, he can use our [management Policy API](https://docs.microsoft.com/en-us/rest/api/containerregistry/registries/update#policies).
 
 Once Quarantine is enabled on a registry, for newly pushed image, it will enter quarantine state automatically and only a user with quarantine reader permissions can see the image. Meanwhile, the same "quarantine" webhook will be raised, but no "push" notification anymore. This gives the scanner a chance to scan the image first before making it available to other users. 
 
