@@ -19,7 +19,7 @@ Inoder to try out this new feature in private preview, you will need to sign-up 
 You can use the feature after the request gets approved.
 
 ```json
-az feature register --namespace Microsoft.Compute --name GalleryPreview --subscription <subscriptionId>
+az feature register -n PrivatePreview --namespace Microsoft.ContainerRegistry --subscription <subscriptionId>
 ```
 
 ## Deploy a registry with BYOK enabled
