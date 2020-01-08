@@ -41,6 +41,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Jobs](https://aka.ms/acr/jobs) | https://aka.ms/acr/jobs |
 | [Repository permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repo-permissions |
 | [Audit logs](https://aka.ms/acr/audit-logs) | https://aka.ms/acr/audit-logs |
+| [Customer-managed keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
 | Twitter | #AzureContainerRegistry |
 
 ## Providing feedback
