@@ -14,7 +14,7 @@ In this private preview, you can create a new Premium container registry with BY
 
 ## How to sign-up for a private preview?
 
-Inoder to try out this new feature in private preview, you will need to sign-up using the command below. Once you run the command, product team will get notified of your request and we will approve the request.
+In order to try out this new feature in private preview, you will need to sign-up using the command below. Once you run the command, product team will get notified of your request and we will approve the request.
 
 You can use the feature after the request gets approved.
 
