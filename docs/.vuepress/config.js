@@ -41,7 +41,12 @@ module.exports = {
                 collapsable: true,
                 sidebarDepth : 1,
                 children : ['/integration/change-analysis/', ]
-            }
+            },
+            {
+                title: 'Encryption',
+                collapsable: true,
+                children: ['/preview/CMK/'],
+            },
         ]
     }
 }
