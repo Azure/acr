@@ -45,7 +45,7 @@ module.exports = {
             {
                 title: 'Encryption',
                 collapsable: true,
-                children: ['/preview/BYOK/'],
+                children: ['/preview/CMK/'],
             },
         ]
     }
