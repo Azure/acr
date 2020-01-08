@@ -1,6 +1,6 @@
-# Bring your own key (BYOK)
+# Customer-Managed Key (CMK)
 
-Bring your own key allows customers to configure customer-managed keys for Azure Container Registry (ACR) encryption. 
+Customer-Managed Key (CMK) or Bring your own key (BYOK) allows customers to configure customer-managed keys for Azure Container Registry (ACR) encryption. All customer-managed keys must be stored in an Azure Key Vault.
 
 In this private preview, you can create a new Premium container registry with BYOK enabled using an Azure ARM template. 
  
@@ -11,6 +11,7 @@ In this private preview, you can create a new Premium container registry with BY
 * Disabling encryption for a registry is not supported in this private preview 
 * Other registry features like geo-replication, content-trust and VNet integration will also be supported in a future release
 * Do not enable this feature on production environment
+* This feature is only enabled on a newly created registry
 
 ## How to sign-up for a private preview?
 
@@ -46,7 +47,7 @@ az keyvault create \
  --enable-purge-protection
 ```
 
-### 4. Create a key and get the key ID
+### 3. Create a key and get the key ID
 	 
  Create a key and get the key ID.
  
@@ -54,13 +55,18 @@ az keyvault create \
  KEK=$(az keyvault key create --name <key-name> --vault-name <key-vault-name> --query key.kid -o tsv)
  ```
  
- ### 5. Create a registry with BYOK enabled
+ ### 4. Create a registry with CMK enabled
 
-Download the template.json file. Run the following command to create a registry with BYOK enabled. Note that you need to provide the key vault name that you just created. Registry and managed identity will be created by the template.
+Download the template.json file. Run the following command to create a registry with BYOK enabled. Note that you need to provide the key vault name that you just created. Registry and user assigned managed identity will be created by the template.
   
 ```json
-az group deployment create -g <resource-group-name> --template-file <template.json> --parameters vault_name=<ey-vault-name> registry_name=<registry-name> identity_name=<managed-identity> kek_id=$KEK
+az group deployment create -g <resource-group-name> --template-file <template.json> --parameters vault_name=<key-vault-name> registry_name=<registry-name> identity_name=<managed-identity> kek_id=$KEK
 ```
+
+### 5. Key rotation
+
+You can rotate keys by creating a new key using step 3 and then using the new key in step 4 mentioned above.
+
 
 ## Login and use the registry
 
