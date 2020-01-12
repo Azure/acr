@@ -82,7 +82,6 @@
             "permissions": {
               "keys": [
                 "get",
-                "recover",
                 "unwrapKey",
                 "wrapKey"
               ]
