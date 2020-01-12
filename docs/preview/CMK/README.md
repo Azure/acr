@@ -19,7 +19,7 @@ In order to try out this new feature in private preview, you will need to sign-u
 
 You can use the feature after the request gets approved.
 
-```json
+```bash
 az feature register -n PrivatePreview --namespace Microsoft.ContainerRegistry --subscription <subscriptionId>
 ```
 
@@ -31,7 +31,7 @@ Follow these steps to create a registry with BYOK enabled using an ARM template.
 
 Create a resource group for creating the Key Vault and Keys.
 
-```json
+```bash
 az group create -g <resource-group-name> -l <location> 
 ```
 
@@ -39,19 +39,15 @@ az group create -g <resource-group-name> -l <location>
 
 Create a key vault to store customer-managed keys for registry encryption. This key vault should have two key protection settings enabled - Soft Delete and Do Not Purge. 
 
-```json
-az keyvault create \
- –-name <key-vault-name> \
- -g <resource-group-name> \
- --enable-soft-delete \
- --enable-purge-protection
+```bash
+az keyvault create –-name <key-vault-name> -g <resource-group-name> --enable-soft-delete --enable-purge-protection
 ```
 
 ### 3. Create a key and get the key ID
 	 
  Create a key and get the key ID.
  
- ```json
+ ```bash
  KEK=$(az keyvault key create --name <key-name> --vault-name <key-vault-name> --query key.kid -o tsv)
  ```
  
@@ -59,13 +55,19 @@ az keyvault create \
 
 Download the template.json file. Run the following command to create a registry with BYOK enabled. Note that you need to provide the key vault name that you just created. Registry and user assigned managed identity will be created by the template.
   
-```json
+```bash
 az group deployment create -g <resource-group-name> --template-file <template.json> --parameters vault_name=<key-vault-name> registry_name=<registry-name> identity_name=<managed-identity> kek_id=$KEK
 ```
 
 ### 5. Key rotation
 
 You can rotate keys by creating a new key using step 3 and then using the new key in step 4 mentioned above.
+
+### 6. Check out registry encryption settings
+
+```bash
+az resource show --id <registry-resource-id> --query properties.encryption --api-version 2019-12-01-preview
+```
 
 
 ## Login and use the registry
