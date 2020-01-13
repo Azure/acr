@@ -62,7 +62,7 @@ az group deployment create -g <resource-group-name> --template-file <template.js
 
 You can rotate keys by creating a new key using step 3 and then using the new key in step 4 mentioned above.
 
-### 6. Check out registry encryption settings
+### 6. View registry encryption settings
 
 ```bash
 az resource show --id <registry-resource-id> --query properties.encryption --api-version 2019-12-01-preview
