@@ -53,7 +53,7 @@ az keyvault create –-name <key-vault-name> -g <resource-group-name> --enable-s
  
  ### 4. Create a registry with CMK enabled
 
-Download the template.json file. Run the following command to create a registry with BYOK enabled. Note that you need to provide the key vault name that you just created. Registry and user assigned managed identity will be created by the template.
+Download the [template.json file](https://github.com/Azure/acr/blob/master/docs/preview/CMK/template.json). Run the following command to create a registry with BYOK enabled. Note that you need to provide the key vault name that you just created. Registry and user assigned managed identity will be created by the template.
   
 ```bash
 az group deployment create -g <resource-group-name> --template-file <template.json> --parameters vault_name=<key-vault-name> registry_name=<registry-name> identity_name=<managed-identity> kek_id=$KEK
