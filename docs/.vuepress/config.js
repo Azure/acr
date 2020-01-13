@@ -27,7 +27,7 @@ module.exports = {
             },
             {
                 title: 'Tasks',
-                collapsible: true, 
+                collapsible: true,
                 children: ['/tasks/container-registry-tasks-overview', '/tasks/run-as-deployment/']
             },
             {
@@ -45,7 +45,7 @@ module.exports = {
             {
                 title: 'Encryption',
                 collapsable: true,
-                children: ['/preview/CMK/'],
+                children: ['/CMK/'],
             },
         ]
     }
