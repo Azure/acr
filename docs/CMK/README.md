@@ -44,7 +44,8 @@ az keyvault create –-name <key-vault-name> -g <resource-group-name> --enable-s
 
 ### 3. Create a key and get the key ID
 
-Create a key and get the key ID.
+Create a key and get the full key ID. 
+> **Note:** if you skip the step because you have an existing key, make sure use a full key ID with version
 
 ```bash
  KEK=$(az keyvault key create --name <key-name> --vault-name <key-vault-name> --query key.kid -o tsv)
