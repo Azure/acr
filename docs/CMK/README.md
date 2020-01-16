@@ -14,7 +14,7 @@ In this version of the API, you can create a new Premium container registry with
 
 ## Whitelist your subscription to use the feature
 
-At this time, you must request access to use this capability. To do so, please contact acr-feedback at microsoft dot com
+At this time, you must request access to use this capability. To do so, please contact acrsup@microsoft.com.
 
 ## Deploy a registry with CMK enabled
 
