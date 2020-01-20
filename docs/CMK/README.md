@@ -12,15 +12,9 @@ In this version of the API, you can create a new Premium container registry with
 * Other registry features like geo-replication, content-trust and VNet integration will also be supported in a future release
 * This feature is only enabled on a newly created registry
 
-## Register the provider to use the feature
+## Whitelist your subscription to use the feature
 
-In order to try out this new feature, you will need to sign-up using the command below. Once you run the command, product team will get notified of your request and we will approve the request.
-
-You can use the feature after the request gets approved.
-
-```bash
-az feature register -n PrivatePreview --namespace Microsoft.ContainerRegistry --subscription <subscriptionId>
-```
+At this time, you must request access to use this capability. To do so, please contact acrsup@microsoft.com.
 
 ## Deploy a registry with CMK enabled
 
