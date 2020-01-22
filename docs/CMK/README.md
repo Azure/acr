@@ -14,7 +14,8 @@ In this version of the API, you can create a new Premium container registry with
 
 ## Whitelist your subscription to use the feature
 
-At this time, you must request access to use this capability. To do so, please contact acrsup@microsoft.com.
+At this time, you must request access to use this capability. To do so, please contact acrsup@microsoft.com and provide the subscription id.
+After approved, you can use https://aka.ms/acr/portal/preview/cmk to view the encryption setting in portal
 
 ## Deploy a registry with CMK enabled
 
