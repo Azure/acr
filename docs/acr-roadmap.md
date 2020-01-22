@@ -65,7 +65,15 @@ We believe customers should have a choice for their security scanning solutions 
 
 Customers have asked for more granular IP restrictions to their registry, in addition to authentication. As a shared registry API, this does present some challenges that we're incrementally addressing.
 
-In [March of 2019 we added preview support for VNet and Firewall rules](https://azure.microsoft.com/en-us/blog/azure-container-registry-virtual-network-and-firewall-rules-preview-support/). This allows customers to restrict their acr endpoint to requests from within the defined Azure VNet, or any whitelisted ip ranges. ACR VNet support is supported with AKS and VMs hosting container images. The container host infrastructure must be placed within the customers VNet as the host must be able to pull the image, from the registry that's in the VNet.
+In [March of 2019 we added preview support for VNet and Firewall rules through Service Endpoints](https://azure.microsoft.com/en-us/blog/azure-container-registry-virtual-network-and-firewall-rules-preview-support/). This allows customers to restrict their acr endpoint to requests from within the defined Azure VNet, or any whitelisted ip ranges. 
+
+The Service Endpoint approach to VNets puts firewall rules on the public endpoint, which limits the inbound traffic to network packets from reources defined as inside the VNet. However, the traffic does travel across the public network to be ingested. 
+
+**Private Links** is the next iteration of VNet & Firewall rules. With private endpoints, customers can assign private IPs to their resources, including ACR. This means that traffic from the VNet is not routed across the public network. 
+
+We plan to GA ACR VNet & Firewall rules when we complete the private link enhancements, and we add a new consumption pricing tier.
+
+#### Multi-tenant Services & VNets
 
 For container hosts that are not within the customers Azure VNet, such as multi-tenant services like Azure ML, ACI, Azure DevOps hosted build agents and ACR Tasks, the host is unable to pull the image. The host can only pull the image if it's in the VNet. We refer to this as the bootstrapping problem.
 
@@ -73,20 +81,7 @@ We are actively working with service teams to identify a secure solution that ad
 
 #### When will ACR VNet support GA
 
-When customers ask; when will __ ga, we typically here the following questions:
-
-1. **Q: Will the capability actually ship, or is it an experiment?**  
-  **A**: VNet will ship - it's not an experiment.
-1. **Q: If I write automation, will the control plane or data plane apis have breaking changes?**  
-  **A**: We are unable to commit to non-breaking changes in the CLI or REST apis at this time.
-1. **Q: When can I get support?**  
-We are engaging a subset of customers in preview support. Contact acr-sup@microsoft.com, requesting VNet Preview support if you are interested.
-1. **Q: What is the SLA? Are there any SLAs for something prior to GA?**  
-We have not provided an SLA for VNet as of yet. If you are blocked adopting ACR VNet without GA, please contact us (acr-sup@microsoft.com), requesting VNet Preview support.
-
-As for when VNet & Firewall rules will ga:
-
-Any new feature needs bake time to work out the bugs, performance bottlenecks, usability gaps and incorporate customer feedback. While we typically aim for a 6 month window between preview and GA, this is an estimate based on the complexity of the capability. VNets, due to the security implications, is something we prioritize stability over a committed time frame. We do not have an ETA for GA at this time. We encourage customers to use ACR VNet support, [providing feedback][feedback] or through [acr support](acr-support@microsoft.com)
+When customers ask for GA support, they are typically asking when we'll be able to support them with their production workloads. ACR will support any customer by opening a support ticket. Although ACR VNet & Firewall rules are not yet GA, we will provide full support by opening a ticket: https://aka.ms/acr/support/create-ticket
 
 ### Tokens & Repository Scoped Permissions (RBAC)
 
