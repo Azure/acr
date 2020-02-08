@@ -38,7 +38,7 @@ The ability to create and delete registries
 
 ## Push
 
-The ability to `docker push` and image to the registry
+The ability to `docker push` an image to the registry
 
 ## Pull
 
