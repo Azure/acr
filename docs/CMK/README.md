@@ -33,7 +33,7 @@ az group create -g <resource-group-name> -l <location>
 Create a key vault to store customer-managed keys for registry encryption. This key vault should have two key protection settings enabled - Soft Delete and Do Not Purge. 
 
 ```bash
-az keyvault create –-name <key-vault-name> -g <resource-group-name> --enable-soft-delete --enable-purge-protection
+az keyvault create --name <key-vault-name> -g <resource-group-name> --enable-soft-delete --enable-purge-protection
 ```
 
 ### 3. Create a key and get the key ID
