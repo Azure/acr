@@ -30,6 +30,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
 | [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
+| [Private Endpoints, Private Links](https://aka.ms/acr/privateendpoint) | https://aka.ms/acr/privateendpoint |
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Importing Containers](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
