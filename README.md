@@ -43,6 +43,7 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Audit logs](https://aka.ms/acr/audit-logs) | https://aka.ms/acr/audit-logs |
 | [Customer-managed keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
 | [Azure Policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
+| [Azure Private Link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
 | Twitter | #AzureContainerRegistry |
 
 ## Providing feedback
