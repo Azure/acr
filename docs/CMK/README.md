@@ -8,9 +8,9 @@ In this version of the API, you can create a new Premium container registry with
 
 ### Current limitations
 
-* Disabling encryption for a registry is not supported.
-* Other registry features like geo-replication, content-trust and VNet integration will also be supported in a future release
-* This feature is only enabled on a newly created registry
+* Disabling encryption for a registry will be supported in a future release.
+* Content-trust is not supported.
+* This feature is only enabled on a newly created registry.
 
 ## Whitelist your subscription to use the feature
 
