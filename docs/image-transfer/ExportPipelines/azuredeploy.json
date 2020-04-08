@@ -1,0 +1,104 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "registryName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Azure Container Registry"
+      }
+    },
+    "exportPipelineName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your export pipeline."
+      }
+    },
+    "userAssignedIdentity": {
+      "type": "string",
+      "metadata": {
+        "description": "The user assigned identity to be bound to the task run."
+      },
+      "defaultValue": ""
+    },
+    "targetUri": {
+      "type": "string",
+      "metadata": {
+        "description": "The target URI of the export pipeline."
+      }
+    },
+    "keyVaultUri": {
+      "type": "string",
+      "metadata": {
+        "description": "The key vault secret uri to obtain the target storage SAS token."
+      }
+    },
+    "options": {
+      "type": "array",
+      "metadata": {
+        "description": "The list of all options configured for the pipeline."
+      }
+    }
+  },
+  "variables": {
+    "targetType": "AzureStorageBlobContainer",
+    "systemIdentity": {
+      "type": "SystemAssigned"
+    },
+    "userIdentity": {
+      "type": "UserAssigned",
+      "userAssignedIdentities": {
+        "[parameters('userAssignedIdentity')]": {}
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2019-12-01-preview",
+      "name": "[parameters('registryName')]",
+      "location": "[parameters('location')]",
+      "comments": "Container registry for storing docker images",
+      "tags": {
+        "displayName": "Container Registry",
+        "container.registry": "[parameters('registryName')]"
+      },
+      "sku": {
+        "name": "Premium",
+        "tier": "Premium"
+      },
+      "properties": {
+        "adminUserEnabled": false
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries/exportPipelines/",
+      "name": "[concat(parameters('registryName'), '/', parameters('exportPipelineName'))]",
+      "location": "[parameters('location')]",
+      "apiVersion": "2019-12-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
+      ],
+      "identity": "[if(not(empty(parameters('userAssignedIdentity'))), variables('userIdentity'), variables('systemIdentity'))]",
+      "properties": {
+        "target": {
+          "type": "[variables('targetType')]",
+          "uri": "[parameters('targetUri')]",
+          "keyVaultUri": "[parameters('keyVaultUri')]"
+        },
+        "options": "[parameters('options')]"
+      }
+    }
+  ]
+}

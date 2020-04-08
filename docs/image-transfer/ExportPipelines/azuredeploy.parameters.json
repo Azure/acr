@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "registryName": {
+      "value": "myregistry"
+    },
+    "exportPipelineName": {
+      "value": "myExportPipeline"
+    },
+    "targetUri": {
+      "value": "https://accountname.blob.core.windows.net/containername"
+    },
+    "keyVaultUri": {
+      "value": "https://myvault.vault.azure.net/secrets/acrexportsas"
+    },
+    "options": {
+      "value": [
+        "ContinueOnErrors"
+      ]
+    }
+  }
+}
