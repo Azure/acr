@@ -1,1 +1,1 @@
-See public docs:
+See public docs: https://aks.ms/acr/transfer.
