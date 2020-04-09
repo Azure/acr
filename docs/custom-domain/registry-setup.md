@@ -63,7 +63,7 @@ We will enable two features on your registry that are currently in preview:
 10. `curl -f -X PATCH -H "Authorization: Bearer $accessToken" -H "Content-Type: application/json" $endpoint -d "$payload"`
 
 ## Prepare your Azure Key Vault
-For each domain, its TLS certificate must be added to an Azure Key Vault that is accessible by your registry. We recommend creating a new key vault containing only your TLS certificates and granting the registry's identity access to `get` secret.
+For each domain, its TLS private key and public certificate pair must be added to an Azure Key Vault that is accessible by your registry as a single PEM formatted file. We recommend creating a new key vault containing only your TLS certificates and granting the registry's identity access to `get` secret.
 1. [Create](https://docs.microsoft.com/azure/key-vault/) a new Azure Key Vault.
 2. [Add](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) your certificates to the key vault.
 3. Add an access policy to the key vault that grants your registry's identity access to `get` secret:\
