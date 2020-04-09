@@ -69,7 +69,7 @@ For greater isolation, you may choose to put each certificate in its own key vau
 2. The regional custom data endpoint must have a CNAME record with the target regional registry data endpoint:\
    `eastus-registry-data.contoso.com` --> `eastus.data.myregistry.azurecr.io`
    
-## Contact us
+## Contact Us
 As a final step, share the following with us by creating a support ticket ([Azure Support](https://azure.microsoft.com/en-us/support/create-ticket/)):
 - Registry custom domain details
   - custom registry domain (`container-registry.contoso.com`)
