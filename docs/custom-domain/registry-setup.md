@@ -1,0 +1,81 @@
+# Using Custom Domains with Azure Container Registry
+
+Every ACR is accessed using its login server. If you have a registry called `myregistry`, you access it using its default hostname, `myregistry.azurecr.io` (in Azure Public Cloud.) As a customer belonging to an organization, you may prefer to access your registry using a custom domain that is associated with your organization, for instance, `container-registry.contoso.com`.
+
+The following steps describe how you can achieve this.
+
+## Prerequisites
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest), [curl](https://curl.haxx.se/) or a similar tool (consider using [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview))
+- An Azure Container Registry. See [here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-azure-cli) for instructions on how to create one.
+- Two custom domains, one for accessing the registry REST API and another for downloading content from the registry. For example:
+  - `container-registry.contoso.com` (custom registry domain to access the registry metadata API)
+  - `eastus-registry-data.contoso.com` (custom data domain to access the registry data API)
+  
+  Note that the custom data domain is region specific. For geo-replicated registries, each region should have its own custom data endpoint.
+  For each domain, you must prepare a single PEM formatted file containing the TLS private key and public certificate:
+  
+  ```
+  -----BEGIN PRIVATE KEY-----  
+  .....  
+  -----END PRIVATE KEY-----  
+  -----BEGIN CERTIFICATE-----  
+  .....  
+  -----END CERTIFICATE-----
+  ```
+  
+## Prepare your existing registry
+We will enable two features on your registry that are currently in preview:
+- Data Endpoints
+  - This provides a dedicated endpoint for downloading content from your registry.
+  - For instance, if you have a registry in East US, when this feature is enabled, the data endpoint would be `eastus.data.myregistry.azurecr.io`.
+  
+- ACR Managed Identity
+  - Managed Identities (MI) provide a mechanism to associate an Azure Active Directory identity with your ACR, while relieving you of the burden of managing credentials. To learn more, see the documentation [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview). 
+  - ACR supports both user assigned and system assigned MI.
+  - If you choose to enable user assigned MI for your registry, create one first before proceeding. Instructions [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
+
+### Enable preview features
+1. `az login`
+2. `az account set -s <subscription-id-or-name> `
+3. `apiVersion="api-version=2019-12-01-preview"`
+4. `mgmtEndpoint=$(az cloud show --query endpoints.resourceManager -o tsv)`
+5. `accessToken=$(az account get-access-token --query accessToken -o tsv)`
+6. `registryResourceId=$(az acr show -n myregistry --query id -o tsv)`
+7. You can either enable a system assigned MI, or a user assigned MI, or both for your registry. Do one of the following:
+   - System assigned: 
+     - `identity="{\"type\": \"systemAssigned\"}"`
+   - User assigned: 
+     - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
+     - `identity="{\"type\": \"userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
+   - Both:
+     - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
+     - `identity="{\"type\": \"systemAssigned,userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
+8. `payload="{\"identity\": $identity, \"properties\": {\"dataEndpointEnabled\": true}}"`
+9. `endpoint="$mgmtEndpoint$registryResourceId?$apiVersion"`
+10. `curl -f -X PATCH -H "Authorization: Bearer $accessToken" -H "Content-Type: application/json" $endpoint -d "$payload"`
+
+## Prepare your TLS certificates
+For each domain, its TLS certificate must be added to an Azure Key Vault that is accessible by a registry identity. We recommend creating a new key vault containing only your TLS certificates and granting the registry's identity access to `get` secret.
+1. [Create](https://docs.microsoft.com/en-us/azure/key-vault/) a new Azure Key Vault.
+2. [Add](https://docs.microsoft.com/en-us/azure/key-vault/certificate-scenarios) your certificates to the key vault.
+3. Add an access policy to the key vault that grants your registry's identity access to `get` secret:\
+   `az keyvault set-policy --name <your-kv-name> --secret-permissions get --spn <registry-system-or-user-mi-clientId>`
+
+For greater isolation, you may choose to put each certificate in its own key vault and set it's access policy independently. The registry should have always have access to the TLS certificates.
+   
+## Prepare your DNS zone
+1. The registry custom domain must have a CNAME record with the target registry login server:\
+   `container-registry.contoso.com` --> `myregistry.azurecr.io`
+2. The regional custom data endpoint must have a CNAME record with the target regional registry data endpoint:\
+   `eastus-registry-data.contoso.com` --> `eastus.data.myregistry.azurecr.io`
+   
+## Contact us
+As a final step, share the following with us by creating a support ticket ([Azure Support](https://azure.microsoft.com/en-us/support/create-ticket/)):
+- Registry custom domain details
+  - custom registry domain (`container-registry.contoso.com`)
+  - key vault secret ID of the corresponding TLS certificate
+  - Client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
+- Data custom domain details
+  - regional custom data domain (`eastus-registry-data.contoso.com`)
+  - key vault secret ID of the corresponding TLS certificate
+  - Client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
