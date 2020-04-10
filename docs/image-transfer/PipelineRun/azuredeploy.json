@@ -81,7 +81,7 @@
           "pipelineResourceId": "[parameters('pipelineResourceId')]",
           "artifacts": "[parameters('artifacts')]",
           "source": {
-            "type": "[if(not(empty(parameters('sourceName'))), variables('transferType'), '']",
+            "type": "[if(not(empty(parameters('sourceName'))), variables('transferType'), '')]",
             "name": "[parameters('sourceName')]"
           },
           "target": {
