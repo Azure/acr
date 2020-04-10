@@ -11,8 +11,11 @@
     "targetUri": {
       "value": "https://accountname.blob.core.windows.net/containername"
     },
-    "keyVaultUri": {
-      "value": "https://myvault.vault.azure.net/secrets/acrexportsas"
+    "keyVaultName": {
+      "value": "myvault"
+    },
+    "sasTokenSecretName": {
+      "value": "acrexportsas"
     },
     "options": {
       "value": [

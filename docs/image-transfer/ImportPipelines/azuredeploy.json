@@ -38,10 +38,16 @@
         "description": "The source URI of the import pipeline."
       }
     },
-    "keyVaultUri": {
+    "keyVaultName": {
       "type": "string",
       "metadata": {
-        "description": "The key vault secret uri to obtain the source storage SAS token."
+        "description": "The key vault name to obtain the target storage SAS token."
+      }
+    },
+    "sasTokenSecretName": {
+      "type": "string",
+      "metadata": {
+        "description": "The key vault secret name to obtain the target storage SAS token."
       }
     },
     "sourceTriggerStatus": {
@@ -72,7 +78,10 @@
       "userAssignedIdentities": {
         "[parameters('userAssignedIdentity')]": {}
       }
-    }
+    },
+    "keyVaultSecretsPermissions": [
+      "get"
+    ]
   },
   "resources": [
     {
@@ -106,7 +115,7 @@
         "source": {
           "type": "[variables('sourceType')]",
           "uri": "[parameters('sourceUri')]",
-          "keyVaultUri": "[parameters('keyVaultUri')]"
+          "keyVaultUri": "[concat(reference(resourceId('Microsoft.KeyVault/vaults', parameters('KeyVaultName')), '2019-09-01').vaultUri, 'secrets/', parameters('sasTokenSecretName'))]"
         },
         "trigger": {
           "sourceTrigger": {
@@ -114,6 +123,25 @@
           }
         },
         "options": "[parameters('options')]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(parameters('keyVaultName'), '/add')]",
+      "apiVersion": "2019-09-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries/importPipelines', parameters('registryName'), parameters('importPipelineName'))]"
+      ],
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[if(not(empty(parameters('userAssignedIdentity'))), reference(parameters('userAssignedIdentity'), '2018-11-30').principalId, reference(resourceId('Microsoft.ContainerRegistry/registries/importPipelines', parameters('registryName'), parameters('importPipelineName')), '2019-12-01-preview', 'Full').identity.principalId)]",
+            "permissions": {
+              "secrets": "[variables('keyVaultSecretsPermissions')]"
+            }
+          }
+        ]
       }
     }
   ]

@@ -38,10 +38,16 @@
         "description": "The target URI of the export pipeline."
       }
     },
-    "keyVaultUri": {
+    "keyVaultName": {
       "type": "string",
       "metadata": {
-        "description": "The key vault secret uri to obtain the target storage SAS token."
+        "description": "The key vault name to obtain the target storage SAS token."
+      }
+    },
+    "sasTokenSecretName": {
+      "type": "string",
+      "metadata": {
+        "description": "The key vault secret name to obtain the target storage SAS token."
       }
     },
     "options": {
@@ -61,7 +67,10 @@
       "userAssignedIdentities": {
         "[parameters('userAssignedIdentity')]": {}
       }
-    }
+    },
+    "keyVaultSecretsPermissions": [
+      "get"
+    ]
   },
   "resources": [
     {
@@ -95,9 +104,28 @@
         "target": {
           "type": "[variables('targetType')]",
           "uri": "[parameters('targetUri')]",
-          "keyVaultUri": "[parameters('keyVaultUri')]"
+          "keyVaultUri": "[concat(reference(resourceId('Microsoft.KeyVault/vaults', parameters('KeyVaultName')), '2019-09-01').vaultUri, 'secrets/', parameters('sasTokenSecretName'))]"
         },
         "options": "[parameters('options')]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(parameters('keyVaultName'), '/add')]",
+      "apiVersion": "2019-09-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries/exportPipelines', parameters('registryName'), parameters('exportPipelineName'))]"
+      ],
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[if(not(empty(parameters('userAssignedIdentity'))), reference(parameters('userAssignedIdentity'), '2018-11-30').principalId, reference(resourceId('Microsoft.ContainerRegistry/registries/exportPipelines', parameters('registryName'), parameters('exportPipelineName')), '2019-12-01-preview', 'Full').identity.principalId)]",
+            "permissions": {
+              "secrets": "[variables('keyVaultSecretsPermissions')]"
+            }
+          }
+        ]
       }
     }
   ]
