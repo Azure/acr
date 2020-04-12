@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Task=System.Threading.Tasks.Task;
 
@@ -69,11 +68,11 @@ namespace ManageTask
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                     "WeatherService");
 
-            Console.WriteLine($"{DateTimeOffset.Now}: Ceating tarball from '{sourceDirecotry}'");
+            Console.WriteLine($"{DateTimeOffset.Now}: Creating tarball from '{sourceDirecotry}'");
 
             var tarball = CreateTarballFromDirectory(sourceDirecotry);
 
-            Console.WriteLine($"{DateTimeOffset.Now}: Ceated tarball '{tarball}'");
+            Console.WriteLine($"{DateTimeOffset.Now}: Created tarball '{tarball}'");
 
             Console.WriteLine($"{DateTimeOffset.Now}: Uploading tarball");
 
@@ -85,6 +84,7 @@ namespace ManageTask
             using (var content = new StreamContent(stream))
             using (var httpClient = new HttpClient())
             {
+                // NOTE: You can also use azure storage sdk to upload the file
                 content.Headers.Add("x-ms-blob-type", "BlockBlob");
                 var response = await httpClient.PutAsync(sourceUpload.UploadUrl, content).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
@@ -113,7 +113,6 @@ namespace ManageTask
             Console.WriteLine($"{DateTimeOffset.Now}: Started run: '{run.RunId}'");
 
             // Poll the run status and wait for completion
-
             DateTimeOffset deadline = DateTimeOffset.Now.AddMinutes(10);
             while (RunInProgress(run.Status)
                 && deadline >= DateTimeOffset.Now)
@@ -129,7 +128,6 @@ namespace ManageTask
             Console.WriteLine($"{DateTimeOffset.Now}: Run status: '{run.Status}'");
 
             // Download the run log
-
             var logResult = await registryClient.Runs.GetLogSasUrlAsync(
                 options.ResourceGroupName,
                 options.RegistryName,
@@ -137,6 +135,7 @@ namespace ManageTask
 
             using (var httpClient = new HttpClient())
             {
+                // NOTE: You can also use azure storage sdk to download the log
                 Console.WriteLine($"{DateTimeOffset.Now}: Run log: ");
                 var log = await httpClient.GetStringAsync(logResult.LogLink).ConfigureAwait(false);
                 Console.WriteLine(log);
