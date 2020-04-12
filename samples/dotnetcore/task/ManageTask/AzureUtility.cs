@@ -5,13 +5,13 @@ using System;
 
 namespace ManageTask
 {
-    internal class SubscriptionUtility
+    internal class AzureUtility
     {
         private readonly AzureCredentials credential;
 
         public ContainerRegistryManagementClient RegistryClient { get; private set; }
 
-        public SubscriptionUtility(AzureEnvironment environment, string tenantId, string subscriptionId, string miClientId, string spClientId, string spClientSecret)
+        public AzureUtility(AzureEnvironment environment, string tenantId, string subscriptionId, string miClientId, string spClientId, string spClientSecret)
         {
             if (string.IsNullOrWhiteSpace(tenantId))
             {
@@ -48,6 +48,7 @@ namespace ManageTask
             }
 
             RegistryClient = new ContainerRegistryManagementClient(credential.WithDefaultSubscription(subscriptionId));
+            RegistryClient.SubscriptionId = subscriptionId;
         }
     }
 }
