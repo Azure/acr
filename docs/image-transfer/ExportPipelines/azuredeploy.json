@@ -54,7 +54,8 @@
       "type": "array",
       "metadata": {
         "description": "The list of all options configured for the pipeline."
-      }
+      },
+      "defaultValue": []
     }
   },
   "variables": {
