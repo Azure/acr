@@ -36,7 +36,7 @@
       "metadata": {
         "description": "List of source artifacts to be transferred by the pipeline."
       },
-      "defaultValue": ""
+      "defaultValue": []
     },
     "sourceName": {
       "type": "string",
