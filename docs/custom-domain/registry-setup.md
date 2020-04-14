@@ -71,8 +71,13 @@ For each domain, its TLS private key and public certificate pair must be added t
 1. [Create](https://docs.microsoft.com/azure/key-vault/) a new Azure Key Vault.
 2. [Add](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) your certificates to the key vault.
 3. Add an access policy to the key vault that grants your registry's identity access to `get` secret:\
-   `az keyvault set-policy --name <your-kv-name> --secret-permissions get --spn <registry-system-or-user-mi-client-id>`
-   - The output of the command to enable preview features on the registry will contain these client ids.
+   `az keyvault set-policy --name <your-kv-name> --secret-permissions get --spn <registry-system-or-user-mi-principal-id>`
+   - The output of the command to enable preview features on the registry will contain the principal ids of the assiged identities.
+   - Alternatively, you may obtain the principal ids using `az cli`:
+     - For system assigned managed identity:
+       - `az acr show -n myrRegistry --query identity.principalId -o tsv`
+     - For user assigned managed identities, you may list them as follows and use the desired principal ID:
+       - `az acr show -n myRegistry --query identity.userAssignedIdentities`
 
 For greater isolation, we recommend that you put each certificate in its own key vault and set its access policy independently. The registry should always have access to the TLS certificates.
 
