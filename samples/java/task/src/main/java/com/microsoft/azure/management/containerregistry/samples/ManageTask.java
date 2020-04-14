@@ -77,8 +77,8 @@ public class ManageTask
 
         // Poll the run status and wait for completion
         while (runInProgress(run.status())) {
-            System.out.printf("%tT: In progress: %s. Wait 5 seconds\n", LocalDateTime.now(), run.status());
-            Thread.sleep(5000);
+            System.out.printf("%tT: In progress: %s. Wait 10 seconds\n", LocalDateTime.now(), run.status());
+            Thread.sleep(10000);
             run = manager.runs().getAsync(rgName, acrName, runId).toBlocking().first();
         }
 
