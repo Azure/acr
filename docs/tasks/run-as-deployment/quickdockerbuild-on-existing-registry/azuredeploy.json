@@ -1,0 +1,104 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "registryName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Azure Container Registry"
+      }
+    },
+    "taskRunName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Task Run and tag generated"
+      }
+    },
+    "userAssignedIdentity": {
+      "type": "string",
+      "metadata": {
+        "description": "The user assigned identity to be bound to the task run"
+      },
+      "defaultValue": ""
+    },
+    "sourceLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The location of the source to build the image"
+      }
+    },
+    "dockerFilePath": {
+      "type": "string",
+      "metadata": {
+        "description": "The relative path of the dockerfile in the source location"
+      },
+      "defaultValue": "Dockerfile"
+    },
+    "repository": {
+      "type": "string",
+      "metadata": {
+        "description": "Repository name for the the build output"
+      }
+    }
+  },
+  "variables": {
+    "tag": "parameters('taskRunName')",
+    "imageName": "[concat(parameters('repository'), ':', parameters('taskRunName'))]",
+    "identity": {
+      "type": "UserAssigned",
+      "userAssignedIdentities": {
+        "[parameters('userAssignedIdentity')]": {
+        }
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries/taskRuns",
+      "apiVersion": "2019-06-01-preview",
+      "name": "[concat(parameters('registryName'), '/', parameters('taskRunName'))]",
+      "location": "[parameters('location')]",
+      "identity": "[if(not(empty(parameters('userAssignedIdentity'))), variables('identity'), '')]",
+      "properties": {
+        "runRequest": {
+          "type": "DockerBuildRequest",
+          "dockerFilePath": "[parameters('dockerFilePath')]",
+          "imageNames": [
+            "[variables('imageName')]"
+          ],
+          "sourceLocation": "[parameters('sourceLocation')]",
+          "isPushEnabled": true,
+          "platform": {
+            "os": "linux",
+            "architecture": "amd64"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "registry": {
+      "type": "string",
+      "value": "[parameters('registryName')]"
+    },
+    "repository": {
+      "type": "string",
+      "value": "[parameters('repository')]"
+    },
+    "tag": {
+      "type": "string",
+      "value": "[variables('tag')]"
+    }
+  }
+}

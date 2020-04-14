@@ -1,0 +1,149 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "registryName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Azure Container Registry"
+      }
+    },
+    "importPipelineName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your import pipeline."
+      }
+    },
+    "userAssignedIdentity": {
+      "type": "string",
+      "metadata": {
+        "description": "The user assigned identity to be bound to the task run."
+      },
+      "defaultValue": ""
+    },
+    "sourceUri": {
+      "type": "string",
+      "metadata": {
+        "description": "The source URI of the import pipeline."
+      }
+    },
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "The key vault name to obtain the target storage SAS token."
+      }
+    },
+    "sasTokenSecretName": {
+      "type": "string",
+      "metadata": {
+        "description": "The key vault secret name to obtain the target storage SAS token."
+      }
+    },
+    "sourceTriggerStatus": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "metadata": {
+        "description": "Indicates whether you want to enable the source trigger on the import pipeline."
+      },
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ]
+    },
+    "options": {
+      "type": "array",
+      "metadata": {
+        "description": "The list of all options configured for the pipeline."
+      },
+      "defaultValue": []
+    }
+  },
+  "variables": {
+    "sourceType": "AzureStorageBlobContainer",
+    "systemIdentity": {
+      "type": "SystemAssigned"
+    },
+    "userIdentity": {
+      "type": "UserAssigned",
+      "userAssignedIdentities": {
+        "[parameters('userAssignedIdentity')]": {}
+      }
+    },
+    "keyVaultSecretsPermissions": [
+      "get"
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2019-12-01-preview",
+      "name": "[parameters('registryName')]",
+      "location": "[parameters('location')]",
+      "comments": "Container registry for storing docker images",
+      "tags": {
+        "displayName": "Container Registry",
+        "container.registry": "[parameters('registryName')]"
+      },
+      "sku": {
+        "name": "Premium",
+        "tier": "Premium"
+      },
+      "properties": {
+        "adminUserEnabled": false
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries/importPipelines/",
+      "name": "[concat(parameters('registryName'), '/', parameters('importPipelineName'))]",
+      "location": "[parameters('location')]",
+      "apiVersion": "2019-12-01-preview",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
+      ],
+      "identity": "[if(not(empty(parameters('userAssignedIdentity'))), variables('userIdentity'), variables('systemIdentity'))]",
+      "properties": {
+        "source": {
+          "type": "[variables('sourceType')]",
+          "uri": "[parameters('sourceUri')]",
+          "keyVaultUri": "[concat(reference(resourceId('Microsoft.KeyVault/vaults', parameters('KeyVaultName')), '2019-09-01').vaultUri, 'secrets/', parameters('sasTokenSecretName'))]"
+        },
+        "trigger": {
+          "sourceTrigger": {
+            "status": "[parameters('sourceTriggerStatus')]"
+          }
+        },
+        "options": "[parameters('options')]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(parameters('keyVaultName'), '/add')]",
+      "apiVersion": "2019-09-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries/importPipelines', parameters('registryName'), parameters('importPipelineName'))]"
+      ],
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[if(not(empty(parameters('userAssignedIdentity'))), reference(parameters('userAssignedIdentity'), '2018-11-30').principalId, reference(resourceId('Microsoft.ContainerRegistry/registries/importPipelines', parameters('registryName'), parameters('importPipelineName')), '2019-12-01-preview', 'Full').identity.principalId)]",
+            "permissions": {
+              "secrets": "[variables('keyVaultSecretsPermissions')]"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

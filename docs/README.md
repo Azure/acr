@@ -1,4 +1,9 @@
-# Azure Container Registry
+---
+title: Overview
+type: post
+---
+
+# Overview
 
 This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./docs), [troubleshooting tips](./docs/Troubleshooting%20Guide.md), and a collection of links for Azure Container Registry.
 
@@ -39,11 +44,6 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
 | [Jobs](https://aka.ms/acr/jobs) | https://aka.ms/acr/jobs |
-| [Repository permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repo-permissions |
-| [Audit logs](https://aka.ms/acr/audit-logs) | https://aka.ms/acr/audit-logs |
-| [Customer-managed keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
-| [Azure Policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
-| [Azure Private Link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
 | Twitter | #AzureContainerRegistry |
 
 ## Providing feedback

@@ -1,0 +1,16 @@
+version: v1.1.0
+
+alias:
+  values:
+    BaseRegistry: {{ .Values.BaseRegistry | default "mcr.microsoft.com" }}
+
+steps:
+ - cmd: docker pull $BaseRegistry/dotnet/core/aspnet:3.1-buster-slim
+   retries: 3
+   retryDelay: 5
+ - cmd: docker pull $BaseRegistry/dotnet/core/sdk:3.1-buster
+   retries: 3
+   retryDelay: 5
+ - build: -f Dockerfile -t $Registry/weatherservice:$ID --build-arg BaseImage=$BaseRegistry/dotnet/core/aspnet:3.1-buster-slim --build-arg BuildImage=$BaseRegistry/dotnet/core/sdk:3.1-buster .
+ - push: 
+    - $Registry/weatherservice:$ID

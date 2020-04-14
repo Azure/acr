@@ -1,8 +1,13 @@
+---
+type: post
+title: "Token with Basic Auth"
+---
+
 # Azure Container Registry's support of getting Bearer token using Basic Authentication
 
 The Azure Container Registry supports both Basic Authentication and OAuth2 for getting a registry Bearer token. This document describes how to get a Bearer token using Basic Authentication. To get the token using OAuth2, please refer to the [AAD-OAuth doc](https://github.com/Azure/acr/blob/master/docs/AAD-OAuth.md).
 
-## Token API
+## Using the token API
 
 ACR has implemented the GET method on the token endpoint for user to retrieve a Bearer token using Basic Authentication:
 
@@ -41,8 +46,12 @@ The body of the payload might provide additional details, but all the informatio
 With this information we're now ready to call `GET /oauth2/token` to obtain an ACR access token that will allow us to use the `GET /v2/hello-world/manifests/latest` API. 
 
 ### Encode the username and password 
-  - using a tool like https://www.base64encode.org/
+  - You can use Windows Powershell or `base64` command line utility in Linux/Mac
     - Encode using the following format: **[username]**:**[password]**
+    - Powershell: 
+    	- `[convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes('[username]:[password]'))`
+    - Linux/Mac Terminal: 
+    	- `echo -n '[username]:[password]' | base64`
     - Copy the encoded value and set it as a environment variable
 	
 ```bash

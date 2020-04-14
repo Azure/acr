@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "registryName": {
+      "value": "myregistry"
+    },
+    "importPipelineName": {
+      "value": "myImportPipeline"
+    },
+    "sourceUri": {
+      "value": "https://accountname.blob.core.windows.net/containername"
+    },
+    "keyVaultName": {
+      "value": "myvault"
+    },
+    "sasTokenSecretName": {
+      "value": "acrimportsas"
+    },
+    "options": {
+      "value": [
+        "OverwriteTags",
+        "DeleteSourceBlobOnSuccess",
+        "ContinueOnErrors"
+      ]
+    }
+  }
+}

@@ -1,0 +1,7 @@
+version: v1.0.0
+steps:
+  - cmd: >-
+      {{.Run.Registry}}/buildx
+      build --push
+      -t {{.Run.Registry}}/{{.Values.REPOSITORY_NAME}}:{{.Run.ID}}
+      {{.Values.BUILD_CONTEXT}}
