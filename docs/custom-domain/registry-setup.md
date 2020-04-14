@@ -96,8 +96,8 @@ As a final step, share the following with us by creating a support ticket ([Azur
 - Custom registry domain details
   - custom registry domain (`container-registry.contoso.com`)
   - key vault secret ID of the corresponding TLS certificate
-  - Client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
+  - client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
 - Custom data domain details
   - regional custom data domain (`eastus-registry-data.contoso.com`)
   - key vault secret ID of the corresponding TLS certificate
-  - Client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
+  - client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
