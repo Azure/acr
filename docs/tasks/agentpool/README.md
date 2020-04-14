@@ -4,10 +4,10 @@
 
 AgentPool allows you to run tasks in the dedicated machine pool exclusively. Here are some key features.
 
-* You can provision the agent pool into your vnet. Tasks running on the agent pool are able to securely access the resources (eg, container registry, key vault) in the vnet.
+* You can provision the agent pool into your vnet. The tasks running on the agent pool are able to securely access the resources in the vnet (eg, container registry, key vault, storage).
 * You can scale in/out the agent pool on demand.
 * You have more machine choices. Current preview release provides 3 tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S4 (8 cpu, 16G mem). 
-* You can create multiple agent pools to serve different type of workloads. 
+* You can create multiple agent pools to serve different types of workloads. 
 
 AgentPool feature is currently previewed in WestUS2, SouthCentralUS, EastUS2 and EastUS. Please contact acrsup@microsoft.com if you want to try the feature.
 
@@ -74,7 +74,7 @@ az acr build \
     -r myregistry \
     --agent-pool myagentpool \
     -t myimage:mytag \
-    -f Dcokerfile \
+    -f Dockerfile \
     https://github.com/Azure-Samples/acr-build-helloworld-node.git
 ```
 
