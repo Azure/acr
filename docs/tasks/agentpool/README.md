@@ -47,6 +47,8 @@ az acr agentpool update \
 | Outbound  | TCP      | VirtualNetwork | Any         | AzureActiveDirectory | 443       | Default |
 | Outbound  | TCP      | VirtualNetwork | Any         | AzureMonitor         | 443       | Default |
 
+    [NOTE] If your Tasks require additional resources from public internet, eg, if you run docker build task that needs to pull the base images from DockerHub or restore Nuget package, please add the corresponding rules. 
+
 * Create an agent pool in the vnet.
 
 ```sh
