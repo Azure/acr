@@ -9,8 +9,8 @@ The following steps describe how you can achieve this.
   - Consider using [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/overview)
 - A _premium_ Azure Container Registry. See [here](https://docs.microsoft.com/azure/container-registry/container-registry-get-started-azure-cli) for instructions on how to create one.
 - Your custom domain names. The following two are required:
-  - custom registry domain to access the registry REST API: `container-registry.contoso.com` 
-  - custom data domain to access the registry content: `eastus-registry-data.contoso.com`
+  - Custom registry domain to access the registry REST API. Example for the `contoso.com` domain: `container-registry.contoso.com` 
+  - Custom data domain to access the registry content. Again, example for `contoso.com`: `eastus-registry-data.contoso.com`
     - Note that the custom data domain is region specific. For geo-replicated registries, each region should have its own custom data endpoint.
 
   For each domain, you must prepare a single PEM formatted file containing the TLS private key and public certificate:
@@ -30,8 +30,9 @@ The following steps describe how you can achieve this.
   - Create a single file containing both the public certificate and private key
      - `cat container-registry.contoso.com.key.pem >> container-registry-contoso-com-pem`
      - `cat container-registry.contoso.com.cert.pem >> container-registry-contoso-com-pem`
+  - For each data domain, follow the same steps above to prepare the PEM formatted files containing the public certificate and private key.
   
-  Azure Key Vault allows you to [create certificates](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) signed with a Certificate Authority.
+  Azure Key Vault allows you to [create](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) Certificate Authority (CA) signed certificates.
   
 ## Prepare your existing registry
 We will enable two features on your registry that are currently in preview:
@@ -39,8 +40,8 @@ We will enable two features on your registry that are currently in preview:
   This feature provides a dedicated endpoint for downloading content from your registry. If you have a registry in East US, on enabling this feature, a data endpoint is automatically created for you: `eastus.data.myregistry.azurecr.io`
   
 - ACR Managed Identities:\
-  Managed Identities (MI) provide a mechanism to associate an Azure Active Directory identity with your registry, while relieving you of the burden of managing credentials. To learn more, see the documentation [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).\
- ACR supports both user assigned and system assigned MI. If you choose to enable user assigned MI for your registry, create one first before proceeding. Instructions [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
+  Managed Identities provide a mechanism to associate an Azure Active Directory identity with your registry, while relieving you of the burden of managing credentials. To learn more, see the documentation [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).\
+ ACR supports both user assigned and system assigned managed identities.
 
 ### Enable preview features
 1. `az login`
@@ -49,15 +50,18 @@ We will enable two features on your registry that are currently in preview:
 4. `mgmtEndpoint=$(az cloud show --query endpoints.resourceManager -o tsv)`
 5. `accessToken=$(az account get-access-token --query accessToken -o tsv)`
 6. `registryResourceId=$(az acr show -n myregistry --query id -o tsv)`
-7. You can either enable a system assigned MI, or a user assigned MI, or both for your registry. We recommend using a system assigned MI to enable advanced scenarios with virtual networks that are [called out below](#enhanced-security-with-virtual-networks). Do one of the following:
-   - System assigned: 
+7. You can either enable a system assigned managed identity, a user assigned managed identity, or both for your registry. We recommend using system assigned managed identity to enable advanced scenarios with virtual networks that, although not supported currently, are [coming soon](#enhanced-security-with-virtual-networks). Do _one_ of the following:
+   - To enable only system assigned managed identity: 
      - `identity="{\"type\": \"systemAssigned\"}"`
-   - User assigned: 
-     - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
-     - `identity="{\"type\": \"userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
-   - Both:
-     - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
-     - `identity="{\"type\": \"systemAssigned,userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
+   - To enable user assigned managed identity, with or without a system identity: 
+     - Create a user assigned managed identity following the instructions [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
+     - Do _one_ of the following:
+       - To enable _only_ user assigned managed identity:
+         - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
+         - `identity="{\"type\": \"userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
+       - To enable _both_ user and system assigned managed identities:
+         - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
+         - `identity="{\"type\": \"systemAssigned,userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
 8. `payload="{\"identity\": $identity, \"properties\": {\"dataEndpointEnabled\": true}}"`
 9. `endpoint="$mgmtEndpoint$registryResourceId?$apiVersion"`
 10. `curl -f -X PATCH -H "Authorization: Bearer $accessToken" -H "Content-Type: application/json" $endpoint -d "$payload"`
