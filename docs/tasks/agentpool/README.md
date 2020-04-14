@@ -1,4 +1,4 @@
-# Running ACR Tasks on a dedicated agent pool
+# Running ACR Tasks on dedicated agent pools
 
 ## Introduction
 
@@ -9,7 +9,7 @@ AgentPool allows you to run tasks in the dedicated machine pool exclusively. Her
 * You have more machine choices. Current preview release provides 3 tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S4 (8 cpu, 16G mem). 
 * You can create multiple agent pools to serve different types of workloads. 
 
-AgentPool feature is currently previewed in WestUS2, SouthCentralUS, EastUS2 and EastUS. Please contact acrsup@microsoft.com if you want to try the feature.
+AgentPool feature is currently previewed in WestUS2, SouthCentralUS, EastUS2 and EastUS. Please contact acrsup@microsoft.com to enable for your subscription.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ AgentPool feature is currently previewed in WestUS2, SouthCentralUS, EastUS2 and
 
 ```sh
 az acr agentpool create \
-    -r myregistry \
+    -r mypremiumregistry \
     -n myagentpool \
     --tier S2
 ```
@@ -31,7 +31,7 @@ az acr agentpool create \
 
 ```sh
 az acr agentpool update \
-    -r myregistry \
+    -r mypremiumregistry \
     -n myagentpool \
     -c 2
 ```
@@ -59,7 +59,7 @@ subnet=$(az network vnet subnet show \
         --query id -o tsv)
 
 az acr agentpool create \
-    -r myregistry \
+    -r mypremiumregistry \
     -n myagentpool \
     --tier S2 \
     --subnet-id $subnet
@@ -71,7 +71,7 @@ az acr agentpool create \
 
 ```sh
 az acr build \
-    -r myregistry \
+    -r mypremiumregistry \
     --agent-pool myagentpool \
     -t myimage:mytag \
     -f Dockerfile \
@@ -82,7 +82,7 @@ az acr build \
 
 ```sh
 az acr task create \
-    -r myregistry \
+    -r mypremiumregistry \
     -n mytask \
     --agent-pool myagentpool \
     -t myimage:mytag \
@@ -91,7 +91,7 @@ az acr task create \
     --commit-trigger-enabled false
     
 az acr task run \
-    -r myregistry \
+    -r mypremiumregistry \
     -n mytask
 ```
 
@@ -99,7 +99,7 @@ az acr task run \
 
 ```sh
 az acr agentpool show \
-    -r myregistry \
+    -r mypremiumregistry \
     -n myagentpool \
     --queue-count
 ```
