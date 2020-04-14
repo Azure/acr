@@ -13,8 +13,8 @@ AgentPool feature is currently previewed in WestUS2, SouthCentralUS, EastUS2 and
 
 ## Prerequisites
 
-* Please install Azure CLI 2.3.1 or above.
-* Please prepare a premium container registry the above preview regions.
+* Please install Azure CLI __2.3.1__ or above.
+* Please prepare a __premium__ container registry in the above preview regions.
 
 ## Create and manage an agent pool
 
