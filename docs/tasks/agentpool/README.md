@@ -1,44 +1,51 @@
-# Running ACR Tasks on dedicated agent pools
+# Running ACR Tasks on Dedicated Agent Pools
 
 ## Introduction
 
-AgentPool allows you to run tasks in the dedicated machine pool exclusively. Here are some key features.
+ACR Task Agent Pool provides [ACR Task][acr-tasks] execution in dedicated machine pools.
 
-* You can provision the agent pool into your vnet. The tasks running on the agent pool are able to securely access the resources in the vnet (eg, container registry, key vault, storage).
-* You can scale in/out the agent pool on demand.
-* You have more machine choices. Current preview release provides 3 tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S4 (8 cpu, 16G mem). 
-* You can create multiple agent pools to serve different types of workloads. 
+Task Agent Pools provide:
 
-AgentPool feature is currently previewed in WestUS2, SouthCentralUS, EastUS2 and EastUS. Please contact acrsup@microsoft.com to enable for your subscription.
+- **VNet Support:** Agent Pools may be assigned to Azure VNets, providing access the resources in the VNet (eg, Container Registry, Key Vault, Storage).
+- **Scale As Needed:** Agent pools can be increased as needed, or scaled to zero, billed based on allocation.
+- **More Memory and CPU Options:** The current preview provides 3 tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S4 (8 cpu, 16G mem).
+- **Agent Pools per Workload:** To serve different configurations, instance agent pools based on scale and tier options to serve different types of workloads.
+- **Hybrid Managed Pools:** Task pools are patched and maintained by Azure. Task pools provide a balance between reserved allocation without the need to maintain the individual VMs.
+
+ACR Task Agent Pools are currently previewed in WestUS2, SouthCentralUS, EastUS2 and EastUS. To participate in the private preview of Task Pools please [open a support ticket][open-support-ticket], specifying the subscription to be enabled.
 
 ## Prerequisites
 
-* Please install Azure CLI __2.3.1__ or above.
-* Please prepare a __premium__ container registry in the above preview regions.
+- [Azure CLI][azure-cli] __2.3.1__ or above.
+- A [__premium__ container registry][acr-tiers] in the above preview regions.
 
-## Create and manage an agent pool
+## Create and Manage an ACR Task Agent Pool
 
-* Create an agent pool of tier S2 (4 cpu/instance).
+- Set the default registry, simplifying CLI commands
+
+```sh
+az configure --defaults acr=[registryName]
+```
+
+- Create an agent pool of tier S2 (4 cpu/instance) with 1 instance.
 
 ```sh
 az acr agentpool create \
-    -r mypremiumregistry \
-    -n myagentpool \
+    --name myagentpool \
     --tier S2
 ```
 
-* The above command will create a new agent pool with 1 instance. You can scale out the agent pool to have more instances or scale in to 0.
+- Scale the agent pool with more instances or scale in to 0.
 
 ```sh
 az acr agentpool update \
-    -r mypremiumregistry \
-    -n myagentpool \
-    -c 2
+    --name myagentpool \
+    --count 2
 ```
 
-## Create an agent pool in a custom vnet
+## Create an Agent Pool in a VNet
 
-* If you enable the network security rule on the vnet, as a managed service, AgentPool requires unrestricted access to several IP addresses in the Azure data center. To allow communication with these IP addresses, update any existing network security groups or user-defined routes with following outbound network rule. 
+- Task Agent Pools require access to the following Azure services. The following firewall rules must be added to any existing network security groups or user-defined routes.
 
 | Direction | Protocol | Source         | Source Port | Destination          | Dest Port | Used    |
 |-----------|----------|----------------|-------------|----------------------|-----------|---------|
@@ -47,9 +54,9 @@ az acr agentpool update \
 | Outbound  | TCP      | VirtualNetwork | Any         | AzureActiveDirectory | 443       | Default |
 | Outbound  | TCP      | VirtualNetwork | Any         | AzureMonitor         | 443       | Default |
 
-    [NOTE] If your Tasks require additional resources from public internet, eg, if you run docker build task that needs to pull the base images from DockerHub or restore Nuget package, please add the corresponding rules. 
+[NOTE] If your Tasks require additional resources from public internet, eg, if you run docker build task that needs to pull the base images from DockerHub or restore Nuget package, please add the corresponding rules.
 
-* Create an agent pool in the vnet.
+- Create an agent pool in the VNet.
 
 ```sh
 subnet=$(az network vnet subnet show \
@@ -59,54 +66,53 @@ subnet=$(az network vnet subnet show \
         --query id -o tsv)
 
 az acr agentpool create \
-    -r mypremiumregistry \
-    -n myagentpool \
+    --name myagentpool \
     --tier S2 \
     --subnet-id $subnet
 ```
 
-## Schedule runs on the agent pool
+## Schedule Runs on the Agent Pool
 
-* Schedule a quick run on the agent pool.
+- Schedule a quick run on the agent pool.
 
 ```sh
 az acr build \
-    -r mypremiumregistry \
     --agent-pool myagentpool \
     -t myimage:mytag \
     -f Dockerfile \
     https://github.com/Azure-Samples/acr-build-helloworld-node.git
 ```
 
-* Create a recurring task on the agent pool.
+- Create a recurring task on the agent pool.
 
 ```sh
 az acr task create \
-    -r mypremiumregistry \
     -n mytask \
     --agent-pool myagentpool \
     -t myimage:mytag \
     -f Dcokerfile \
     -c https://github.com/Azure-Samples/acr-build-helloworld-node.git \
     --commit-trigger-enabled false
-    
+
 az acr task run \
     -r mypremiumregistry \
     -n mytask
 ```
 
-* Query the agent pool queue status (current scheduled runs on the agent pool).
+- Query the agent pool queue status (current scheduled runs on the agent pool).
 
 ```sh
 az acr agentpool show \
-    -r mypremiumregistry \
     -n myagentpool \
     --queue-count
 ```
 
+## Preview Limitations
 
+- Task Agent Pools currently support Linux nodes. Windows nodes are not currently supported.
+- For each registry, the default total cpu quota of all agent pools is 16. Please [open a support ticket][open-support-ticket] for additional allocation.
 
-## Preview limitation
-
-* Windows is not supported.
-* For each registry, the default total cpu quota of all agent pools is 16. Please contact acrsup@microsoft.com if you want to bump the quota.
+[acr-tasks]:           https://aka.ms/acr/tasks
+[acr-tiers]:           https://aka.ms/acr/tiers
+[azure-cli]:           https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
+[open-support-ticket]: https://aka.ms/acr/support/create-ticket
