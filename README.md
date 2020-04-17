@@ -11,42 +11,74 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 * [Docker Tagging Best Practices](https://stevelasker.blog/2018/03/01/docker-tagging-best-practices-for-tagging-and-versioning-docker-images/)
 * [Deploying Docker Images to Azure Container Instances](https://stevelasker.blog/2017/07/28/deploying-docker-images-from-the-azure-container-registry-to-azure-container-instances/)
 
-
 ## Links
+
+A set of short links for presentations & social media.
+
+### General ACR Links
+
 | Title | Link |
 | - | - |
-| [Service Overview](https://aka.ms/acr) | https://aka.ms/acr |
-| [Links](https://aka.ms/acr/links) | https://aka.ms/acr/links | 
+| [ACR Service](https://aka.ms/acr) | https://aka.ms/acr |
+| [Tiers](https://aka.ms/acr/tiers) | https://aka.ms/acr/tiers |
+| [Pricing](https://aka.ms/acr/pricing) | https://aka.ms/acr/pricing |
 | [Docs](https://aka.ms/acr/docs) | https://aka.ms/acr/docs |
 | [CLI Docs](https://aka.ms/acr/docs/cli) | https://aka.ms/acr/docs/cli |
-| [Pricing](https://aka.ms/acr/pricing) | https://aka.ms/acr/pricing |
-| [Tiers](https://aka.ms/acr/tiers) | https://aka.ms/acr/tiers |
+| [REST Docs](https://acr/docs/rest) | https://acr/docs/rest |
+| [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
+
+### General ACR Capabilities
+
+| Title | Link |
+| - | - |
+| [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
+| [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
+| [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
+| [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
+| [OCI Artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
+
+### Diagnostic & Troubleshooting Links
+
+| Title | Link |
+| - | - |
+| [Audit logs](https://aka.ms/acr/audit-logs) | https://aka.ms/acr/audit-logs |
+| [Health Check CLI](https://aka.ms/acr/health-check) | https://aka.ms/acr/health-check |
+
+### Security Links
+
+| Title | Link |
+| - | - |
 | [Authentication](https://aka.ms/acr/authentication) | https://aka.ms/acr/authentication |
 | [Authorization Roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
-| [Health Check CLI](https://aka.ms/acr/health-check) | https://aka.ms/acr/health-check |
+| [Repository Permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repo-permissions |
+| [Azure Policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
+| [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
+| [Azure Private Link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
+| [Customer-managed Keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
+| [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
+| [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
+
+### ACR Tasks
+
+| Title | Link |
+| - | - |
 | [Tasks](https://aka.ms/acr/tasks) | https://aka.ms/acr/tasks |
 | [Task Scheduling](https://aka.ms/acr/tasks/scheduling) | https://aka.ms/acr/tasks/scheduling |
 | [Task Timer Cron Expressions](https://aka.ms/acr/tasks/cron) | https://aka.ms/acr/tasks/cron |
-| [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
-| [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
-| [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
-| [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
-| [Importing Containers](https://aka.ms/acr/import) | https://aka.ms/acr/import |
-| [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
-| [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
-| [OCI Artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
+| [Task Dedicated Agent Pool](https://aka.ms/acr/tasks/agentpool) | https://aka.ms/acr/tasks/agentpool |
+
+## Social Media, Content & ACR Jobs at Microsoft
+
+| Title | Link |
+|-|-|
+| [Links](https://aka.ms/acr/links) | https://aka.ms/acr/links |
 | [FAQ](https://aka.ms/acr/faq) | https://aka.ms/acr/faq |
-| [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
 | [Jobs](https://aka.ms/acr/jobs) | https://aka.ms/acr/jobs |
-| [Repository permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repo-permissions |
-| [Audit logs](https://aka.ms/acr/audit-logs) | https://aka.ms/acr/audit-logs |
-| [Customer-managed keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
-| [Azure Policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
-| [Azure Private Link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
-| Twitter | #AzureContainerRegistry |
+| Twitter #AzureContainerRegistry | https://twitter.com/search?q=%23AzureContainerRegistry |
 
 ## Providing feedback
+
 | Title | Link |
 |-|-|
 | [**Stack overflow** for community support](https://aka.ms/acr/stack-overflow) | https://aka.ms/acr/stack-overflow |
@@ -54,7 +86,6 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 | [**Github** for logging issues](https://aka.ms/acr/issues) | https://aka.ms/acr/issues |
 | [**Slack** for collaboration](https://aka.ms/acr/slack) | https://aka.ms/acr/slack |
 | [**Create a ticket** for general support](https://aka.ms/acr/support/create-ticket) | https://aka.ms/acr/support/create-ticket |
-
 
 ## API and SDK reference
 
