@@ -8,11 +8,18 @@ az group create \
   -l westus
 ```
 
-## Crate a Registry
+## Create a Registry
 
 ```bash
 az acr create \
    -n myreg -g mytaskrunrg --sku Standard
+```
+
+## Create a Custom Registry
+
+```bash
+az acr create \
+   -n mycustomreg -g mytaskrunrg --sku Standard
 ```
 
 ## Create a User Identity
@@ -23,20 +30,41 @@ az identity create \
   -n myquickdockerbuildrunwithidentity
 ```
 
-## Add role assignment to the remote registry (You need fill the right information below)
+## Grant identity access to custom registry 
 
 ```bash
-az role assignment create --assignee "c5e2807e-4bbf-4faa-80fb-0a37f316113a" \
-  --scope "/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourceGroups/huanwutest/providers/Microsoft.ContainerRegistry/registries/huanwudftest2" \
+#Get principal ID of the identity
+principalId=$(az identity show --resource-group mytaskrunrg --name myquickdockerbuildrunwithidentity --query principalId --output tsv)
+
+#Get the custom registry ID
+customRegistryId=$(az acr show -n mycustomreg --query id --output tsv)
+
+#Assign the Acrpull role to identity
+az role assignment create \
+  --assignee $principalId \
+  --scope $customRegistryId \
   --role acrpull
 ```
 
 ## Deploy a quick run
-Fill the right credential azuredeploy.json
 
 ```bash
-az group deployment create --resource-group "huanwutest" --template-file azuredeploy.json \
-  --parameters azuredeploy.parameters.json --parameters registryName="huanwudftest6" --parameters taskRunName="huanwudfwesttaskrun03" \
-  --parameters userAssignedIdentity="/subscriptions/f9d7ebed-adbd-4cb4-b973-aaf82c136138/resourcegroups/huanwudfwestgroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/huanwudfidentity"
-```
+#Get the custom registry name
+customregistryName=$(az acr show -n mycustomreg --query loginServer --output tsv)
 
+#Get resource ID of the identity
+resourceId==$(az identity show --resource-group mytaskrunrg --name myquickdockerbuildrunwithidentity --query id --output tsv)
+
+#Get client ID of the identity
+clientId=$(az identity show --resource-group mytaskrunrg --name myquickdockerbuildrunwithidentity --query clientId --output tsv)
+
+az group deployment create --resource-group "mytaskrunrg" --template-file azuredeploy.json \
+  --parameters azuredeploy.parameters.json \
+  --parameters registryName="myreg" \
+  --parameters repository="hello-world" \
+  --parameters taskRunName="mytaskrun" \
+  --parameters userAssignedIdentity=$resourceId \
+  --parameters customRegistry=$customregistryName \
+  --parameters customRegistryIdentity=$clientId \
+  --parameters sourceLocation="https://github.com/Azure-Samples/acr-build-helloworld-node.git"
+```
