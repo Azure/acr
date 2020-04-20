@@ -58,7 +58,7 @@ resourceId==$(az identity show --resource-group mytaskrunrg --name myquickdocker
 #Get client ID of the identity
 clientId=$(az identity show --resource-group mytaskrunrg --name myquickdockerbuildrunwithidentity --query clientId --output tsv)
 
-az group deployment create --resource-group "mytaskrunrg" --template-file azuredeploy.json \
+az deployment group create --resource-group "mytaskrunrg" --template-file azuredeploy.json \
   --parameters azuredeploy.parameters.json \
   --parameters registryName="myreg" \
   --parameters repository="hello-world" \

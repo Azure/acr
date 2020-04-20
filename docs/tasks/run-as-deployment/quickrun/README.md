@@ -22,7 +22,7 @@ identity=$(az identity create \
 ## Deploy a registry and a task run  which is associated with the user assigned identity and run a multi-step task
 
 ```bash
-registry=$(az group deployment create \
+registry=$(az deployment group create \
   -g mytaskrunrg \
   --template-file azuredeploy.json \
   --parameters azuredeploy.parameters.json \

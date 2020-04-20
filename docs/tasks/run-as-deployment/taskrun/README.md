@@ -11,7 +11,7 @@ az group create \
 ## Deploy a task run, which will create the registry, task and schedule a run using the following command
 
 ```bash
-az group deployment create \
+az deployment group create \
   --resource-group "mytaskrunrg" --template-file azuredeploy.json --parameters azuredeploy.parameters.json \
   --parameters registryName="mytaskrunrg" --parameters --parameters taskName="huanwudfwesttask02" taskRunName="mytaskname"
 ```
