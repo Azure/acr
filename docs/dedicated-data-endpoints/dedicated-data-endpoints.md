@@ -1,9 +1,8 @@
 # Azure Container Registry: Dedicated Data Endpoints – Mitigating Data Exfiltration
 
-Azure Container Registry announces dedicated data-endpoints, enabling client firewall rules on registries, minimizing data exfiltration concerns.
-When users pull content from a registry, they primarily think of the registry url: 'docker pull contoso.azurecr.io.'
+Azure Container Registry announces dedicated data-endpoints, enabling tightly scoped client firewall rules to specific registries, minimizing data exfiltration concerns.
 
-What most users do not realize is the registry URL is a REST endpoint for authentication and content discovery. One a client initiates a pull requests and identifies the layers required a secondary data-endpoint is used serving blobs that represent content layers.
+When users pull content from a registry, they primarily think of the registry url: `docker pull contoso.azurecr.io`. What most users do not realize is the registry URL is a REST endpoint for authentication and content discovery. Once a client initiates a pull requests, identifying the layers required, a secondary data-endpoint is serves blobs representing content layers.
 
 <img src="./media/registry-dual-endpoints.png" width=170x>
 
