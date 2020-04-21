@@ -54,6 +54,7 @@ A set of short links for presentations & social media.
 | [Azure Policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
 | [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
 | [Azure Private Link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
+| [Dedicated Data-endpoints](https://aka.ms/acr/dedicated-data-endpoints) | https://aka.ms/acr/dedicated-data-endpoints |
 | [Customer-managed Keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
