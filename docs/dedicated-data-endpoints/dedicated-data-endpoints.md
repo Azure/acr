@@ -26,7 +26,7 @@ Unfortunately, VNet connectivity isn’t always an option.
 
 ## Client Firewall Rules & Data Exfiltration Risks
 
-When connecting to a registry from on-prem hosts, IoT devices, custom build agents, or when Private Link simply is not an option, client firewall rules may be applied, limiting access to specific resources.
+When connecting to a registry from on-prem hosts, IoT devices, custom build agents, or when Private Link may not be an option, client firewall rules may be applied, limiting access to specific resources.
 
 <img src="./media/registry-client-rules-all-storage.png" width=500x>
 
