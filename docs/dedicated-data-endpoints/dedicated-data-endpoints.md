@@ -129,4 +129,4 @@ Within the Azure Portal, select the Networking topic. Then, select the Data-endp
 
 Dedicated data-endpoints are a feature of premium registries.
 
-For more [information on dedicated data-endpoints](https://aka.ms/acr/data-endpoints).
+For more [information on dedicated data-endpoints](https://aka.ms/acr/dedicated-data-endpoints).
