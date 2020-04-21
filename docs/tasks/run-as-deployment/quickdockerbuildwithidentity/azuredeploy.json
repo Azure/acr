@@ -63,12 +63,29 @@
         "description": "The relative path of the dockerfile in the source location"
       },
       "defaultValue": "Dockerfile"
+    },
+    "repository": {
+      "type": "string",
+      "metadata": {
+        "description": "Repository name for the the build output"
+      }
+    },
+    "customRegistry": {
+      "type": "string",
+      "metadata": {
+        "description": "CustomRegistry name for the task"
+      }
+    },
+    "customRegistryIdentity": {
+      "type": "string",
+      "metadata": {
+        "description": "The identity name for the task"
+      }
     }
   },
   "variables": {
-    "repository": "hello-world-node",
     "tag": "parameters('taskRunName')",
-    "imageName": "[concat(variables('repository'), ':', parameters('taskRunName'))]",
+    "imageName": "[concat(parameters('repository'), ':', parameters('taskRunName'))]",
     "identity": {
       "type": "UserAssigned",
       "userAssignedIdentities": {
@@ -86,11 +103,9 @@
       "properties": {
           "runRequest": {
             "type": "DockerBuildRequest",
-            "imageNames": [
-              "mytest2:123"
-            ],
-            "sourceLocation": "https://github.com/huanwu/armtemplates.git",
-            "dockerFilePath": "Dockerfile-test",
+            "imageNames": ["[variables('imageName')]"],
+            "sourceLocation": "[parameters('sourceLocation')]",
+            "dockerFilePath": "[parameters('dockerFilePath')]",
             "values": [],
             "isPushEnabled": true,
             "platform": {
@@ -100,9 +115,9 @@
             "credentials": {
               "apiVersion": "2018-09-01",
               "customRegistries": {
-                  "huanwudftest2.azurecr-test.io": 
+                  "[parameters('customRegistry')]": 
                   {
-                      "identity": "98d4358f-fd01-4255-aac4-7256f7eb5483"
+                      "identity": "[parameters('customRegistryIdentity')]"
                   }
                 },
                 "sourceRegistry": {
@@ -120,7 +135,7 @@
     },
     "repository": {
       "type": "string",
-      "value": "[variables('repository')]"
+      "value": "[parameters('repository')]"
     },
     "tag": {
       "type": "string",

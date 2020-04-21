@@ -5,7 +5,7 @@ The sample shows how to schedule a deployment which will perform a quick docker 
 ## Deploy the Task
 
 ```bash
-registry=$(az group deployment create \
+registry=$(az deployment group create \
   -g mytaskrunrg \
   --template-file azuredeploy.json \
   --parameters azuredeploy.parameters.json \

@@ -11,7 +11,7 @@ az group create \
 ## Deploy a registry and a task run which builds/pushes to the registry
 
 ```bash
-registry=$(az group deployment create \
+registry=$(az deployment group create \
   -g mytaskrunrg \
   --template-file azuredeploy.json \
   --parameters azuredeploy.parameters.json \
@@ -37,7 +37,7 @@ identity=$(az identity create \
 ## Deploy a task run which is associated with the user assigned identity and builds/pushes an image to the registry
 
 ```bash
-registry=$(az group deployment create \
+registry=$(az deployment group create \
   -g mytaskrunrg \
   --template-file azuredeploy.json \
   --parameters azuredeploy.parameters.json \
