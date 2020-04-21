@@ -30,7 +30,7 @@ When connecting to a registry from on-prem hosts, IoT devices, custom build agen
 
 <img src="./media/registry-client-rules-all-storage.png" width=500x>
 
-As customers locked down their client firewall configurations, they realized they must create a rule with a wildcard for all storage accounts, raising concerns for data-exfiltration. A bad actor could deploy code that would be capable of writing to another "bad-dev" storage account.
+As customers locked down their client firewall configurations, they realized they must create a rule with a wildcard for all storage accounts, raising concerns for data-exfiltration. A bad actor could deploy code that would be capable of writing to another "Evil-Empire" storage account.
 
 To mitigate data-exfiltration concerns, Azure Container Registry is making dedicated data-endpoints available.
 
