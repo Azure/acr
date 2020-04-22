@@ -371,7 +371,7 @@ export acr_access_token="eyJ...xcg"
 export limit=2
 export operation=/v2/_catalog?n=$limit
 
-export headers=$(mktemp)
+export headers=$(mktemp -t headers.XXXXX)
 
 while [ -n "$operation" ]
 do
@@ -384,6 +384,7 @@ do
     
     operation=$(cat $headers | sed -n 's/^Link: <\(.*\)>.*/\1/p')
 done
+rm $headers
 ```
 
 For more information, visit [Docker V2 API Reference - Listing Repositories](https://docs.docker.com/registry/spec/api/#listing-repositories).
@@ -453,7 +454,7 @@ export image="hello-world"
 export limit=2
 export operation=/v2/$image/tags/list?n=$limit
 
-export headers=$(mktemp)
+export headers=$(mktemp -t headers.XXXXX)
 
 while [ -n "$operation" ]
 do
@@ -466,6 +467,7 @@ do
     
     operation=$(cat $headers | sed -n 's/^Link: <\(.*\)>.*/\1/p')
 done
+rm $headers
 ```
 
 For more information, visit [Docker V2 API Reference - Listing Image Tags](https://docs.docker.com/registry/spec/api/#listing-image-tags).
