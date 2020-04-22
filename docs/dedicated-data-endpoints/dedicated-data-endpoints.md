@@ -85,9 +85,7 @@ Until the Portal and az cli are enabled, customers can use the `az rest` api to 
 
 ### az CLI
 
-> **NOTE**: The acr cli for `--data-endpoint-enabled`  has not yet been released. Please use [Private Preview Configuration](#private-preview-configuration). This content will be updated when the CLI drops.
-
-Using [az cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) version ___ or greater, run the [az acr update](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-update) command:
+Using [az cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) version 2.4.0 or greater, run the [az acr update](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-update) command:
 
 ```sh
 az acr update --name contoso --data-endpoint-enabled
