@@ -16,7 +16,7 @@ Azure Container Registry is a multi-tenant service, where the data-endpoint stor
 
 ## Azure Private Link VNet Support
 
-Azure Container Registry recently announced [Private Link support](https://aka.ms/acr/privatelink), enabling a private endpoints from Azure VNets to be placed on the managed registry service. In this case, both the registry and data-endpoints are accessible from within the VNet, using private IPs. 
+Azure Container Registry recently announced [Private Link support](https://aka.ms/acr/privatelink), enabling private endpoints from Azure VNets to be placed on the managed registry service. In this case, both the registry and data-endpoints are accessible from within the VNet, using private IPs.
 
 The public endpoint can then be removed, securing the managed registry and storage accounts to access from within the VNet.
 
@@ -30,7 +30,7 @@ When connecting to a registry from on-prem hosts, IoT devices, custom build agen
 
 <img src="./media/registry-client-rules-all-storage.png" width=500x>
 
-As customers locked down their client firewall configurations, they realized they must create a rule with a wildcard for all storage accounts, raising concerns for data-exfiltration. A bad actor could deploy code that would be capable of writing to another "Evil-Empire" storage account.
+As customers locked down their client firewall configurations, they realized they must create a rule with a wildcard for all storage accounts, raising concerns for data-exfiltration. A bad actor could deploy code that would be capable of writing to their storage account.
 
 To mitigate data-exfiltration concerns, Azure Container Registry is making dedicated data-endpoints available.
 
@@ -85,7 +85,9 @@ Until the Portal and az cli are enabled, customers can use the `az rest` api to 
 
 ### az CLI
 
-Using [az cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) version 2.3.1 or greater, run the [az acr update](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-update) command:
+> **NOTE**: The acr cli for `--data-endpoint-enabled`  has not yet been released. Please use [Private Preview Configuration](#private-preview-configuration). This content will be updated when the CLI drops.
+
+Using [az cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) version ___ or greater, run the [az acr update](https://docs.microsoft.com/en-us/cli/azure/acr?view=azure-cli-latest#az-acr-update) command:
 
 ```sh
 az acr update --name contoso --data-endpoint-enabled
@@ -117,6 +119,8 @@ outputs:
 
 ### Azure Portal
 
+> **NOTE**: The acr portal update `--data-endpoint-enabled`  has not yet been released. Please use [Private Preview Configuration](#private-preview-configuration). This content will be updated when the portal is updated.
+> 
 Within the Azure Portal, select the Networking topic. Then, select the Data-endpoints tab to enable **dedicated data-endpoints**.
 
 <img src="./media/portal-dedicated-data-endpoints.png" width=700x>
