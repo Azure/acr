@@ -92,7 +92,7 @@ This will produce a JWT refresh token with the following payload:
   "version": "1.0",
   "grant_type": "access_token_refresh_token",
   "tenant": "409520d4-8100-4d1d-ad47-72432ddcc120",
-  "credential": "AQA...iAA"
+  "credential": "AQA...iAA",
   "permissions": {
     "actions": [
       "*"
