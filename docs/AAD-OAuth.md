@@ -315,7 +315,7 @@ In this example we'll call catalog listing and tag listing APIs on an Azure Cont
 
 Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
-  2. A valid ACR access token, created with the correct scope for the API we're going to call. 
+  2. A valid ACR access token, created with the correct scope for the API we're going to call.
 
 Here's how a call to the `GET /v2/_catalog` API of the given registry would look like when done via `curl`:
 
@@ -392,7 +392,7 @@ For more information, visit [Docker V2 API Reference - Listing Repositories](htt
 
 Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
-  2. A valid ACR access token, created with the correct scope for the API we're going to call. 
+  2. A valid ACR access token, created with the correct scope for the API we're going to call.
   3. A valid image in the registry, for example `hello-world`.
 
 Here's how a call to the `GET /v2/<name>/tags/list` API of the given image would look like when done via `curl`:
