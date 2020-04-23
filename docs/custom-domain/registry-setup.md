@@ -5,7 +5,7 @@ Every ACR is accessed using its login server. If you have a registry called `myr
 The following steps describe how you can achieve this.
 
 ## Prerequisites
-- [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest), [curl](https://curl.haxx.se/) (or a similar tool)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest): version 2.4.0 or higher
   - Consider using [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/overview)
 - A _premium_ Azure Container Registry. See [here](https://docs.microsoft.com/azure/container-registry/container-registry-get-started-azure-cli) for instructions on how to create one.
 - Your custom domain names. The following two are required:
@@ -46,25 +46,17 @@ We will enable two features on your registry that are currently in preview:
 ### Enable preview features
 1. `az login`
 2. `az account set -s <subscription-id-or-name> `
-3. `apiVersion="api-version=2019-12-01-preview"`
-4. `mgmtEndpoint=$(az cloud show --query endpoints.resourceManager -o tsv)`
-5. `accessToken=$(az account get-access-token --query accessToken -o tsv)`
-6. `registryResourceId=$(az acr show -n myregistry --query id -o tsv)`
-7. You can either enable a system assigned managed identity, a user assigned managed identity, or both for your registry. We recommend using system assigned managed identity to enable advanced scenarios with virtual networks that, although not supported currently, are [coming soon](#enhanced-security-with-virtual-networks). Do _one_ of the following:
+3. `az acr update --data-endpoint-enabled true -n myregistry`
+4. You can either enable a system assigned managed identity, a user assigned managed identity, or both for your registry. We recommend using system assigned managed identity to enable advanced scenarios with virtual networks that, although not supported currently, are [coming soon](#enhanced-security-with-virtual-networks). Do _one_ of the following:
    - To enable only system assigned managed identity: 
-     - `identity="{\"type\": \"systemAssigned\"}"`
+     - `az acr identity assign -n myregistry --identities [system]`
    - To enable user assigned managed identity, with or without a system identity: 
      - Create a user assigned managed identity following the instructions [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
      - Do _one_ of the following:
        - To enable _only_ user assigned managed identity:
-         - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
-         - `identity="{\"type\": \"userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
+         - `az acr identity assign -n avtakkarweu --identities "<arm-resource-id-of-user-assigned-identity>"`
        - To enable _both_ user and system assigned managed identities:
-         - `userMIResourceId=$(az identity show -n <user-mi-name> -g <user-mi-resource-group> --subscription <user-mi-subscription-id-or-name> --query id -o tsv)`
-         - `identity="{\"type\": \"systemAssigned,userAssigned\", \"userAssignedIdentities\": {\"${userMIResourceId}\":{}}}"`
-8. `payload="{\"identity\": $identity, \"properties\": {\"dataEndpointEnabled\": true}}"`
-9. `endpoint="$mgmtEndpoint$registryResourceId?$apiVersion"`
-10. `curl -f -X PATCH -H "Authorization: Bearer $accessToken" -H "Content-Type: application/json" $endpoint -d "$payload"`
+         - `az acr identity assign -n avtakkarweu --identities "<arm-resource-id-of-user-assigned-identity>" [system]`
 
 ## Prepare your Azure Key Vault
 For each domain, its TLS private key and public certificate pair must be added to an Azure Key Vault that is accessible by your registry as a single PEM formatted file. We recommend creating a new key vault containing only your TLS certificates and granting the registry's identity access to `get` secret.
