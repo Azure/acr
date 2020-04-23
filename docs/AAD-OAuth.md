@@ -83,7 +83,7 @@ This will produce a JWT refresh token with the following payload:
 ```json
 {
   "jti": "365e3b5b-844e-4a21-a38c-4d8aebdd6a06",
-  "sub": "user@contoso.com"
+  "sub": "user@contoso.com",
   "nbf": 1497988712,
   "exp": 1497990801,
   "iat": 1497988712,
@@ -92,7 +92,7 @@ This will produce a JWT refresh token with the following payload:
   "version": "1.0",
   "grant_type": "access_token_refresh_token",
   "tenant": "409520d4-8100-4d1d-ad47-72432ddcc120",
-  "credential": "AQA...iAA"
+  "credential": "AQA...iAA",
   "permissions": {
     "actions": [
       "*"
@@ -107,7 +107,7 @@ Followed by an access token with the following payload:
 ```json
 {
   "jti": "ec425c1e-7eda-4f70-adb5-19f927e34a41",
-  "sub": "user@contoso.com"
+  "sub": "user@contoso.com",
   "nbf": 1497988907,
   "exp": 1497993407,
   "iat": 1497988907,
@@ -309,7 +309,11 @@ This response is the ACR access token which you can inspect with [jwt.io](https:
 
 ## Calling an Azure Container Registry API
 
-In this example we'll call the `GET /v2/_catalog` API on an Azure Container Registry. Assume you have the following:
+In this example we'll call catalog listing and tag listing APIs on an Azure Container Registry. 
+
+### Catalog Listing
+
+Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
   2. A valid ACR access token, created with the correct scope for the API we're going to call.
 
@@ -325,15 +329,155 @@ Note that `curl` by default does the request as a `GET` unless you specify a dif
 This should result in a status 200 OK, and a body with a JSON payload listing the repositories held in this registry:
 
 ```json
-{"repositories":["alpine","hello-world","contoso-marketing"]}
+{"repositories":["alpine","contoso-marketing","hello-world","node"]}
 ```
+
+#### Pagination
+
+To retrieve paginated catalog results, add an `n` parameter to limit the number or results. We take `n=2` as example:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+export acr_access_token="eyJ...xcg"
+export limit=2
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/_catalog?n=$limit"
+```
+
+This should result in a status 200 OK, and a body with a JSON payload listing the first `n` repositories held in this registry. If there are more results, a `Link` header containing the request URL for the next result block is also returned.  If the entire result set has been received, the `Link` header will not be returned.
+
+In this case, the first 2 repositories are returned, and there are more entries in the result set. The response would look like:
+
+```http
+< HTTP/1.1 200 OK
+...
+Content-Type: application/json
+Link: </v2/_catalog?last=contoso-marketing&n=2&orderby=>; rel="next"
+
+{"repositories": ["alpine","contoso-marketing"]}
+```
+
+To get the next result block, issue the request using the `/v2/_catalog?last=contoso-marketing&n=2&orderby=` URL encoded in the `Link` header. Here is how the call would look like:
+
+```bash
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/_catalog?last=contoso-marketing&n=2&orderby="
+```
+
+You can query the paginated results in a loop, as the following shows:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+export acr_access_token="eyJ...xcg"
+
+export limit=2
+export operation=/v2/_catalog?n=$limit
+
+export headers=$(mktemp -t headers.XXXXX)
+
+while [ -n "$operation" ]
+do
+    echo "Operation"
+    echo $operation
+    
+    export catalog=$(curl -H "Authorization: Bearer $acr_access_token" "https://$registry$operation" -D $headers)
+    echo "Catalog"
+    echo $catalog
+    
+    operation=$(cat $headers | sed -n 's/^Link: <\(.*\)>.*/\1/p')
+done
+rm $headers
+```
+
+For more information, visit [Docker V2 API Reference - Listing Repositories](https://docs.docker.com/registry/spec/api/#listing-repositories).
+
+### Tag Listing
+
+Assume you have the following:
+  1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
+  2. A valid ACR access token, created with the correct scope for the API we're going to call.
+  3. A valid image in the registry, for example `hello-world`.
+
+Here's how a call to the `GET /v2/<name>/tags/list` API of the given image would look like when done via `curl`:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+export acr_access_token="eyJ...xcg"
+export image="hello-world"
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/$image/tags/list"
+```
+
+Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
+
+This should result in a status 200 OK, and a body with a JSON payload listing the tags of this image:
+
+```json
+{"name": "hello-world","tags": ["latest","v1","v2","v3"]}
+```
+
+#### Pagination
+
+To retrieve paginated tag results, add an `n` parameter to limit the number or results. We take `n=2` as example:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+export acr_access_token="eyJ...xcg"
+export image="hello-world"
+export limit=2
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/$image/tags/list?n=$limit"
+```
+
+This should result in a status 200 OK, and a body with a JSON payload listing the first `n` tags of this image. If there are more results, a `Link` header containing the request URL for the next result block is also returned.  If the entire result set has been received, the `Link` header will not be returned.
+
+In this case, the first 2 tags are returned, and there are more entries in the result set. The response would look like:
+
+```http
+< HTTP/1.1 200 OK
+...
+Content-Type: application/json
+Link: </v2/hello-world/tags/list?last=v1&n=2&orderby=>; rel="next"
+
+{"name":"hello-world","tags":["latest","v1"]}
+```
+
+To get the next result block, issue the request using the `/v2/hello-world/tags/list?last=v1&n=2&orderby=` URL encoded in the `Link` header. Here is how the call would look like:
+
+```bash
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/$image/tags/list?last=v1&n=2&orderby="
+```
+
+You can query the paginated results in a loop, as the following shows:
+
+```bash
+export registry="contosoregistry.azurecr.io"
+export acr_access_token="eyJ...xcg"
+export image="hello-world"
+
+export limit=2
+export operation=/v2/$image/tags/list?n=$limit
+
+export headers=$(mktemp -t headers.XXXXX)
+
+while [ -n "$operation" ]
+do
+    echo "Operation"
+    echo $operation
+    
+    export tags=$(curl -H "Authorization: Bearer $acr_access_token" "https://$registry$operation" -D $headers)
+    echo "Tags"
+    echo $tags
+    
+    operation=$(cat $headers | sed -n 's/^Link: <\(.*\)>.*/\1/p')
+done
+rm $headers
+```
+
+For more information, visit [Docker V2 API Reference - Listing Image Tags](https://docs.docker.com/registry/spec/api/#listing-image-tags).
 
 ## Samples API Call scripts
 
 This is a summary script of the points discussed above. The first three variables have to be filled out.
 
 - Variable `registry` can be something like `"contosoregistry.azurecr.io"`.
-- The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running az login check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
+- The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running `az login` check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
 
 Note that a stale AAD tokens will result in this script failing to obtain an ACR refresh token, and therefore it won't succeed in obtaining an ACR access token or in executing the operation against the registry.
 
