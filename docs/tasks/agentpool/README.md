@@ -8,7 +8,7 @@ Task Agent Pools provide:
 
 - **VNet Support:** Agent Pools may be assigned to Azure VNets, providing access the resources in the VNet (eg, Container Registry, Key Vault, Storage).
 - **Scale As Needed:** Agent pools can be increased as needed, or scaled to zero, billed based on allocation.
-- **More Memory and CPU Options:** The current preview provides 3 tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S4 (8 cpu, 16G mem).
+- **More Memory and CPU Options:** The current preview provides 3 tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S3 (8 cpu, 16G mem).
 - **Agent Pools per Workload:** To serve different configurations, instance agent pools based on scale and tier options to serve different types of workloads.
 - **Hybrid Managed Pools:** Task pools are patched and maintained by Azure. Task pools provide a balance between reserved allocation without the need to maintain the individual VMs.
 
