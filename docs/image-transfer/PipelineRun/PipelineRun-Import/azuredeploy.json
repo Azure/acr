@@ -1,0 +1,97 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "registryName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your Azure Container Registry"
+      }
+    },
+    "pipelineRunName": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Name of your pipeline run."
+      }
+    },
+    "pipelineResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the pipeline to run."
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "metadata": {
+        "description": "List of source artifacts to be transferred by the pipeline."
+      },
+      "defaultValue": []
+    },
+    "sourceName": {
+      "type": "string",
+      "metadata": {
+        "description": "The source URI of the export pipeline."
+      },
+      "defaultValue": ""
+    },
+    "targetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The key vault secret uri to obtain the source storage SAS token."
+      },
+      "defaultValue": ""
+    },
+    "catalogDigest": {
+      "type": "string",
+      "metadata": {
+        "description": "The digest of the tar used to transfer the artifacts."
+      },
+      "defaultValue": ""
+    },
+    "forceUpdateTag": {
+      "type": "string",
+      "metadata": {
+        "description": "How the pipeline run should be forced to recreate even if the pipeline run configuration has not changed."
+      },
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "transferType": "AzureStorageBlob"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries/pipelineRuns/",
+      "name": "[concat(parameters('registryName'), '/', parameters('pipelineRunName'))]",
+      "location": "[parameters('location')]",
+      "apiVersion": "2019-12-01-preview",
+      "properties": {
+        "request": {
+          "pipelineResourceId": "[parameters('pipelineResourceId')]",
+          "artifacts": "[parameters('artifacts')]",
+          "source": {
+            "type": "[if(not(empty(parameters('sourceName'))), variables('transferType'), '')]",
+            "name": "[parameters('sourceName')]"
+          },
+          "target": {
+            "type": "[if(not(empty(parameters('targetName'))), variables('transferType'), '')]",
+            "name": "[parameters('targetName')]"
+          },
+          "catalogDigest": "[parameters('catalogDigest')]"
+        },
+        "forceUpdateTag": "[parameters('forceUpdateTag')]"
+      }
+    }
+  ]
+}
