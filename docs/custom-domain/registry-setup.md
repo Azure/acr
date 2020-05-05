@@ -37,7 +37,7 @@ The following steps describe how you can achieve this.
 ## Prepare your existing registry
 We will enable two features on your registry that are currently in preview:
 - Data Endpoints:\
-  This feature provides a dedicated endpoint for downloading content from your registry. If you have a registry in East US, on enabling this feature, a data endpoint is automatically created for you: `eastus.data.myregistry.azurecr.io`
+  This feature provides a dedicated endpoint for downloading content from your registry. If you have a registry in East US, on enabling this feature, a data endpoint is automatically created for you: `myregistry.eastus.data.azurecr.io`
   
 - ACR Managed Identities:\
   Managed Identities provide a mechanism to associate an Azure Active Directory identity with your registry, while relieving you of the burden of managing credentials. To learn more, see the documentation [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).\
@@ -80,7 +80,7 @@ Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure
 1. The custom registry domain must have a CNAME record with the target registry login server:\
    `container-registry.contoso.com` --> `myregistry.azurecr.io`
 2. The regional custom data domain must have a CNAME record with the target regional registry data endpoint:\
-   `eastus-registry-data.contoso.com` --> `eastus.data.myregistry.azurecr.io`
+   `eastus-registry-data.contoso.com` --> `myregistry.eastus.data.azurecr.io`
    - The output of the command to enable preview features on the registry will contain the regional data endpoint.
    
 ## Contact us
