@@ -32,8 +32,9 @@ The following steps describe how you can achieve this.
      - `cat container-registry.contoso.com.cert.pem >> container-registry-contoso-com-pem`
   - For each data domain, follow the same steps above to prepare the PEM formatted files containing the public certificate and private key.
   
-  Azure Key Vault allows you to [create](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) Certificate Authority (CA) signed certificates.
-  
+  Azure Key Vault allows you to [create](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) Certificate Authority (CA) signed certificates. 
+  - If you choose to use the Azure Portal to create the certificates, be sure to select certificate content type as PEM.
+ 
 ## Prepare your existing registry
 We will enable two features on your registry that are currently in preview:
 - Data Endpoints:\
