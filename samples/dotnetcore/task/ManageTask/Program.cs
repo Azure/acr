@@ -52,7 +52,7 @@ namespace ManageTask
             Console.WriteLine($"  AzureEnvironment: {options.AzureEnvironment.Name}");
             Console.WriteLine($"  SubscriptionId: {options.SubscriptionId}");
             Console.WriteLine($"  ResourceGroupName: {options.ResourceGroupName}");
-            Console.WriteLine($"  RegistyName: {options.RegistryName}");
+            Console.WriteLine($"  RegistryName: {options.RegistryName}");
             Console.WriteLine($"======================================================================");
             Console.WriteLine();
 
@@ -122,6 +122,7 @@ version: v1.1.0
 steps:
   - build: . -t {imageName}
   - push: 
+    timeout: 1800
      - {imageName}";
 
             run = await registryClient.Registries.ScheduleRunAsync(
