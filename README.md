@@ -24,7 +24,7 @@ A set of short links for presentations & social media.
 | [Pricing](https://aka.ms/acr/pricing) | https://aka.ms/acr/pricing |
 | [Docs](https://aka.ms/acr/docs) | https://aka.ms/acr/docs |
 | [CLI Docs](https://aka.ms/acr/docs/cli) | https://aka.ms/acr/docs/cli |
-| [REST Docs](https://acr/docs/rest) | https://acr/docs/rest |
+| [REST Docs](https://aka.ms/acr/docs/rest) | https://aka.ms/acr/docs/rest |
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 
 ### General ACR Capabilities
