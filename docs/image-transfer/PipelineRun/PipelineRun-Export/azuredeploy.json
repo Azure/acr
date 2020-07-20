@@ -41,14 +41,14 @@
     "sourceName": {
       "type": "string",
       "metadata": {
-        "description": "The source URI of the export pipeline."
+        "description": "Name of the existing blob for exported artifacts in your storage account, such as myblob."
       },
       "defaultValue": ""
     },
     "targetName": {
       "type": "string",
       "metadata": {
-        "description": "The key vault secret uri to obtain the source storage SAS token."
+        "description": "Name you choose for the artifacts blob exported to your source storage account, such as myblob."
       },
       "defaultValue": ""
     },
