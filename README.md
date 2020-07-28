@@ -35,6 +35,7 @@ A set of short links for presentations & social media.
 | [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
 | [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
+| [Webhook Notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
 | [OCI Artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
 
 ### Diagnostic & Troubleshooting Links
