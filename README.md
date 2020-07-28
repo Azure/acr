@@ -36,6 +36,7 @@ A set of short links for presentations & social media.
 | [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
 | [Webhook Notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
+| [Auto-purge](https://aka.ms/acr/auto-purge) | https://aka.ms/acr/auto-purge |
 | [OCI Artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
 
 ### Diagnostic & Troubleshooting Links
