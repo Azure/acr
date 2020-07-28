@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Task=System.Threading.Tasks.Task;
 
@@ -51,7 +52,7 @@ namespace ManageTask
             Console.WriteLine($"  AzureEnvironment: {options.AzureEnvironment.Name}");
             Console.WriteLine($"  SubscriptionId: {options.SubscriptionId}");
             Console.WriteLine($"  ResourceGroupName: {options.ResourceGroupName}");
-            Console.WriteLine($"  RegistyName: {options.RegistryName}");
+            Console.WriteLine($"  RegistryName: {options.RegistryName}");
             Console.WriteLine($"======================================================================");
             Console.WriteLine();
 
@@ -105,6 +106,32 @@ namespace ManageTask
                     DockerFilePath = "Dockerfile",
                     ImageNames = new List<string> { "weatherservice:{{.Run.ID}}" },
                     IsPushEnabled = true,
+                    Platform = new PlatformProperties(OS.Linux),
+                    Timeout = 60 * 10, // 10 minutes
+                    AgentConfiguration = new AgentProperties(cpu: 2)
+                }).ConfigureAwait(false);
+
+            Console.WriteLine($"{DateTimeOffset.Now}: Started run: '{run.RunId}'");
+
+            Console.WriteLine($"{DateTimeOffset.Now}: Starting new run with encoded task");
+
+            string imageName = $"{options.RegistryName}.azurecr.io/weatherservice:latest";
+            string taskString =
+$@"
+version: v1.1.0
+steps:
+  - build: . -t {imageName}
+  - push: 
+    timeout: 1800
+     - {imageName}";
+
+            run = await registryClient.Registries.ScheduleRunAsync(
+                options.ResourceGroupName,
+                options.RegistryName,
+                new EncodedTaskRunRequest
+                {
+                    EncodedTaskContent = Convert.ToBase64String(Encoding.UTF8.GetBytes(taskString)),
+                    SourceLocation = sourceUpload.RelativePath,
                     Platform = new PlatformProperties(OS.Linux),
                     Timeout = 60 * 10, // 10 minutes
                     AgentConfiguration = new AgentProperties(cpu: 2)
