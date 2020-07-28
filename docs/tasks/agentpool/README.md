@@ -49,6 +49,7 @@ az acr agentpool update \
 
 | Direction | Protocol | Source         | Source Port | Destination          | Dest Port | Used    |
 |-----------|----------|----------------|-------------|----------------------|-----------|---------|
+| Outbound  | TCP      | VirtualNetwork | Any         | AzureKeyVault        | 443       | Default |
 | Outbound  | TCP      | VirtualNetwork | Any         | Storage              | 443       | Default |
 | Outbound  | TCP      | VirtualNetwork | Any         | EventHub             | 443       | Default |
 | Outbound  | TCP      | VirtualNetwork | Any         | AzureActiveDirectory | 443       | Default |
