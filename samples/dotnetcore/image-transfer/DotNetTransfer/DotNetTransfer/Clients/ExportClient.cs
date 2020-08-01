@@ -52,11 +52,6 @@ namespace DotNetTransfer.Clients
                 exportResourceGroupName,
                 exportRegistryName);
 
-            if (registry == null )
-            {
-                
-            }
-
             if (registry != null)
             {
                 var exportPipeline = new ExportPipeline(
@@ -118,7 +113,7 @@ namespace DotNetTransfer.Clients
                                                             request: pipelineRunRequest).ConfigureAwait(false);
             if (string.Equals(pipelineRun.ProvisioningState, "Failed", StringComparison.InvariantCultureIgnoreCase))
             {
-                Console.WriteLine($"PipelineRun {pipelineRunName} failed with the inner error {pipelineRun.Response.PipelineRunErrorMessage}.");
+                Console.WriteLine($"PipelineRun {pipelineRunName} failed with the inner error '{pipelineRun.Response.PipelineRunErrorMessage}'.");
             }
             else
             {
