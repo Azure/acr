@@ -1,11 +1,11 @@
-﻿using DotNetTransfer.Clients;
+﻿using ContainerRegistryTransfer.Clients;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
 
-namespace DotNetTransfer
+namespace ContainerRegistryTransfer
 {
     internal class Program
     {

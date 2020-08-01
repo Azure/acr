@@ -1,4 +1,4 @@
-﻿using DotNetTransfer.Helpers;
+﻿using ContainerRegistryTransfer.Helpers;
 using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.ContainerRegistry.Models;
 using Microsoft.Azure.Management.KeyVault;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using Task = System.Threading.Tasks.Task;
 
-namespace DotNetTransfer.Clients
+namespace ContainerRegistryTransfer.Clients
 {
     public class ExportClient
     {

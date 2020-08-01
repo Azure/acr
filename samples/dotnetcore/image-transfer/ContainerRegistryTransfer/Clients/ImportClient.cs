@@ -1,4 +1,4 @@
-﻿using DotNetTransfer.Helpers;
+﻿using ContainerRegistryTransfer.Helpers;
 using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.ContainerRegistry.Models;
 using Microsoft.Azure.Management.KeyVault;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 
 
-namespace DotNetTransfer.Clients
+namespace ContainerRegistryTransfer.Clients
 {
     public class ImportClient
     {

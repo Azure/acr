@@ -67,11 +67,11 @@ Example: `[samples/hello-world:v1", "samples/nginx:v1" , "myrepository@sha256:0a
 
 
 
-* Build DotNetTransfer.csproj (DotNetCore SDK 3.1 required)
+* Build ContainerRegistryTransfer.csproj (DotNetCore SDK 3.1 required)
 ```
-dotnet build DotNetTransfer/DotNetTransfer.csproj
+dotnet build ContainerRegistryTransfer/ContainerRegistryTransfer.csproj
 
-dotnet DotNetTransfer/bin/Debug/netcoreapp3.1/DotNetTransfer.dll
+dotnet ContainerRegistryTransfer/bin/Debug/netcoreapp3.1/ContainerRegistryTransfer.dll
 ```
 
 ## More information ##

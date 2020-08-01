@@ -4,7 +4,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using System;
 
-namespace DotNetTransfer
+namespace ContainerRegistryTransfer
 {
     internal class AzureUtility
     {

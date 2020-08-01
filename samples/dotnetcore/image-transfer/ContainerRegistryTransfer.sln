@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetTransfer", "DotNetTransfer\DotNetTransfer.csproj", "{939E1C02-5F96-4982-B72D-419CE87D4C8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContainerRegistryTransfer", "ContainerRegistryTransfer\ContainerRegistryTransfer.csproj", "{939E1C02-5F96-4982-B72D-419CE87D4C8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
