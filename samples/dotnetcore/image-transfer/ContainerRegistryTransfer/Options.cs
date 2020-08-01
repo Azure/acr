@@ -1,7 +1,6 @@
 ﻿using Microsoft.Azure.Management.ResourceManager.Fluent;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ContainerRegistryTransfer
 {

@@ -75,13 +75,13 @@ namespace ContainerRegistryTransfer
             var registryClient = azure.RegistryClient;
             var keyVaultClient = azure.KeyVaultClient;
 
-            ExportClient exportClient = new ExportClient(registryClient, keyVaultClient, options);
+            var exportClient = new ExportClient(registryClient, keyVaultClient, options);
             var exportPipeline = exportClient.CreateExportPipeline();
 
-            ImportClient importClient = new ImportClient(registryClient, keyVaultClient, options);
+            var importClient = new ImportClient(registryClient, keyVaultClient, options);
             var importPipeline = importClient.CreateImportPipeline();
 
-            Console.WriteLine($"Your importPipeline '{options.ImportPipeline.PipelineName}' will be run automatically.");
+            Console.WriteLine($"Your importPipeline '{importPipeline.Name}' will be run automatically.");
             Console.WriteLine($"Would you like to run your exportPipeline '{options.ExportPipeline.PipelineName}'? [Y/N]");
             var response = Console.ReadLine();
             if (string.Equals("Y", response, StringComparison.InvariantCultureIgnoreCase))

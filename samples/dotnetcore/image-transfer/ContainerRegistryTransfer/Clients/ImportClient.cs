@@ -5,10 +5,9 @@ using Microsoft.Azure.Management.KeyVault;
 using Microsoft.Extensions.Configuration;
 using System;
 
-
 namespace ContainerRegistryTransfer.Clients
 {
-    public class ImportClient
+    internal class ImportClient
     {
         ContainerRegistryManagementClient registryClient;
         KeyVaultManagementClient keyVaultClient;

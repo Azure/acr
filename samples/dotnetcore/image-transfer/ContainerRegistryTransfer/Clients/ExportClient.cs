@@ -9,7 +9,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace ContainerRegistryTransfer.Clients
 {
-    public class ExportClient
+    internal class ExportClient
     {
         ContainerRegistryManagementClient registryClient;
         KeyVaultManagementClient keyVaultClient;
@@ -111,7 +111,7 @@ namespace ContainerRegistryTransfer.Clients
                                                             resourceGroupName: options.ExportPipeline.ResourceGroupName,
                                                             pipelineRunName: pipelineRunName,
                                                             request: pipelineRunRequest).ConfigureAwait(false);
-            if (string.Equals(pipelineRun.ProvisioningState, "Failed", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(pipelineRun.ProvisioningState, "Failed", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"PipelineRun {pipelineRunName} failed with the inner error '{pipelineRun.Response.PipelineRunErrorMessage}'.");
             }
