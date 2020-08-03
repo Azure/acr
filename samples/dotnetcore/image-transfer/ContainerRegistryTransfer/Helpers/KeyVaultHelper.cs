@@ -1,17 +1,17 @@
 ﻿using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.KeyVault;
 using Microsoft.Azure.Management.KeyVault.Models;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using Task = System.Threading.Tasks.Task;
 
 namespace ContainerRegistryTransfer.Helpers
 {
-    public class KeyVaultHelper
+    public static class KeyVaultHelper
     {
-        public static void AddKeyVaultAccessPolicy(KeyVaultManagementClient keyVaultClient, string tenantId, string subscriptionId, string resourceGroupName, string vaultName, string identityPrincipalId)
+        public static async Task AddKeyVaultAccessPolicyAsync(KeyVaultManagementClient keyVaultClient, string tenantId, string subscriptionId, string resourceGroupName, string vaultName, string identityPrincipalId)
         {
-            var vault = keyVaultClient.Vaults.Get(resourceGroupName, vaultName);
+            var vault = await keyVaultClient.Vaults.GetAsync(resourceGroupName, vaultName).ConfigureAwait(false);
 
             if (vault != null)
             {
@@ -36,7 +36,7 @@ namespace ContainerRegistryTransfer.Helpers
                 {
                     Console.WriteLine($"Adding access policy for principalId '{identityPrincipalId} to the vault '{vaultName}'.");
 
-                    keyVaultClient.Vaults.UpdateAccessPolicy(
+                    await keyVaultClient.Vaults.UpdateAccessPolicyAsync(
                         resourceGroupName,
                         vaultName,
                         AccessPolicyUpdateKind.Add,
@@ -49,7 +49,7 @@ namespace ContainerRegistryTransfer.Helpers
                                     accessPolicy
                                 }
                             }
-                        });
+                        }).ConfigureAwait(false);
                 }
             }
             else

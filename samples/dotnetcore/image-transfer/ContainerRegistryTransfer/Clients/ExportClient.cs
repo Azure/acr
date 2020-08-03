@@ -3,8 +3,8 @@ using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.ContainerRegistry.Models;
 using Microsoft.Azure.Management.KeyVault;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Extensions.Configuration;
 using System;
+using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
 
 namespace ContainerRegistryTransfer.Clients
@@ -22,17 +22,17 @@ namespace ContainerRegistryTransfer.Clients
             this.options = options;
         }
 
-        public ExportPipeline CreateExportPipeline()
+        public async Task<ExportPipeline> CreateExportPipelineAsync()
         {
             Console.WriteLine($"Creating exportPipeline {options.ExportPipeline.PipelineName}.");
-            var exportPipeline = CreateExportPipelineResource();
+            var exportPipeline = await CreateExportPipelineResourceAsync().ConfigureAwait(false);
             Console.WriteLine($"Successfully created exportPipeline {options.ExportPipeline.PipelineName}.");
 
             var vaultName = KeyVaultHelper.GetKVNameFromUri(options.ExportPipeline.KeyVaultUri);
 
             Console.WriteLine($"Adding an accessPolicy for exportPipeline {options.ExportPipeline.PipelineName} to vault {vaultName}.");
             // give the pipeline identity access to the key vault
-            KeyVaultHelper.AddKeyVaultAccessPolicy(
+            await KeyVaultHelper.AddKeyVaultAccessPolicyAsync(
                 keyVaultClient,
                 options.TenantId,
                 options.SubscriptionId,
@@ -43,14 +43,14 @@ namespace ContainerRegistryTransfer.Clients
             return exportPipeline;
         }
 
-        public ExportPipeline CreateExportPipelineResource()
+        public async Task<ExportPipeline> CreateExportPipelineResourceAsync()
         {
             var exportResourceGroupName = options.ExportPipeline.ResourceGroupName;
             var exportRegistryName = options.ExportPipeline.RegistryName;
 
-            var registry = registryClient.Registries.Get(
+            var registry = await registryClient.Registries.GetAsync(
                 exportResourceGroupName,
-                exportRegistryName);
+                exportRegistryName).ConfigureAwait(false);
 
             if (registry != null)
             {
@@ -67,10 +67,10 @@ namespace ContainerRegistryTransfer.Clients
                 options: options.ExportPipeline.Options
                 );
 
-                return registryClient.ExportPipelines.Create(registryName: options.ExportPipeline.RegistryName,
+                return await registryClient.ExportPipelines.CreateAsync(registryName: options.ExportPipeline.RegistryName,
                                                                 resourceGroupName: options.ExportPipeline.ResourceGroupName,
                                                                 exportPipelineName: options.ExportPipeline.PipelineName,
-                                                                exportPipelineCreateParameters: exportPipeline);
+                                                                exportPipelineCreateParameters: exportPipeline).ConfigureAwait(false);
             }
             else
             {
@@ -90,7 +90,7 @@ namespace ContainerRegistryTransfer.Clients
             Console.WriteLine($"  pipelineRunName: {options.ExportPipelineRun.PipelineRunName}");
             Console.WriteLine($"  pipelineResourceId: {pipelineId}");
             Console.WriteLine($"  targetName: {options.ExportPipelineRun.TargetName}");
-            Console.WriteLine($"  artifacts: {string.Join("\n", artifacts)}");
+            Console.WriteLine($"  artifacts: {string.Join(Environment.NewLine, artifacts)}");
             Console.WriteLine($"======================================================================");
 
 

@@ -1,4 +1,5 @@
 ﻿using ContainerRegistryTransfer.Clients;
+using ContainerRegistryTransfer.Helpers;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
@@ -64,24 +65,16 @@ namespace ContainerRegistryTransfer
             Console.WriteLine($"======================================================================");
             Console.WriteLine();
 
-            var azure = new AzureUtility(
-                options.AzureEnvironment,
-                options.TenantId,
-                options.SubscriptionId,
-                options.MIClientId,
-                options.SPClientId,
-                options.SPClientSecret);
-
-            var registryClient = azure.RegistryClient;
-            var keyVaultClient = azure.KeyVaultClient;
+            var registryClient = AzureHelper.GetContainerRegistryManagementClient(options);
+            var keyVaultClient = AzureHelper.GetKeyVaultManagementClient(options);
 
             var exportClient = new ExportClient(registryClient, keyVaultClient, options);
-            var exportPipeline = exportClient.CreateExportPipeline();
+            var exportPipeline = await exportClient.CreateExportPipelineAsync().ConfigureAwait(false);
 
             var importClient = new ImportClient(registryClient, keyVaultClient, options);
-            var importPipeline = importClient.CreateImportPipeline();
+            var importPipeline = await importClient.CreateImportPipelineAsync().ConfigureAwait(false);
 
-            Console.WriteLine($"Your importPipeline '{importPipeline.Name}' will be run automatically.");
+            Console.WriteLine($"Your importPipeline '{importPipeline.Name}' will run automatically.");
             Console.WriteLine($"Would you like to run your exportPipeline '{options.ExportPipeline.PipelineName}'? [Y/N]");
             var response = Console.ReadLine();
             if (string.Equals("Y", response, StringComparison.InvariantCultureIgnoreCase))

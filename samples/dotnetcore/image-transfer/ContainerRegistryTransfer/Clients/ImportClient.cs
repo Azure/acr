@@ -2,8 +2,8 @@
 using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.ContainerRegistry.Models;
 using Microsoft.Azure.Management.KeyVault;
-using Microsoft.Extensions.Configuration;
 using System;
+using System.Threading.Tasks;
 
 namespace ContainerRegistryTransfer.Clients
 {
@@ -20,10 +20,10 @@ namespace ContainerRegistryTransfer.Clients
             this.options = options;
         }
 
-        public ImportPipeline CreateImportPipeline()
+        public async Task<ImportPipeline> CreateImportPipelineAsync()
         {
             Console.WriteLine($"Creating importPipeline {options.ImportPipeline.PipelineName}.");
-            var importPipeline = CreateImportPipelineResource();
+            var importPipeline = await CreateImportPipelineResourceAsync().ConfigureAwait(false);
             Console.WriteLine($"Successfully created importPipeline {options.ImportPipeline.PipelineName}.");
 
             var vaultName = KeyVaultHelper.GetKVNameFromUri(options.ImportPipeline.KeyVaultUri);
@@ -31,7 +31,7 @@ namespace ContainerRegistryTransfer.Clients
             Console.WriteLine($"Adding an accessPolicy for importPipeline {options.ImportPipeline.PipelineName} to vault {vaultName}.");
             
             // give the pipeline identity access to the key vault
-            KeyVaultHelper.AddKeyVaultAccessPolicy(
+            await KeyVaultHelper.AddKeyVaultAccessPolicyAsync(
                 keyVaultClient,
                 options.TenantId,
                 options.SubscriptionId,
@@ -42,15 +42,14 @@ namespace ContainerRegistryTransfer.Clients
             return importPipeline;
         }
 
-        public ImportPipeline CreateImportPipelineResource()
+        public async Task<ImportPipeline> CreateImportPipelineResourceAsync()
         {
             var importResourceGroupName = options.ImportPipeline.ResourceGroupName;
             var importRegistryName = options.ImportPipeline.RegistryName;
 
-            var registry = registryClient.Registries.Get(
+            var registry = await registryClient.Registries.GetAsync(
                 importResourceGroupName,
-                importRegistryName);
-
+                importRegistryName).ConfigureAwait(false);
 
             if (registry != null)
             {
@@ -74,10 +73,10 @@ namespace ContainerRegistryTransfer.Clients
                 options: options.ImportPipeline.Options
                 );
 
-                return registryClient.ImportPipelines.Create(registryName: registry.Name,
+                return await registryClient.ImportPipelines.CreateAsync(registryName: registry.Name,
                                                                 resourceGroupName: options.ImportPipeline.ResourceGroupName,
                                                                 importPipelineName: options.ImportPipeline.PipelineName,
-                                                                importPipelineCreateParameters: importPipeline);
+                                                                importPipelineCreateParameters: importPipeline).ConfigureAwait(false);
             }
             else
             {
