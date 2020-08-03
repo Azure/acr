@@ -40,7 +40,9 @@ namespace ContainerRegistryTransfer
             var exportOptionsDisplay = options.ExportPipeline.Options != null ? string.Join(", ", options.ExportPipeline.Options) : "";
             var importOptionsDisplay = options.ImportPipeline.Options != null ? string.Join(", ", options.ImportPipeline.Options) : "";
 
-            Console.WriteLine($"TransferRegistryArtifacts");
+            Console.WriteLine($"Starting ContainerRegistryTransfer...");
+            Console.WriteLine();
+            Console.WriteLine($"Azure Environment properties:");
             Console.WriteLine($"  MIClientId: {options.MIClientId}");
             Console.WriteLine($"  SPClientId: {options.SPClientId}");
             Console.WriteLine($"  AzureEnvironment: {options.AzureEnvironment.Name}");
@@ -88,7 +90,7 @@ namespace ContainerRegistryTransfer
                 await exportClient.ExportImagesAsync(exportPipeline).ConfigureAwait(false);
             }
 
-            Console.WriteLine("TransferRegistryArtifacts completed. Goodbye!");
+            Console.WriteLine("ContainerRegistryTransfer completed. Goodbye!");
         }
 
         private static Options LoadOptions(string appSettingsFile)
