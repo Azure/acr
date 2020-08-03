@@ -1,4 +1,5 @@
 ﻿using ContainerRegistryTransfer.Helpers;
+using ContainerRegistryTransfer.Models;
 using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.ContainerRegistry.Models;
 using Microsoft.Azure.Management.KeyVault;
@@ -24,20 +25,18 @@ namespace ContainerRegistryTransfer.Clients
 
         public async Task<ExportPipeline> CreateExportPipelineAsync()
         {
-            Console.WriteLine($"Creating exportPipeline {options.ExportPipeline.PipelineName}.");
+            var exportPipelineName = options.ExportPipeline.PipelineName;
+            Console.WriteLine($"Creating exportPipeline {exportPipelineName}.");
             var exportPipeline = await CreateExportPipelineResourceAsync().ConfigureAwait(false);
-            Console.WriteLine($"Successfully created exportPipeline {options.ExportPipeline.PipelineName}.");
+            Console.WriteLine($"Successfully created exportPipeline {exportPipelineName}.");
 
-            var vaultName = KeyVaultHelper.GetKVNameFromUri(options.ExportPipeline.KeyVaultUri);
-
-            Console.WriteLine($"Adding an accessPolicy for exportPipeline {options.ExportPipeline.PipelineName} to vault {vaultName}.");
             // give the pipeline identity access to the key vault
             await KeyVaultHelper.AddKeyVaultAccessPolicyAsync(
                 keyVaultClient,
+                exportPipelineName,
                 options.TenantId,
-                options.SubscriptionId,
                 options.ExportPipeline.ResourceGroupName,
-                vaultName,
+                options.ExportPipeline.KeyVaultUri,
                 IdentityHelper.GetManagedIdentityPrincipalId(exportPipeline.Identity));
 
             return exportPipeline;
@@ -93,7 +92,6 @@ namespace ContainerRegistryTransfer.Clients
             Console.WriteLine($"  artifacts: {string.Join(Environment.NewLine, artifacts)}");
             Console.WriteLine($"======================================================================");
 
-
             var pipelineRunRequest = new PipelineRunRequest
             {
                 PipelineResourceId = pipelineId,
@@ -110,7 +108,8 @@ namespace ContainerRegistryTransfer.Clients
             var pipelineRun = await registryClient.PipelineRuns.CreateAsync(registryName: options.ExportPipeline.RegistryName,
                                                             resourceGroupName: options.ExportPipeline.ResourceGroupName,
                                                             pipelineRunName: pipelineRunName,
-                                                            request: pipelineRunRequest).ConfigureAwait(false);
+                                                           request: pipelineRunRequest).ConfigureAwait(false);
+
             if (string.Equals(pipelineRun.ProvisioningState, "Failed", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"PipelineRun {pipelineRunName} failed with the inner error '{pipelineRun.Response.PipelineRunErrorMessage}'.");

@@ -1,5 +1,6 @@
 ﻿using ContainerRegistryTransfer.Clients;
 using ContainerRegistryTransfer.Helpers;
+using ContainerRegistryTransfer.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;

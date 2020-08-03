@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Management.ContainerRegistry;
+using ContainerRegistryTransfer.Models;
 using Microsoft.Azure.Management.KeyVault;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;

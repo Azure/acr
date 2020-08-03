@@ -9,8 +9,11 @@ namespace ContainerRegistryTransfer.Helpers
 {
     public static class KeyVaultHelper
     {
-        public static async Task AddKeyVaultAccessPolicyAsync(KeyVaultManagementClient keyVaultClient, string tenantId, string subscriptionId, string resourceGroupName, string vaultName, string identityPrincipalId)
+        public static async Task AddKeyVaultAccessPolicyAsync(KeyVaultManagementClient keyVaultClient, string pipelineName, string tenantId, string resourceGroupName, string vaultUri, string identityPrincipalId)
         {
+            var vaultName = GetKVNameFromUri(vaultUri);
+            Console.WriteLine($"Adding accessPolicy for pipeline '{pipelineName}' to vault '{vaultName}'.");
+
             var vault = await keyVaultClient.Vaults.GetAsync(resourceGroupName, vaultName).ConfigureAwait(false);
 
             if (vault != null)
@@ -58,7 +61,7 @@ namespace ContainerRegistryTransfer.Helpers
             }
         }
 
-        public static string GetKVNameFromUri(string keyVaultUri)
+        private static string GetKVNameFromUri(string keyVaultUri)
         {
             var vaultUri = new Uri(keyVaultUri);
             return vaultUri?.Host?.Split('.')[0];

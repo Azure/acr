@@ -1,4 +1,5 @@
 ﻿using ContainerRegistryTransfer.Helpers;
+using ContainerRegistryTransfer.Models;
 using Microsoft.Azure.Management.ContainerRegistry;
 using Microsoft.Azure.Management.ContainerRegistry.Models;
 using Microsoft.Azure.Management.KeyVault;
@@ -22,21 +23,18 @@ namespace ContainerRegistryTransfer.Clients
 
         public async Task<ImportPipeline> CreateImportPipelineAsync()
         {
-            Console.WriteLine($"Creating importPipeline {options.ImportPipeline.PipelineName}.");
+            var importPipelineName = options.ImportPipeline.PipelineName;
+            Console.WriteLine($"Creating importPipeline {importPipelineName}.");
             var importPipeline = await CreateImportPipelineResourceAsync().ConfigureAwait(false);
-            Console.WriteLine($"Successfully created importPipeline {options.ImportPipeline.PipelineName}.");
-
-            var vaultName = KeyVaultHelper.GetKVNameFromUri(options.ImportPipeline.KeyVaultUri);
-
-            Console.WriteLine($"Adding an accessPolicy for importPipeline {options.ImportPipeline.PipelineName} to vault {vaultName}.");
+            Console.WriteLine($"Successfully created importPipeline {importPipelineName}.");
             
             // give the pipeline identity access to the key vault
             await KeyVaultHelper.AddKeyVaultAccessPolicyAsync(
                 keyVaultClient,
+                importPipelineName,
                 options.TenantId,
-                options.SubscriptionId,
-                options.ExportPipeline.ResourceGroupName,
-                vaultName,
+                options.ImportPipeline.ResourceGroupName,
+                options.ImportPipeline.KeyVaultUri,
                 IdentityHelper.GetManagedIdentityPrincipalId(importPipeline.Identity));
 
             return importPipeline;
