@@ -84,7 +84,7 @@ namespace ContainerRegistryTransfer.Clients
             var targetName = options.ExportPipelineRun.TargetName;
             var artifacts = options.ExportPipelineRun.Artifacts;
 
-            Console.WriteLine($"Export PipelineRun;");
+            Console.WriteLine($"Export PipelineRun properties:");
             Console.WriteLine($"  registryName: {options.ExportPipeline.RegistryName}");
             Console.WriteLine($"  pipelineRunName: {options.ExportPipelineRun.PipelineRunName}");
             Console.WriteLine($"  pipelineResourceId: {pipelineId}");

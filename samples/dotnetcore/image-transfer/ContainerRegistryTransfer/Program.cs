@@ -75,19 +75,20 @@ namespace ContainerRegistryTransfer
             var importClient = new ImportClient(registryClient, keyVaultClient, options);
             var importPipeline = await importClient.CreateImportPipelineAsync().ConfigureAwait(false);
 
+            Console.WriteLine();
+            Console.WriteLine($"======================================================================");
             Console.WriteLine($"Your importPipeline '{importPipeline.Name}' will run automatically.");
             Console.WriteLine($"Would you like to run your exportPipeline '{options.ExportPipeline.PipelineName}'? [Y/N]");
             var response = Console.ReadLine();
+
             if (string.Equals("Y", response, StringComparison.InvariantCultureIgnoreCase))
             {
                 Console.WriteLine("Validating pipelineRun configurations for export.");
                 options.ExportPipelineRun.Validate();
                 await exportClient.ExportImagesAsync(exportPipeline).ConfigureAwait(false);
             }
-            else
-            {
-                Console.WriteLine("Goodbye!");
-            }
+
+            Console.WriteLine("TransferRegistryArtifacts completed. Goodbye!");
         }
 
         private static Options LoadOptions(string appSettingsFile)
