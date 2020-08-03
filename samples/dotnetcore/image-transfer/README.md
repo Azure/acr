@@ -22,7 +22,7 @@ Note: The sample assumes the above resources are all in the same subscription.
 
 * Create a service principal and assign it the contributor role of the source and target resource groups.
 ```
-az ad sp create-for-rbac -n "MyApp" --role contributor \
+az ad sp create-for-rbac -n "MyApp" --sdk-auth --role contributor \
     --scopes /subscriptions/{SubID}/resourceGroups/{SourceResourceGroup} \
     /subscriptions/{SubID}/resourceGroups/{TargetResourceGroup}
 ```
