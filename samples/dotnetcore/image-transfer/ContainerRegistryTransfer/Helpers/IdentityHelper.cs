@@ -15,7 +15,7 @@ namespace ContainerRegistryTransfer.Helpers
                     Type = ResourceIdentityType.UserAssigned,
                     UserAssignedIdentities = new Dictionary<string, UserIdentityProperties>
                     {
-                        { userAssignedIdentity, null }
+                        { userAssignedIdentity, new UserIdentityProperties() }
                     }
                 };
             }
