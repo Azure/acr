@@ -26,10 +26,19 @@ The following steps describe how you can achieve this.
   
   For example, using [openssl](https://github.com/openssl/openssl):
   - Create a self-signed public cert and private key
-     - `openssl req -nodes -x509 -newkey rsa:4096 -keyout container-registry.contoso.com.key.pem -out container-registry.contoso.com.cert.pem -days 365 -subj '/CN=container-registry.contoso.com/O=Contoso./C=US'`
+    ```shell
+    openssl req -nodes -x509 -newkey rsa:4096 \
+      -keyout container-registry.contoso.com.key.pem \
+      -out container-registry.contoso.com.cert.pem -days 365 \
+      -subj '/CN=container-registry.contoso.com/O=Contoso./C=US'
+    ```
   - Create a single file containing both the public certificate and private key
-     - `cat container-registry.contoso.com.key.pem >> container-registry-contoso-com-pem`
-     - `cat container-registry.contoso.com.cert.pem >> container-registry-contoso-com-pem`
+    ```shell
+    cat container-registry.contoso.com.key.pem \
+      >> container-registry-contoso-com-pem
+    cat container-registry.contoso.com.cert.pem \
+      >> container-registry-contoso-com-pem
+    ```
   - For each data domain, follow the same steps above to prepare the PEM formatted files containing the public certificate and private key.
   
   Azure Key Vault allows you to [create](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) Certificate Authority (CA) signed certificates. 
@@ -44,7 +53,7 @@ We will enable two features on your registry:
   Managed Identities provide a mechanism to associate an Azure Active Directory identity with your registry, while relieving you of the burden of managing credentials. To learn more, see the documentation [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).\
  ACR supports both user assigned and system assigned managed identities.
 
-### Enable preview features
+### Enable data endpoints and managed idenitites
 1. `az login`
 2. `az account set -s <subscription-id-or-name> `
 3. `az acr update --data-endpoint-enabled true -n myregistry`
@@ -55,9 +64,9 @@ We will enable two features on your registry:
      - Create a user assigned managed identity following the instructions [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
      - Do _one_ of the following:
        - To enable _only_ user assigned managed identity:
-         - `az acr identity assign -n avtakkarweu --identities "<arm-resource-id-of-user-assigned-identity>"`
+         - `az acr identity assign -n myregistry --identities "<arm-resource-id-of-user-assigned-identity>"`
        - To enable _both_ user and system assigned managed identities:
-         - `az acr identity assign -n avtakkarweu --identities "<arm-resource-id-of-user-assigned-identity>" [system]`
+         - `az acr identity assign -n myregistry --identities "<arm-resource-id-of-user-assigned-identity>" [system]`
 
 ## Prepare your Azure Key Vault
 For each domain, its TLS private key and public certificate pair must be added to an Azure Key Vault that is accessible by your registry as a single PEM formatted file. We recommend creating a new key vault containing only your TLS certificates and granting the registry's identity access to `get` secret.
@@ -65,14 +74,14 @@ For each domain, its TLS private key and public certificate pair must be added t
 2. [Add](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) your certificates to the key vault.
 3. Add an access policy to the key vault that grants your registry's identity access to `get` secret:\
    `az keyvault set-policy --name <your-kv-name> --secret-permissions get --spn <registry-system-or-user-mi-principal-id>`
-   - The output of the command to enable preview features on the registry will contain the principal ids of the assiged identities.
+   - The output of the command to enable managed identities on the registry will contain the principal ids of the assiged identities.
    - Alternatively, you may obtain the principal ids using `az cli`:
      - For system assigned managed identity:
-       - `az acr show -n myrRegistry --query identity.principalId -o tsv`
+       - `az acr show -n myregistry --query identity.principalId -o tsv`
      - For user assigned managed identities, you may list them as follows and use the desired principal ID:
-       - `az acr show -n myRegistry --query identity.userAssignedIdentities`
+       - `az acr show -n myregistry --query identity.userAssignedIdentities`
 
-For greater isolation, we recommend that you put each certificate in its own key vault and set its access policy independently. The registry should always have access to the TLS certificates.
+For greater isolation, we recommend that you put each certificate in its own key vault and set its access policy independently. The registry should always have access to the key vault secrets.
 
 ### Enhanced security with Virtual Networks
 Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. ACR custom domains are currently _not supported_ where key vault access is restricted, but this is work in progress and will be available with system managed identities only.
@@ -82,15 +91,15 @@ Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure
    `container-registry.contoso.com` --> `myregistry.azurecr.io`
 2. The regional custom data domain must have a CNAME record with the target regional registry data endpoint:\
    `eastus-registry-data.contoso.com` --> `myregistry.eastus.data.azurecr.io`
-   - The output of the command to enable preview features on the registry will contain the regional data endpoint.
+   - The output of the command to enable data endpoints on the registry will contain the regional data endpoint.
    
 ## Contact us
-As a final step, share the following with us by creating a support ticket ([Azure Support](https://azure.microsoft.com/en-us/support/create-ticket/)):
+As a final step, share the following with us by creating a support ticket ([Azure Support](https://azure.microsoft.com/support/create-ticket/)):
 - Custom registry domain details
   - custom registry domain (`container-registry.contoso.com`)
-  - key vault secret ID of the corresponding TLS certificate
+  - key vault secret ID of the corresponding TLS data
   - client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
 - Custom data domain details
   - regional custom data domain (`eastus-registry-data.contoso.com`)
-  - key vault secret ID of the corresponding TLS certificate
+  - key vault secret ID of the corresponding TLS data
   - client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
