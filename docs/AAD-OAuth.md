@@ -153,11 +153,10 @@ We'll now call `POST /oauth2/exchange` to exchange the AAD tokens for an ACR ref
 ```bash
 registry="contosoregistry.azurecr.io"
 tenant="409520d4-8100-4d1d-ad47-72432ddcc120"
-aad_refresh_token="AQA...iAA"
 aad_access_token="eyJ...H-g"
 curl -v -X POST -H "Content-Type: application/x-www-form-urlencoded" -d \
-"grant_type=access_token_refresh_token&service=$registry&tenant=$tenant&refresh_token=$aad_refresh_token&access_token=$aad_access_token" \
-https://$registry/oauth2/exchange
+    "grant_type=access_token&service=$registry&tenant=$tenant&access_token=$aad_access_token" \
+    https://$registry/oauth2/exchange
 ```
 
 The body of the POST message is a querystring-like text that specifies the following values:
