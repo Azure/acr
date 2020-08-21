@@ -8,7 +8,7 @@ Task Agent Pools provide:
 
 - **VNet Support:** Agent Pools may be assigned to Azure VNets, providing access the resources in the VNet (eg, Container Registry, Key Vault, Storage).
 - **Scale As Needed:** Agent pools can be increased as needed, or scaled to zero, billed based on allocation.
-- **More Memory and CPU Options:** The current preview provides 3 tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S3 (8 cpu, 16G mem).
+- **More Memory and CPU Options:** The current preview provides 3 standard tiers, S1 (2 cpu, 3G mem), S2 (4 cpu, 8G mem), and S3 (8 cpu, 16G mem) and 1 isolated tier, I6 (64 cpu, 216G mem).
 - **Agent Pools per Workload:** To serve different configurations, instance agent pools based on scale and tier options to serve different types of workloads.
 - **Hybrid Managed Pools:** Task pools are patched and maintained by Azure. Task pools provide a balance between reserved allocation without the need to maintain the individual VMs.
 
@@ -111,7 +111,7 @@ az acr agentpool show \
 ## Preview Limitations
 
 - Task Agent Pools currently support Linux nodes. Windows nodes are not currently supported.
-- For each registry, the default total cpu quota of all agent pools is 16. Please [open a support ticket][open-support-ticket] for additional allocation.
+- For each registry, the default total cpu quota of all standard agent pools is 16 and all isolated agent pools is 0. Please [open a support ticket][open-support-ticket] for additional allocation.
 
 [acr-tasks]:           https://aka.ms/acr/tasks
 [acr-tiers]:           https://aka.ms/acr/tiers
