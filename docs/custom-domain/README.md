@@ -1,56 +1,105 @@
-# How to use a custom domain for azure container registry
+# Using Custom Domains with Azure Container Registry
 
-Azure Container registries has a typical login url of the format `*.azurecr.io`. A customer might like to have a custom domain that associate with its own organization. The following is the guide on how to achieve that.
+Every ACR is accessed using its login server. If you have a registry called `myregistry`, you access it using its default hostname, `myregistry.azurecr.io` (in Azure Public Cloud.) As a customer belonging to an organization, you may prefer to access your registry using a custom domain that is associated with your organization, for instance, `container-registry.contoso.com`.
+
+The following steps describe how you can achieve this.
 
 ## Prerequisites
+- [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest): version 2.4.0 or higher
+  - Consider using [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/overview)
+- A _premium_ Azure Container Registry. See [here](https://docs.microsoft.com/azure/container-registry/container-registry-get-started-azure-cli) for instructions on how to create one.
+- Your custom domain names. The following two are required:
+  - Custom registry domain to access the registry REST API. Example for the `contoso.com` domain: `container-registry.contoso.com` 
+  - Custom data domain to access the registry content. Again, example for `contoso.com`: `eastus-registry-data.contoso.com`
+    - Note that the custom data domain is region specific. For geo-replicated registries, each region should have its own custom data endpoint.
 
-For this example, we suppose that you want to associate `registry.contoso.com` with a Azure Container Registry. You would need the following:
+  For each domain, you must prepare a single PEM formatted file containing the TLS private key and public certificate:
+  
+  ```
+  -----BEGIN PRIVATE KEY-----  
+  .....  
+  -----END PRIVATE KEY-----  
+  -----BEGIN CERTIFICATE-----  
+  .....  
+  -----END CERTIFICATE-----
+  ```
+  
+  For example, using [openssl](https://github.com/openssl/openssl):
+  - Create a self-signed public cert and private key
+    ```shell
+    openssl req -nodes -x509 -newkey rsa:4096 \
+      -keyout container-registry.contoso.com.key.pem \
+      -out container-registry.contoso.com.cert.pem -days 365 \
+      -subj '/CN=container-registry.contoso.com/O=Contoso./C=US'
+    ```
+  - Create a single file containing both the public certificate and private key
+    ```shell
+    cat container-registry.contoso.com.key.pem \
+      >> container-registry-contoso-com-pem
+    cat container-registry.contoso.com.cert.pem \
+      >> container-registry-contoso-com-pem
+    ```
+  - For each data domain, follow the same steps above to prepare the PEM formatted files containing the public certificate and private key.
+  
+  Azure Key Vault allows you to [create](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) Certificate Authority (CA) signed certificates. 
+  - If you choose to use the Azure Portal to create the certificates, be sure to select certificate content type as PEM.
+ 
+## Prepare your existing registry
+We will enable two features on your registry:
+- Data Endpoints:\
+  This feature provides a dedicated endpoint for downloading content from your registry. If you have a registry in East US, on enabling this feature, a data endpoint is automatically created for you: `myregistry.eastus.data.azurecr.io`
+  
+- ACR Managed Identities:\
+  Managed Identities provide a mechanism to associate an Azure Active Directory identity with your registry, while relieving you of the burden of managing credentials. To learn more, see the documentation [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview).\
+ ACR supports both user assigned and system assigned managed identities.
 
-* Setup your organization's DNS zone `.contoso.com`. To create one on Azure, you can follow [this guide](https://docs.microsoft.com/en-us/azure/dns/dns-getstarted-create-dnszone-portal)
-* SSL certificate for `registry.contoso.com`, we would call it `contoso.pfx`. Put the password of the certificate to a file named `pwd.txt`. You would optionally also need your signing CA certificate's URL, such as `http://www.contoso.com/pki/ca.cert`
-* An instance of Azure Container Registry service as the backend. In this example we would assume it's `docker-registry-contoso.azurecr.io`
+### Enable data endpoints and managed idenitites
+1. `az login`
+2. `az account set -s <subscription-id-or-name> `
+3. `az acr update --data-endpoint-enabled true -n myregistry`
+4. You can either enable a system assigned managed identity, a user assigned managed identity, or both for your registry. We recommend using system assigned managed identity to enable advanced scenarios with virtual networks that, although not supported currently, are [coming soon](#enhanced-security-with-virtual-networks). Do _one_ of the following:
+   - To enable only system assigned managed identity: 
+     - `az acr identity assign -n myregistry --identities [system]`
+   - To enable user assigned managed identity, with or without a system identity: 
+     - Create a user assigned managed identity following the instructions [here](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
+     - Do _one_ of the following:
+       - To enable _only_ user assigned managed identity:
+         - `az acr identity assign -n myregistry --identities "<arm-resource-id-of-user-assigned-identity>"`
+       - To enable _both_ user and system assigned managed identities:
+         - `az acr identity assign -n myregistry --identities "<arm-resource-id-of-user-assigned-identity>" [system]`
 
-## Steps
+## Prepare your Azure Key Vault
+For each domain, its TLS private key and public certificate pair must be added to an Azure Key Vault that is accessible by your registry as a single PEM formatted file. We recommend creating a new key vault containing only your TLS certificates and granting the registry's identity access to `get` secret.
+1. [Create](https://docs.microsoft.com/azure/key-vault/) a new Azure Key Vault.
+2. [Add](https://docs.microsoft.com/azure/key-vault/certificate-scenarios) your certificates to the key vault.
+3. Add an access policy to the key vault that grants your registry's identity access to `get` secret:\
+   `az keyvault set-policy --name <your-kv-name> --secret-permissions get --spn <registry-system-or-user-mi-principal-id>`
+   - The output of the command to enable managed identities on the registry will contain the principal ids of the assiged identities.
+   - Alternatively, you may obtain the principal ids using `az cli`:
+     - For system assigned managed identity:
+       - `az acr show -n myregistry --query identity.principalId -o tsv`
+     - For user assigned managed identities, you may list them as follows and use the desired principal ID:
+       - `az acr show -n myregistry --query identity.userAssignedIdentities`
 
-### Upload your cert into Azure Key Vault
+For greater isolation, we recommend that you put each certificate in its own key vault and set its access policy independently. The registry should always have access to the key vault secrets.
 
-Under [key-vault-setup/](key-vault-setup/), run the following:
-
-1. (Optional) Create an Azure Key Vault, if you don't already have one:
-
-        `.\ensure-vault.ps1 -subscriptionName <subscription> -resourceGroupName <resourceGroup> -vaultName <new VaultName>`
-
-2. Upload `contoso.pfx` to Azure Key Vault:
-
-        `.\upload-cert.ps1 -pfxFilePath <pfxFile> -pfxPwFile <pwdFile> -secretName <new SecretName> -vaultName <vaultName>`
-
-### Deploy and configure an Nginx Docker image on a new Azure VM
-
-Deploy via Azure Portal
-
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Facr%2Fmaster%2Fdocs%2Fcustom-domain%2Fdocker-vm-deploy%2Fazuredeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Facr%2Fmaster%2Fdocs%2Fcustom-domain%2Fdocker-vm-deploy%2Fazuredeploy.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
-
-Alternatively, to deploy using powershell script, [docker-vm-deploy/](docker-vm-deploy/), do the following:
-
-1. Edit [azuredeploy.parameters.json](docker-vm-deploy/azuredeploy.parameters.json) and populate all necessary parameters
-
-2. Run the following script to create the new VM:
-
-        `.\deploy.ps1 -resourceGroupName <resourceGroup>`
-
-### Configure DNS zone
-
-Configure the DNS zone so `registry.contoso.com` points to the Azure VM you have just created. If you are using an Azure DNS Zone. You can use the following command:
-
-  `New-AzureRmDnsRecordSet -Name <registry> -RecordType CNAME -ZoneName <contoso.com> -ResourceGroupName <resourceGroup> -Ttl <Ttl> -DnsRecords (New-AzureRmDnsRecordConfig -Cname <AddrToAboveVM>)`
-
-## Quick verification
-
-A simple way to test the setup is to call `docker login` to quickly confirm that the requests are properly forwarded:
-
-  `docker login -u <username> -p <password> registry.contoso.com`
+### Enhanced security with Virtual Networks
+Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. ACR custom domains are currently _not supported_ where key vault access is restricted, but this is work in progress and will be available with system managed identities only.
+   
+## Prepare your DNS zone
+1. The custom registry domain must have a CNAME record with the target registry login server:\
+   `container-registry.contoso.com` --> `myregistry.azurecr.io`
+2. The regional custom data domain must have a CNAME record with the target regional registry data endpoint:\
+   `eastus-registry-data.contoso.com` --> `myregistry.eastus.data.azurecr.io`
+   - The output of the command to enable data endpoints on the registry will contain the regional data endpoint.
+   
+## Contact us
+As a final step, share the following with us by creating a support ticket ([Azure Support](https://azure.microsoft.com/support/create-ticket/)):
+- Custom registry domain details
+  - custom registry domain (`container-registry.contoso.com`)
+  - key vault secret ID of the corresponding TLS data
+  - client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
+- Custom data domain details
+  - regional custom data domain (`eastus-registry-data.contoso.com`)
+  - key vault secret ID of the corresponding TLS data
+  - client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
