@@ -28,7 +28,7 @@ module.exports = {
             {
                 title: 'Tasks',
                 collapsible: true,
-                children: ['/tasks/container-registry-tasks-overview', '/tasks/run-as-deployment/', '/tasks/agentpool']
+                children: ['/tasks/container-registry-tasks-overview', '/tasks/run-as-deployment/', '/tasks/agentpool/']
             },
             {
                 title: 'Authentication',
@@ -40,13 +40,8 @@ module.exports = {
                 title: 'Integration',
                 collapsable: true,
                 sidebarDepth : 1,
-                children : ['/integration/change-analysis/', ]
-            },
-            {
-                title: 'Encryption',
-                collapsable: true,
-                children: ['/CMK/'],
-            },
+                children : ['/integration/change-analysis/']
+            }
         ]
     }
 }

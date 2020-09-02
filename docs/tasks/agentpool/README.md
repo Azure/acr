@@ -1,3 +1,7 @@
+---
+title: Agent Pools
+---
+
 # Running ACR Tasks on Dedicated Agent Pools
 
 ## Introduction

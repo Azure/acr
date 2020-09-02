@@ -3,7 +3,7 @@ name: GH-Page Publish
 on:
   push:
     branches: 
-      - master
+      - main 
       - test-pages
 
 jobs:
