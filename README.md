@@ -60,6 +60,7 @@ A set of short links for presentations & social media.
 | [Customer-managed Keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
 | [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
+| [Custom Domains (Preview)](https://aka.ms/acr/custom-domains) | https://aka.ms/acr/custom-domains |
 
 ### ACR Tasks
 
