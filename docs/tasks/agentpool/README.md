@@ -16,7 +16,7 @@ Task Agent Pools provide:
 - **Agent Pools per Workload:** To serve different configurations, instance agent pools based on scale and tier options to serve different types of workloads.
 - **Hybrid Managed Pools:** Task pools are patched and maintained by Azure. Task pools provide a balance between reserved allocation without the need to maintain the individual VMs.
 
-ACR Task Agent Pools are currently previewed in WestUS2, SouthCentralUS, EastUS2 and EastUS. 
+ACR Task Agent Pools are currently previewed in WestUS2, SouthCentralUS, EastUS2, EastUS, CentralUS, USGovArizona, USGovTexas and USGovVirginia.
 
 ## Prerequisites
 
