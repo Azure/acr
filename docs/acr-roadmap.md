@@ -65,7 +65,7 @@ We believe customers should have a choice for their security scanning solutions 
 
 Customers have asked for more granular IP restrictions to their registry, in addition to authentication. As a shared registry API, this does present some challenges that we're incrementally addressing.
 
-In [March of 2019 we added preview support for VNet and Firewall rules through Service Endpoints](https://azure.microsoft.com/en-us/blog/azure-container-registry-virtual-network-and-firewall-rules-preview-support/). This allows customers to restrict their acr endpoint to requests from within the defined Azure VNet, or any whitelisted ip ranges. 
+In [March of 2019 we added preview support for VNet and Firewall rules through Service Endpoints](https://azure.microsoft.com/en-us/blog/azure-container-registry-virtual-network-and-firewall-rules-preview-support/). This allows customers to restrict their acr endpoint to requests from within the defined Azure VNet, or any allowed ip ranges.
 
 The Service Endpoint approach to VNets puts firewall rules on the public endpoint, which limits the inbound traffic to network packets from reources defined as inside the VNet. However, the traffic does travel across the public network to be ingested. 
 
