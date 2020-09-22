@@ -5,7 +5,7 @@
 | September 22, 2020| Active - testing solution |
 | September 18, 2020 | Identified |
 
-- The ACR engineering team has coded a fix that has been deployed for canary testing on September 22, 2020
+- The ACR engineering team is validating a fix that has been deployed for canary testing on September 22, 2020
 - Assuming testing goes as expected, following Azure safe deployment practices, regional deployments will start September 23, 2020
 - Deployments should complete by start of business, Monday September 28, 2020 - **_please check here for final confirmation_**
 
@@ -51,7 +51,7 @@ We can provide some guidance to avoid customers being stuck between the proverbi
 First, some scoping to this guidance:
 
 - [ACR is a private registry](https://aka.ms/acr), providing [private repository storage of Helm charts](https://aka.ms/acr/helm-repos)
-- ACR connectivity is secured through SSL connections, minimizing man in the middle attacks
+- ACR implements [Azure Security Benchmarks](https://docs.microsoft.com/en-us/azure/container-registry/security-baseline) minimizing man in the middle attacks addressed in the helm security issues.
 - The customer controls access to their resource, and can monitor requests through [ACR Audit Logs](https://aka.ms/acr/audit-logs)
 - The helm client being used to pull charts from ACR is scoped to only pulling charts from ACR, and not public locations outside the control of the customers environment
 
@@ -110,7 +110,7 @@ The information isn't required by the client, but it's stored in the `chart.yaml
   ```shell
   helm create test
   helm package ./test
-  az acr helm push ./test
+  az acr helm push ./test-0.1.0.tgz
   ```
 - Once a push is complete, the `chart.yaml` will be updated to conform to the new annotations format
 - The ACR Helm update must be completed in the region hosting the registry for the new format to be generated
