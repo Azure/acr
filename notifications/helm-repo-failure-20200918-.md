@@ -18,7 +18,7 @@
 
 ## Issue Summary
 
-- ACR generates yaml content within the `chart.yaml` index to identify where the chart is stored within the content store
+- ACR generates yaml content within the `index.yaml` index to identify where the chart is stored within the content store
   ```yaml
   apiVersion: v1
   entries:
@@ -28,7 +28,7 @@
     appVersion: 5.1.0
     created: "2019-03-06T16:59:25.8892193Z"
   ```
-- To mitigate security concerns, unrelated to how ACR annotates `chart.yaml`, the helm client no longer supports additional content within the `chart.yaml` index file causing helm v3.3.2 or higher to fail.
+- To mitigate security concerns, unrelated to how ACR annotates `index.yaml`, the helm client no longer supports additional content within the `index.yaml` index file causing helm v3.3.2 or higher to fail.
 - ACR is actively rolling out a server side change to generate newly complaint content, expected to be completed by Monday September 28, 2020
   ```yaml
   apiVersion: v1
@@ -47,7 +47,7 @@ Evaluating the information provided to the [Helm security advisories](https://gi
 - [Sanitizing plugin names](https://github.com/helm/helm/security/advisories/GHSA-m54r-vrmv-hw33)
 - [plugin.yaml file allows for duplicate entries](https://github.com/helm/helm/security/advisories/GHSA-c52f-pq47-2r9j)
 
-We can provide some guidance to avoid customers being stuck between the proverbial rock and hard place while we rollout a server side change to regenerate the `chart.yaml` files.
+We can provide some guidance to avoid customers being stuck between the proverbial rock and hard place while we rollout a server side change to regenerate the `index.yaml` files.
 
 First, some scoping to this guidance:
 
@@ -64,7 +64,7 @@ Based on the above guidance, we recognize that customers can not be blocked for 
 - Helm server deployed within kubernetes is unrelated
 - Do NOT use the same client to pull public charts as the concerns noted in the security advisories may apply
 - As ACR completes the rollout tracked [here](https://aka.ms/acr/advisories), update to `v3.3.2` or newer tested clients.
-- Once the rollout is complete, users will need to push any chart to their repository, trigger a regeneration of the `chart.yaml` file, conforming to new helm behavior
+- Once the rollout is complete, users will need to push any chart to their repository, trigger a regeneration of the `index.yaml` file, conforming to new helm behavior
 
 ## Go Forward Plan
 
@@ -94,11 +94,11 @@ entries:
    created: "2019-03-06T16:59:25.8892193Z"
 ```
 
-The information isn't required by the client, but it's stored in the `chart.yaml` as it worked, and it solved the need. Prior to `helm v3.3.1` string elements were supported. The result of a security audit triggered the helm team to implement string yaml validation. We fully support the security fix and recognize the gap in security notifications between the helm project and consumers.
+The information isn't required by the client, but it's stored in the `index.yaml` as it worked, and it solved the need. Prior to `helm v3.3.1` string elements were supported. The result of a security audit triggered the helm team to implement string yaml validation. We fully support the security fix and recognize the gap in security notifications between the helm project and consumers.
 
 ### The Fix
 
-- The ACR service will change the `chart.yaml` formatting of the digest to conform to helm annotations:
+- The ACR service will change the `index.yaml` formatting of the digest to conform to helm annotations:
   ```yaml
   apiVersion: v1
   entries: wordpress:
@@ -107,13 +107,13 @@ The information isn't required by the client, but it's stored in the `chart.yaml
   appVersion: 5.1.0
   created: "2019-03-06T16:59:25.8892193Z"
   ```
-- To trigger a server side regeneration of the `chart.yaml` a new chart will need to be pushed to acr
+- To trigger a server side regeneration of the `index.yaml` a new chart will need to be pushed to acr
   ```shell
   helm create test
   helm package ./test
   az acr helm push ./test-0.1.0.tgz
   ```
-- Once a push is complete, the `chart.yaml` will be updated to conform to the new annotations format
+- Once a push is complete, the `index.yaml` will be updated to conform to the new annotations format
 - The ACR Helm update must be completed in the region hosting the registry for the new format to be generated
 - Once complete, all helm clients will continue to function, including new helm clients > `v3.3.1`
 
@@ -124,7 +124,7 @@ The information isn't required by the client, but it's stored in the `chart.yaml
 - **Q: Can ACR update my registry so I don't have push a chart to get the new format?**
 - **A:** We evaluated back filling, however this would have taken longer to verify and implied higher risk as the number of registries supporting `helm repo` worldwide is substantial
 - **Q: Am I secure in using helm < `v3.3.1` in production, even though there are security advisories?**
-- **A:** Security should always be a concern. If you follow the above guidance for using `helm repo` uniquely with ACR, where you control all the content which was securely pushed by members of your trusted circle, you should be comfortable proceeding. The known security issues involve compromised registries, or shared public registries that share a single `chart.yaml`
+- **A:** Security should always be a concern. If you follow the above guidance for using `helm repo` uniquely with ACR, where you control all the content which was securely pushed by members of your trusted circle, you should be comfortable proceeding. The known security issues involve compromised registries, or shared public registries that share a single `index.yaml`
 - **Q: How can I secure my helm chart usage?**
 - **A:** Consuming public content is an advantage and a risk. We recommend importing all public content and tooling being used within your organization. Security scan it, test each updated version and automate the process to assure you are always working with recent content, that is both secured and tested for your environment.  
 See guidance on [Consuming Upstream Content in Your Software or Service](https://stevelasker.blog/2020/09/01/consuming-upstream-content/)
