@@ -34,7 +34,7 @@
   apiVersion: v1
   entries: wordpress:
   - annotations
-    "azurecr.io/manifestDigest": sha256:08ef434162070bba4256414c80b001d15b7503ef2a1a4fa1f60bab174f80d4d7
+    azurecr.io/manifest-digest: sha256:08ef434162070bba4256414c80b001d15b7503ef2a1a4fa1f60bab174f80d4d7
   appVersion: 5.1.0
   created: "2019-03-06T16:59:25.8892193Z"
   ```
@@ -103,7 +103,7 @@ The information isn't required by the client, but it's stored in the `index.yaml
   apiVersion: v1
   entries: wordpress:
   - annotations
-    "azurecr.io/manifestDigest": sha256:08ef434162070bba4256414c80b001d15b7503ef2a1a4fa1f60bab174f80d4d7
+    azurecr.io/manifest-digest: sha256:08ef434162070bba4256414c80b001d15b7503ef2a1a4fa1f60bab174f80d4d7
   appVersion: 5.1.0
   created: "2019-03-06T16:59:25.8892193Z"
   ```
