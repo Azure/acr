@@ -2,11 +2,12 @@
 
 |Date | Status |
 |-|-|
+| September 24, 2020| Active - in-deployment |
 | September 22, 2020| Active - testing solution |
 | September 18, 2020 | Identified |
 
-- The ACR engineering team is validating a fix that has been deployed for canary testing on September 22, 2020
-- Assuming testing goes as expected, following Azure safe deployment practices, regional deployments will start September 23, 2020
+- The ACR engineering team validated a fix that is actively being deployed to all Azure regions.
+- Following [Azure safe deployment practices](https://azure.microsoft.com/en-us/blog/advancing-safe-deployment-practices/), regional deployments are under way.
 - Deployments should complete by start of business, Monday September 28, 2020 - **_please check here for final confirmation_**
 - Azure government clouds and Azure China should complete by September 30, 2020.
 
