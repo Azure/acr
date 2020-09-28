@@ -1,0 +1,59 @@
+﻿{
+  "AzureEnvironment": {
+    "Name": "AzureGlobalCloud"
+  },
+  "Registry": {
+    "TenantId": "myTenantId",
+    "SubscriptionId": "mySubscriptionId",
+    "ResourceGroupName": "myResourceGroupName",
+    "Name": "myRegistryName"
+  },
+  "Identity": {
+    "ClientId": "myClientId",
+    "ClientSecret": "myClientSecret"
+  },
+  "Import": {
+    "Enabled": true,
+    "Force": true,
+    "SourceRegistry": {
+      "ResourceId": "mySourceRegistryResourceId",
+      "RegistryUri": "mysourceregistry.azurecr.io",
+      "UserName": "clientId-or-adminUser",
+      "Password": "clientSecret-or-adminPassword"
+    },
+    "Repositories": [
+      "sourceRepo",
+      "sourceRepoPrefix*"
+    ],
+    "Tags": [
+      "sourceRepo1:tag1",
+      "sourceRepo2:tag2"
+    ],
+    "ImportPipelineName": "myImportPipelineName",
+    "Blobs": [
+      "exportedBlob1",
+      "exportedBlob2",
+      "exportedBlob3"
+    ]
+  },
+  "Export": {
+    "Enabled": true,
+    "ExportPipelineName": "myExportPipelineName",
+    "MaxArtifactCountPerBlob": 50,
+    "BlobNamePrefix": "artifacts",
+    "IncludeImportedArtifacts": true,
+    "Repositories": [
+      "targetRepo",
+      "targetRepoPrefix*"
+    ],
+    "Tags": [
+      "targetRepo1:tag1",
+      "targetRepo2:tag2"
+    ],
+    "CopyBlobs": {
+      "Enabled": true,
+      "SourceSasToken": "sourceBlobContainerSasToken",
+      "DestContainerSasUri": "destinationBlobContainerSasUri"
+    }
+  }
+}
