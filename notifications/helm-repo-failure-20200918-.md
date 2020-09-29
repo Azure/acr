@@ -2,13 +2,15 @@
 
 |Date | Status |
 |-|-|
+| September 26, 2020| Mitigation Complete |
 | September 25, 2020| Azure Commercial/Public Complete, China/.gov under way |
 | September 24, 2020| Active - in-deployment |
 | September 22, 2020| Active - testing solution |
 | September 18, 2020 | Identified |
 
-- The ACR engineering team has completed deployments to all Azure Commercial/Public regions.
-- Following [Azure safe deployment practices](https://azure.microsoft.com/en-us/blog/advancing-safe-deployment-practices/), Azure government clouds and Azure China should complete by September 30, 2020  - **_please check here for final confirmation_**
+## Rollout Complete
+
+- Following [Azure safe deployment practices](https://azure.microsoft.com/en-us/blog/advancing-safe-deployment-practices/), the ACR engineering team has completed deployments to all Azure Commercial/Public, China and US Gov regions.
 
 ## Does this Issue Apply to You
 
