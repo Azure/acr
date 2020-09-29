@@ -18,4 +18,4 @@ This repo contains [issues](https://github.com/Azure/acr/issues), [samples](./do
 
 ## Links
 
-See [ACR Links](./README.md/#links)
+See [ACR Links](../README.md/#links)
