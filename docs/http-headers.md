@@ -46,20 +46,22 @@ The values we ask ACR partners to use when populating the `X-Meta-Source-Client`
 | On Premise                | `on-prem/                               |
 
 
-| Service name              | Header                                  |
-| ------------------------- | --------------------------------------- |
-| App Service - Logic Apps  | `azure/app-service/logic-apps`          |
-| App Service - Web Apps    | `azure/app-service/web-apps`            |
-| Azure Container Builder   | `azure/acb`                             |
-| Azure Container Instance  | `azure/aci`                             |
-| Azure Container Service   | `azure/acs`                             |
-| Azure Kubernetes Service  | `azure/aks`                             |
-| Batch                     | `azure/batch`                           |
-| Cloud Console             | `azure/cloud-console`                   |
-| Functions                 | `azure/functions`                       |
-| HDInsight                 | `azure/hdinsight`                       |
-| Internet of Things - Hub  | `azure/iot/hub`                         |
-| Jenkins                   | `azure/jenkins`                         |
-| Machine Learning          | `azure/ml`                              |
-| Service Fabric            | `azure/service-fabric`                  |
-| VSTS                      | `azure/vsts`                            |
+| Service or Orchestrator name   | Header                                  |
+| ------------------------------ | --------------------------------------- |
+| App Service - Logic Apps       | `azure/app-service/logic-apps`          |
+| App Service - Web Apps         | `azure/app-service/web-apps`            |
+| Azure Container Builder        | `azure/acb`                             |
+| Azure Container Instance       | `azure/aci`                             |
+| Azure Container Service        | `azure/acs`                             |
+| Azure Kubernetes Service       | `azure/aks`                             |
+| AKS Engine (Kubernetes)        | `azure/aks-engine`                      |
+| Cluster API Azure (Kubernetes) | `azure/capz`                            |
+| Batch                          | `azure/batch`                           |
+| Cloud Console                  | `azure/cloud-console`                   |
+| Functions                      | `azure/functions`                       |
+| HDInsight                      | `azure/hdinsight`                       |
+| Internet of Things - Hub       | `azure/iot/hub`                         |
+| Jenkins                        | `azure/jenkins`                         |
+| Machine Learning               | `azure/ml`                              |
+| Service Fabric                 | `azure/service-fabric`                  |
+| VSTS                           | `azure/vsts`                            |
