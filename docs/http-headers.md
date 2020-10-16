@@ -45,7 +45,6 @@ The values we ask ACR partners to use when populating the `X-Meta-Source-Client`
 | US Gov                    | `azureusgov/`                           |
 | On Premise                | `on-prem/                               |
 
-
 | Service or Orchestrator name   | Header                                  |
 | ------------------------------ | --------------------------------------- |
 | App Service - Logic Apps       | `azure/app-service/logic-apps`          |
@@ -65,3 +64,4 @@ The values we ask ACR partners to use when populating the `X-Meta-Source-Client`
 | Machine Learning               | `azure/ml`                              |
 | Service Fabric                 | `azure/service-fabric`                  |
 | VSTS                           | `azure/vsts`                            |
+| ACR Tasks                      | `azure/acr/tasks`                       |
