@@ -67,6 +67,7 @@ A set of short links for presentations & social media.
 | Title | Link |
 | - | - |
 | [Tasks](https://aka.ms/acr/tasks) | https://aka.ms/acr/tasks |
+| [Tasks - Gated Import of Public Content](https://aka.ms/acr/tasks/gated-import) | https://aka.ms/acr/tasks/gated-import |
 | [Task Scheduling](https://aka.ms/acr/tasks/scheduling) | https://aka.ms/acr/tasks/scheduling |
 | [Task Timer Cron Expressions](https://aka.ms/acr/tasks/cron) | https://aka.ms/acr/tasks/cron |
 | [Task Dedicated Agent Pool](https://aka.ms/acr/tasks/agentpool) | https://aka.ms/acr/tasks/agentpool |
