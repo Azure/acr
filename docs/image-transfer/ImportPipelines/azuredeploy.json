@@ -86,31 +86,10 @@
   },
   "resources": [
     {
-      "type": "Microsoft.ContainerRegistry/registries",
-      "apiVersion": "2019-12-01-preview",
-      "name": "[parameters('registryName')]",
-      "location": "[parameters('location')]",
-      "comments": "Container registry for storing docker images",
-      "tags": {
-        "displayName": "Container Registry",
-        "container.registry": "[parameters('registryName')]"
-      },
-      "sku": {
-        "name": "Premium",
-        "tier": "Premium"
-      },
-      "properties": {
-        "adminUserEnabled": false
-      }
-    },
-    {
       "type": "Microsoft.ContainerRegistry/registries/importPipelines/",
       "name": "[concat(parameters('registryName'), '/', parameters('importPipelineName'))]",
       "location": "[parameters('location')]",
       "apiVersion": "2019-12-01-preview",
-      "dependsOn": [
-        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
-      ],
       "identity": "[if(not(empty(parameters('userAssignedIdentity'))), variables('userIdentity'), variables('systemIdentity'))]",
       "properties": {
         "source": {
