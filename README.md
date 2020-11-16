@@ -32,7 +32,7 @@ A set of short links for presentations & social media.
 | Title | Link |
 | - | - |
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
-| [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
+| [Helm Support](https://aka.ms/acr/helm) | https://aka.ms/acr/helm |
 | [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
 | [Webhook Notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
