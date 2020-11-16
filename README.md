@@ -32,7 +32,7 @@ A set of short links for presentations & social media.
 | Title | Link |
 | - | - |
 | [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
-| [Helm Chart Repos](https://aka.ms/acr/helm-repos) | https://aka.ms/acr/helm-repos |
+| [Helm Support](https://aka.ms/acr/helm) | https://aka.ms/acr/helm |
 | [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
 | [Webhook Notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
@@ -67,6 +67,7 @@ A set of short links for presentations & social media.
 | Title | Link |
 | - | - |
 | [Tasks](https://aka.ms/acr/tasks) | https://aka.ms/acr/tasks |
+| [Tasks - Gated Import of Public Content](https://aka.ms/acr/tasks/gated-import) | https://aka.ms/acr/tasks/gated-import |
 | [Task Scheduling](https://aka.ms/acr/tasks/scheduling) | https://aka.ms/acr/tasks/scheduling |
 | [Task Timer Cron Expressions](https://aka.ms/acr/tasks/cron) | https://aka.ms/acr/tasks/cron |
 | [Task Dedicated Agent Pool](https://aka.ms/acr/tasks/agentpool) | https://aka.ms/acr/tasks/agentpool |
