@@ -8,14 +8,15 @@ author: toddysm
 ms.custom:
 ---
 
-# Private Preview - ACR Connected Registry Feature
-We are announcing the private preview of Azure Container Registry (ACR) connected registry feature.
+## Private Preview - ACR Connected Registry Feature
 
-The connected registry feature of ACR allows you to deploy a registry on your premises and synchronize images between the ACR and your premises. It brings the container images and OCI artifacts closer to your on-premise container workloads and increases their performance and reliability.
+We are announcing the private preview of the Azure Container Registry (ACR) connected registry feature.
 
-ACR connected registry can be used in conjunction with Azure IoT Edge, Azure Arc, Azure Stack as well as other edge container workloads.
+The connected registry feature of ACR allows you to deploy a registry on your premises and synchronize images between the ACR and your premises. It brings the container images and OCI artifacts closer to your on premises container workloads and increases their acquisition performance.
 
-Right now, the feature is scheduled for limited private preview with selected customers starting on January 15th 2021. If you want to be considered for the private preview, please submit your contact details using this [form](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR1OsLxas9SdIhfyFenqqkolUMkFKMTdDSU45SFQzU0o0WUNROVAySkRINy4u).
+ACR connected registry can be used in conjunction with [Azure IoT Edge](https://azure.microsoft.com/services/iot-edge/), [Azure Arc](https://azure.microsoft.com/en-us/services/azure-arc/), [Azure Stack](https://azure.microsoft.com/overview/azure-stack/) as well as other edge container workloads.
+
+Connected registry is currently in limited preview. To request private preview access, submit your contact details using this [form](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR1OsLxas9SdIhfyFenqqkolUMkFKMTdDSU45SFQzU0o0WUNROVAySkRINy4u).
 
 ---
 Toddy Mladenov
