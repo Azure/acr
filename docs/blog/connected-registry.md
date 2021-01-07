@@ -12,7 +12,7 @@ ms.custom:
 
 We are announcing the private preview of the Azure Container Registry (ACR) connected registry feature.
 
-The connected registry feature of ACR allows you to deploy a registry on your premises and synchronize images between the ACR and your premises. It brings the container images and OCI artifacts closer to your on premises container workloads and increases their acquisition performance.
+The connected registry feature of ACR allows you to deploy a registry on your premises and synchronize images between the ACR and your premises. It brings the container images and OCI artifacts closer to your container workloads on premises and increases their acquisition performance.
 
 ACR connected registry can be used in conjunction with [Azure IoT Edge](https://azure.microsoft.com/services/iot-edge/), [Azure Arc](https://azure.microsoft.com/en-us/services/azure-arc/), [Azure Stack](https://azure.microsoft.com/overview/azure-stack/) as well as other edge container workloads.
 
