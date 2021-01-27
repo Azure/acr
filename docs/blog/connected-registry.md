@@ -16,7 +16,9 @@ The connected registry feature of ACR allows you to deploy a registry on your pr
 
 ACR connected registry can be used in conjunction with [Azure IoT Edge](https://azure.microsoft.com/services/iot-edge/), [Azure Arc](https://azure.microsoft.com/en-us/services/azure-arc/), [Azure Stack](https://azure.microsoft.com/overview/azure-stack/) as well as other edge container workloads.
 
-Connected registry is currently in limited preview. To request private preview access, submit your contact details using this [form](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR1OsLxas9SdIhfyFenqqkolUMkFKMTdDSU45SFQzU0o0WUNROVAySkRINy4u).
+Connected registry is currently in limited preview. To request preview access, submit your contact details using this [form](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR1OsLxas9SdIhfyFenqqkolUMkFKMTdDSU45SFQzU0o0WUNROVAySkRINy4u).
+
+For private preview documentation, please visit [Connected Registry Private Preview Details](../preview/connected-registry/README.md).
 
 ---
 Toddy Mladenov
