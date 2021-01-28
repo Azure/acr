@@ -63,4 +63,4 @@ In this overview, you learned about the connected registry and some basic concep
 <!-- LINKS - internal -->
 [overview-connected-registry-access]:overview-connected-registry-access.md
 [overview-connected-registry-and-iot-edge]:overview-connected-registry-and-iot-edge.md
-[repository-scoped-permissions]:[repository-scoped-permissions](https://docs.microsoft.com/azure/container-registry/container-registry-repository-scoped-permissions)
+[repository-scoped-permissions]: https://docs.microsoft.com/azure/container-registry/container-registry-repository-scoped-permissions
