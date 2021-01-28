@@ -41,6 +41,13 @@ Here is a list of known limitations for the connected registry functionality in 
 - Garbage collection of deleted artifacts on connected registries is currently not supported.
 - Connected registry is coupled with home region data endpoint and its automatic migration for geo replications is not supported.
 - Deletion of a connected registry needs manual removal of the containers on premises as well as removal of the respective scope map or tokens in the cloud.
+- Connected registry sync limitations are as follows:
+  - For continuous sync:
+    - `minMessageTtl` is 1 day
+    - `maxMessageTtl` is 90 days
+  - For occasionally connected scenarios, where you want to specify sync window:
+    - `minSyncWindow` is 1 hr
+    - `maxSyncWindow` is 7 days
 
 ## Set Up and Configuration
 
