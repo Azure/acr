@@ -122,8 +122,6 @@ In this quickstart, you used Azure CLI to create a connected registry resources 
 
 > [Quickstart: Deploy connected registry on IoT Edge][quickstart-deploy-connected-registry-iot-edge-cli]
 
-> [Quickstart: Deploy connected registry on Azure Arc][quickstart-deploy-connected-registry-azure-arc]
-
 <!-- LINKS - internal -->
 [az-acr-connected-registry-create]: https://docs.microsoft.com/cli/azure/acr/connected-registry?view=azure-cli-latest#az_acr_connected_registry_create
 [az-acr-connected-registry-list]: https://docs.microsoft.com/cli/azure/acr/connected-registry?view=azure-cli-latest#az_acr_connected_registry_list
@@ -133,4 +131,4 @@ In this quickstart, you used Azure CLI to create a connected registry resources 
 [container-registry-intro]: https://docs.microsoft.com/azure/container-registry/container-registry-intro
 [container-registry-skus]: https://docs.microsoft.com/azure/container-registry/container-registry-skus
 [quickstart-deploy-connected-registry-azure-arc]: quickstart-deploy-connected-registry-azure-arc.md
-[quickstart-deploy-connected-registry-iot-edge-cli]: quickstart-deploy-connected-registry-iot-edge.md
+[quickstart-deploy-connected-registry-iot-edge-cli]: quickstart-deploy-connected-registry-iot-edge-cli.md
