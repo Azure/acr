@@ -19,7 +19,7 @@ May include one or more of the following:
 
 ## Causes
 
-* The connected registry is configured for HTTP access only - [solution]()
+* The connected registry is configured for HTTP access only - [solution](#configure-docker-daemon-to-access-insecure-registry)
 
 ## Potential solutions
 

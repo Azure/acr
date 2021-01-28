@@ -1,6 +1,6 @@
 # ACR connected registry (Private Preview) instructions
 
-This article provides a guidance for use of the connected registry feature of Azure Container Registry (ACR) during the limited preview. 
+This article provides guidance for use of the connected registry feature of Azure Container Registry (ACR) during the limited preview. 
 
 To request preview access, submit your contact details using this [form](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR1OsLxas9SdIhfyFenqqkolUMkFKMTdDSU45SFQzU0o0WUNROVAySkRINy4u) and we will get in touch with you.
 
@@ -12,13 +12,13 @@ During limited preview period, the connected registry functionality is available
 - EU West
 - US East
 
-To use the connected registry functionality, your ACR must be deployed in one of the above three regions. To check the stamp where your ACR is deployed to, use the following command:
+To use the connected registry functionality, your ACR must be deployed in one of the above three regions and in a supported deployment stamp. To check the stamp where your ACR is deployed to, use the following command:
 
 ```azurecli
 nslookup <your_registry_name>.azurecr.io
 ```
 
-The stamp name is one of the aliases returned by the above command.  
+The stamp name is one of the aliases returned by the above command. Currently, connected registries are supported in the following stamps:
 
 - East Asia: `ea-1.fe.azcr.io`
 - EU West: `weu-3.fe.azcr.io`
@@ -34,16 +34,17 @@ Here is a list of known limitations for the connected registry functionality in 
 - Nested connected registry mode is still under development and requires additional testing. Currently nested registries are blocked and will be released in a few weeks.
 - Number of tokens and scopemaps is limited to 20K for a single ACR. This indirectly limits the number of connected registries for an ACR registry because every connected registry needs a sync and client token.
 - Number of repository permissions in a scope map is limited to 500.
+- Number of clients for the connected registry is currently limited to 20.
 - Image locking through repository/manifest/tag metadata is not currently supported for connected registries.
 - Repository delete is not supported on the connected registry using registry mode.
 - Audit logs for connected registries are currently not supported.
 - Garbage collection of deleted artifacts on connected registries is currently not supported.
 - Connected registry is coupled with home region data endpoint and its automatic migration for geo replications is not supported.
-- Deletion of a connected registry needs manual removal of the containers on premise as well also removal of the respective scope map or tokens in the cloud.
+- Deletion of a connected registry needs manual removal of the containers on premises as well as removal of the respective scope map or tokens in the cloud.
 
 ## Set Up and Configuration
 
-In limited preview, the connected registry targets IoT scenarios. Below are links to the preliminary documentation you can use to set up and configure the connected registry with your IoT Edge infrastructure. It is recommended to 
+In limited preview, the connected registry targets IoT scenarios. Below are links to the preliminary documentation you can use to set up and configure the connected registry with your IoT Edge infrastructure.
 
 - [Overview of connected registry](./intro-connected-registry.md)
 - [Understand access to a connected registry](./overview-connected-registry-access.md)
