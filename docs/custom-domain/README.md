@@ -13,7 +13,7 @@ The following steps describe how you can achieve this.
   - Custom data domain to access the registry content. Again, example for `contoso.com`: `eastus-registry-data.contoso.com`
     - Note that the custom data domain is region specific. For geo-replicated registries, each region should have its own custom data endpoint.
 
-  For each domain, you must prepare a single PEM formatted file containing the TLS private key and public certificate:
+  For each domain, you must prepare a single PEM formatted file containing the TLS private key and public certificate. The key must be exportable.
   
   ```
   -----BEGIN PRIVATE KEY-----  
