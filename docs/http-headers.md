@@ -13,7 +13,7 @@ X-Meta-Source-Client: <cloud>/<service>/<optionalservicename>
 
 * `cloud`: Azure, Azure Stack, or other government- or country-specific Azure cloud.
 * `service`: The name of the service.
-* `optionalservicename`: An optional parameter for services with subservices, or for specifying a SKU. For example, Web Apps corresponds to `azure/app-service/web-apps`).
+* `optionalservicename`: An optional parameter for services with subservices, or for specifying a SKU. For example, Web Apps corresponds to `azure/app-service/web-apps`. The servicename can also be a hierarchy path, for example `azure/acr/connected-registry/instance-1`.
 
 ### Example
 
@@ -35,31 +35,34 @@ Partner services and orchestrators are encouraged to use specific header values 
 
 The values we ask ACR partners to use when populating the `X-Meta-Source-Client` field are:
 
-| Cloud                     | Header                                  |
-| ------------------------- | --------------------------------------- |
-| Azure Public Cloud        | `azure/`                                |
-| Azure Stack               | `azurestack/`                           |
-| China (Mooncake)          | `china/`                                |
-| Germany                   | `germany/`                              |
-| US DOD                    | `azureusdod/`                           |
-| US Gov                    | `azureusgov/`                           |
-| On Premise                | `on-prem/                               |
+| Cloud              | Header        |
+| ------------------ | ------------- |
+| Azure Public Cloud | `azure/`      |
+| Azure Stack        | `azurestack/` |
+| China (Mooncake)   | `china/`      |
+| Germany            | `germany/`    |
+| US DOD             | `azureusdod/` |
+| US Gov             | `azureusgov/` |
+| On Premise         | `on-prem/`    |
 
-
-| Service name              | Header                                  |
-| ------------------------- | --------------------------------------- |
-| App Service - Logic Apps  | `azure/app-service/logic-apps`          |
-| App Service - Web Apps    | `azure/app-service/web-apps`            |
-| Azure Container Builder   | `azure/acb`                             |
-| Azure Container Instance  | `azure/aci`                             |
-| Azure Container Service   | `azure/acs`                             |
-| Azure Kubernetes Service  | `azure/aks`                             |
-| Batch                     | `azure/batch`                           |
-| Cloud Console             | `azure/cloud-console`                   |
-| Functions                 | `azure/functions`                       |
-| HDInsight                 | `azure/hdinsight`                       |
-| Internet of Things - Hub  | `azure/iot/hub`                         |
-| Jenkins                   | `azure/jenkins`                         |
-| Machine Learning          | `azure/ml`                              |
-| Service Fabric            | `azure/service-fabric`                  |
-| VSTS                      | `azure/vsts`                            |
+| Service or Orchestrator name   | Header                                    |
+| ------------------------------ | ----------------------------------------- |
+| App Service - Logic Apps       | `azure/app-service/logic-apps`            |
+| App Service - Web Apps         | `azure/app-service/web-apps`              |
+| Azure Container Builder        | `azure/acb`                               |
+| Azure Container Instance       | `azure/aci`                               |
+| Azure Container Service        | `azure/acs`                               |
+| Azure Kubernetes Service       | `azure/aks`                               |
+| AKS Engine (Kubernetes)        | `azure/aks-engine`                        |
+| Cluster API Azure (Kubernetes) | `azure/capz`                              |
+| Batch                          | `azure/batch`                             |
+| Cloud Console                  | `azure/cloud-console`                     |
+| Functions                      | `azure/functions`                         |
+| HDInsight                      | `azure/hdinsight`                         |
+| Internet of Things - Hub       | `azure/iot/hub`                           |
+| Jenkins                        | `azure/jenkins`                           |
+| Machine Learning               | `azure/ml`                                |
+| Service Fabric                 | `azure/service-fabric`                    |
+| VSTS                           | `azure/vsts`                              |
+| ACR Tasks                      | `azure/acr/tasks`                         |
+| ACR Connected Registry         | `azure/acr/connected-registry/instance-1` |

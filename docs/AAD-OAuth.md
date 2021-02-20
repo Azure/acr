@@ -1,3 +1,8 @@
+---
+type: post
+title: "AAD Integration"
+---
+
 # Azure Container Registry integration with Azure Active Directory
 
 <!-- TOC depthFrom:2 orderedList:false -->
@@ -78,7 +83,7 @@ This will produce a JWT refresh token with the following payload:
 ```json
 {
   "jti": "365e3b5b-844e-4a21-a38c-4d8aebdd6a06",
-  "sub": "user@contoso.com"
+  "sub": "user@contoso.com",
   "nbf": 1497988712,
   "exp": 1497990801,
   "iat": 1497988712,
@@ -87,7 +92,7 @@ This will produce a JWT refresh token with the following payload:
   "version": "1.0",
   "grant_type": "access_token_refresh_token",
   "tenant": "409520d4-8100-4d1d-ad47-72432ddcc120",
-  "credential": "AQA...iAA"
+  "credential": "AQA...iAA",
   "permissions": {
     "actions": [
       "*"
@@ -102,7 +107,7 @@ Followed by an access token with the following payload:
 ```json
 {
   "jti": "ec425c1e-7eda-4f70-adb5-19f927e34a41",
-  "sub": "user@contoso.com"
+  "sub": "user@contoso.com",
   "nbf": 1497988907,
   "exp": 1497993407,
   "iat": 1497988907,
@@ -146,13 +151,12 @@ The AAD access token and AAD refresh token can be obtained from the Azure CLI. A
 
 We'll now call `POST /oauth2/exchange` to exchange the AAD tokens for an ACR refresh token. Here's how such a call looks when done via `curl`:
 ```bash
-export registry="contosoregistry.azurecr.io"
-export tenant="409520d4-8100-4d1d-ad47-72432ddcc120"
-export aad_refresh_token="AQA...iAA"
-export aad_access_token="eyJ...H-g"
+registry="contosoregistry.azurecr.io"
+tenant="409520d4-8100-4d1d-ad47-72432ddcc120"
+aad_access_token="eyJ...H-g"
 curl -v -X POST -H "Content-Type: application/x-www-form-urlencoded" -d \
-"grant_type=access_token_refresh_token&service=$registry&tenant=$tenant&refresh_token=$aad_refresh_token&access_token=$aad_access_token" \
-https://$registry/oauth2/exchange
+    "grant_type=access_token&service=$registry&tenant=$tenant&access_token=$aad_access_token" \
+    https://$registry/oauth2/exchange
 ```
 
 The body of the POST message is a querystring-like text that specifies the following values:
@@ -175,9 +179,9 @@ This response is the ACR refresh token which you can inspect with [jwt.io](https
 Once you have obtained an ACR refresh token, you can use the docker CLI to sign in to your registry like this:
 
 ```bash
-export registry="contosoregistry.azurecr.io"
-export acr_username="00000000-0000-0000-0000-000000000000"
-export acr_refresh_token="eyJ...L7a"
+registry="contosoregistry.azurecr.io"
+acr_username="00000000-0000-0000-0000-000000000000"
+acr_refresh_token="eyJ...L7a"
 docker login -u "$acr_username" -p "$acr_refresh_token" $registry
 ```
 
@@ -198,7 +202,7 @@ In this example, we'll try to obtain an ACR access token from existing ACR refre
 The first thing you want is to obtain an authentication challenge for the operation you want to on the Azure Container Registry. That can be done by targetting the API you want to call without any authentication. Here's how to do that via `curl`:
 
 ```bash
-export registry="contosoregistry.azurecr.io"
+registry="contosoregistry.azurecr.io"
 curl -v https://$registry/v2/_catalog
 ```
 
@@ -225,9 +229,9 @@ The body of the payload might provide additional details, but all the informatio
 With this information we're now ready to call `POST /oauth2/token` to obtain an ACR access token that will allow us to use the `GET /v2/_catalog` API. Here's how such a call looks when done via `curl`:
 
 ```bash
-export registry="contosoregistry.azurecr.io"
-export acr_refresh_token="eyJ...L7a"
-export scope="registry:catalog:*"
+registry="contosoregistry.azurecr.io"
+acr_refresh_token="eyJ...L7a"
+scope="registry:catalog:*"
 curl -v -X POST -H "Content-Type: application/x-www-form-urlencoded" -d \
 "grant_type=refresh_token&service=$registry&scope=$scope&refresh_token=$acr_refresh_token" \
 https://$registry/oauth2/token
@@ -254,7 +258,7 @@ In this example, we'll try to obtain an ACR access token from existing ACR refre
 The first thing you want is to obtain an authentication challenge for the operation you want to on the Azure Container Registry. That can be done by targetting the API you want to call without any authentication. Here's how to do that via `curl`:
 
 ```bash
-export registry="contosoregistry.azurecr.io"
+registry="contosoregistry.azurecr.io"
 curl -v https://$registry/helm/v1/repo/index.yaml
 ```
 
@@ -281,9 +285,9 @@ The body of the payload might provide additional details, but all the informatio
 With this information we're now ready to call `POST /oauth2/token` to obtain an ACR access token that will allow us to use the `GET /helm/v1/repo/index.yaml` API. Here's how such a call looks when done via `curl`:
 
 ```bash
-export registry="contosoregistry.azurecr.io"
-export acr_refresh_token="eyJ...L7a"
-export scope="artifact-repository:repo:pull"
+registry="contosoregistry.azurecr.io"
+acr_refresh_token="eyJ...L7a"
+scope="artifact-repository:repo:pull"
 curl -v -X POST -H "Content-Type: application/x-www-form-urlencoded" -d \
 "grant_type=refresh_token&service=$registry&scope=$scope&refresh_token=$acr_refresh_token" \
 https://$registry/oauth2/token
@@ -304,15 +308,19 @@ This response is the ACR access token which you can inspect with [jwt.io](https:
 
 ## Calling an Azure Container Registry API
 
-In this example we'll call the `GET /v2/_catalog` API on an Azure Container Registry. Assume you have the following:
+In this example we'll call catalog listing and tag listing APIs on an Azure Container Registry. 
+
+### Catalog Listing
+
+Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
   2. A valid ACR access token, created with the correct scope for the API we're going to call.
 
 Here's how a call to the `GET /v2/_catalog` API of the given registry would look like when done via `curl`:
 
 ```bash
-export registry="contosoregistry.azurecr.io"
-export acr_access_token="eyJ...xcg"
+registry="contosoregistry.azurecr.io"
+acr_access_token="eyJ...xcg"
 curl -v -H "Authorization: Bearer $acr_access_token" https://$registry/v2/_catalog
 ```
 Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
@@ -320,15 +328,155 @@ Note that `curl` by default does the request as a `GET` unless you specify a dif
 This should result in a status 200 OK, and a body with a JSON payload listing the repositories held in this registry:
 
 ```json
-{"repositories":["alpine","hello-world","contoso-marketing"]}
+{"repositories":["alpine","contoso-marketing","hello-world","node"]}
 ```
+
+#### Pagination
+
+To retrieve paginated catalog results, add an `n` parameter to limit the number or results. We take `n=2` as example:
+
+```bash
+registry="contosoregistry.azurecr.io"
+acr_access_token="eyJ...xcg"
+limit=2
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/_catalog?n=$limit"
+```
+
+This should result in a status 200 OK, and a body with a JSON payload listing the first `n` repositories held in this registry. If there are more results, a `Link` header containing the request URL for the next result block is also returned.  If the entire result set has been received, the `Link` header will not be returned.
+
+In this case, the first 2 repositories are returned, and there are more entries in the result set. The response would look like:
+
+```http
+< HTTP/1.1 200 OK
+...
+Content-Type: application/json
+Link: </v2/_catalog?last=contoso-marketing&n=2&orderby=>; rel="next"
+
+{"repositories": ["alpine","contoso-marketing"]}
+```
+
+To get the next result block, issue the request using the `/v2/_catalog?last=contoso-marketing&n=2&orderby=` URL encoded in the `Link` header. Here is how the call would look like:
+
+```bash
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/_catalog?last=contoso-marketing&n=2&orderby="
+```
+
+You can query the paginated results in a loop, as the following shows:
+
+```bash
+registry="contosoregistry.azurecr.io"
+acr_access_token="eyJ...xcg"
+
+limit=2
+operation=/v2/_catalog?n=$limit
+
+headers=$(mktemp -t headers.XXXXX)
+
+while [ -n "$operation" ]
+do
+    echo "Operation"
+    echo $operation
+    
+    catalog=$(curl -H "Authorization: Bearer $acr_access_token" "https://$registry$operation" -D $headers)
+    echo "Catalog"
+    echo $catalog
+    
+    operation=$(cat $headers | sed -n 's/^Link: <\(.*\)>.*/\1/p')
+done
+rm $headers
+```
+
+For more information, visit [Docker V2 API Reference - Listing Repositories](https://docs.docker.com/registry/spec/api/#listing-repositories).
+
+### Tag Listing
+
+Assume you have the following:
+  1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
+  2. A valid ACR access token, created with the correct scope for the API we're going to call.
+  3. A valid image in the registry, for example `hello-world`.
+
+Here's how a call to the `GET /v2/<name>/tags/list` API of the given image would look like when done via `curl`:
+
+```bash
+registry="contosoregistry.azurecr.io"
+acr_access_token="eyJ...xcg"
+image="hello-world"
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/$image/tags/list"
+```
+
+Note that `curl` by default does the request as a `GET` unless you specify a different verb with the `-X` modifier.
+
+This should result in a status 200 OK, and a body with a JSON payload listing the tags of this image:
+
+```json
+{"name": "hello-world","tags": ["latest","v1","v2","v3"]}
+```
+
+#### Pagination
+
+To retrieve paginated tag results, add an `n` parameter to limit the number or results. We take `n=2` as example:
+
+```bash
+registry="contosoregistry.azurecr.io"
+acr_access_token="eyJ...xcg"
+image="hello-world"
+limit=2
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/$image/tags/list?n=$limit"
+```
+
+This should result in a status 200 OK, and a body with a JSON payload listing the first `n` tags of this image. If there are more results, a `Link` header containing the request URL for the next result block is also returned.  If the entire result set has been received, the `Link` header will not be returned.
+
+In this case, the first 2 tags are returned, and there are more entries in the result set. The response would look like:
+
+```http
+< HTTP/1.1 200 OK
+...
+Content-Type: application/json
+Link: </v2/hello-world/tags/list?last=v1&n=2&orderby=>; rel="next"
+
+{"name":"hello-world","tags":["latest","v1"]}
+```
+
+To get the next result block, issue the request using the `/v2/hello-world/tags/list?last=v1&n=2&orderby=` URL encoded in the `Link` header. Here is how the call would look like:
+
+```bash
+curl -v -H "Authorization: Bearer $acr_access_token" "https://$registry/v2/$image/tags/list?last=v1&n=2&orderby="
+```
+
+You can query the paginated results in a loop, as the following shows:
+
+```bash
+registry="contosoregistry.azurecr.io"
+acr_access_token="eyJ...xcg"
+image="hello-world"
+
+limit=2
+operation=/v2/$image/tags/list?n=$limit
+
+headers=$(mktemp -t headers.XXXXX)
+
+while [ -n "$operation" ]
+do
+    echo "Operation"
+    echo $operation
+    
+    tags=$(curl -H "Authorization: Bearer $acr_access_token" "https://$registry$operation" -D $headers)
+    echo "Tags"
+    echo $tags
+    
+    operation=$(cat $headers | sed -n 's/^Link: <\(.*\)>.*/\1/p')
+done
+rm $headers
+```
+
+For more information, visit [Docker V2 API Reference - Listing Image Tags](https://docs.docker.com/registry/spec/api/#listing-image-tags).
 
 ## Samples API Call scripts
 
 This is a summary script of the points discussed above. The first three variables have to be filled out.
 
 - Variable `registry` can be something like `"contosoregistry.azurecr.io"`.
-- The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running az login check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
+- The AAD access token and AAD refresh token values can be obtained from the Azure CLI, after running `az login` check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
 
 Note that a stale AAD tokens will result in this script failing to obtain an ACR refresh token, and therefore it won't succeed in obtaining an ACR access token or in executing the operation against the registry.
 
@@ -337,29 +485,29 @@ Note that a stale AAD tokens will result in this script failing to obtain an ACR
 ```bash
 #!/bin/bash
 
-export registry=" --- you have to fill this out --- "
-export aad_refresh_token=" --- you have to fill this out --- "
-export aad_access_token=" --- you have to fill this out --- "
+registry=" --- you have to fill this out --- "
+aad_refresh_token=" --- you have to fill this out --- "
+aad_access_token=" --- you have to fill this out --- "
 
-export operation="/v2/_catalog"
+operation="/v2/_catalog"
 
-export acr_refresh_token=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=access_token_refresh_token&service=$registry&refresh_token=$aad_refresh_token&access_token=$aad_access_token" https://$registry/oauth2/exchange | jq '.refresh_token' | sed -e 's/^"//' -e 's/"$//')
+acr_refresh_token=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=access_token_refresh_token&service=$registry&refresh_token=$aad_refresh_token&access_token=$aad_access_token" https://$registry/oauth2/exchange | jq '.refresh_token' | sed -e 's/^"//' -e 's/"$//')
 echo "ACR Refresh Token"
 echo $acr_refresh_token
 
-export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
+challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
 echo "Challenge"
 echo $challenge
 
-export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
+scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
 echo "Scope"
 echo $scope
 
-export acr_access_token=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=refresh_token&service=$registry&scope=$scope&refresh_token=$acr_refresh_token" https://$registry/oauth2/token | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+acr_access_token=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=refresh_token&service=$registry&scope=$scope&refresh_token=$acr_refresh_token" https://$registry/oauth2/token | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
 echo "ACR Access Token"
 echo $acr_access_token
 
-export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
+catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
 echo "Catalog"
 echo $catalog
 ```
@@ -373,15 +521,15 @@ If you'd like to use basic auth, you can do a direct call to the registry like t
 ```bash
 #!/bin/bash
  
-export registry=" --- you have to fill this out --- "
-export user=" --- you have to fill this out --- "
-export password=" --- you have to fill this out --- "
+registry=" --- you have to fill this out --- "
+user=" --- you have to fill this out --- "
+password=" --- you have to fill this out --- "
  
-export operation="/v2/_catalog"
+operation="/v2/_catalog"
  
-export credentials=$(echo -n "$user:$password" | base64 -w 0)
+credentials=$(echo -n "$user:$password" | base64 -w 0)
  
-export catalog=$(curl -s -H "Authorization: Basic $credentials" https://$registry$operation)
+catalog=$(curl -s -H "Authorization: Basic $credentials" https://$registry$operation)
 echo "Catalog"
 echo $catalog
 ```
@@ -393,27 +541,27 @@ If you'd like to use bearer auth, you have to first convert your admin credentia
 ```bash
 #!/bin/bash
  
-export registry=" --- you have to fill this out --- "
-export user=" --- you have to fill this out --- "
-export password=" --- you have to fill this out --- "
+registry=" --- you have to fill this out --- "
+user=" --- you have to fill this out --- "
+password=" --- you have to fill this out --- "
  
-export operation="/v2/_catalog"
+operation="/v2/_catalog"
  
-export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
+challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
 echo "Challenge"
 echo $challenge
  
-export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
+scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
 echo "Scope"
 echo $scope
 
-export credentials=$(echo -n "$user:$password" | base64 -w 0)
+credentials=$(echo -n "$user:$password" | base64 -w 0)
  
-export acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" -H "Authorization: Basic $credentials" "https://$registry/oauth2/token?service=$registry&scope=$scope" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
+acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" -H "Authorization: Basic $credentials" "https://$registry/oauth2/token?service=$registry&scope=$scope" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
 echo "ACR Access Token"
 echo $acr_access_token
  
-export catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
+catalog=$(curl -s -H "Authorization: Bearer $acr_access_token" https://$registry$operation)
 echo "Catalog"
 echo $catalog
 ```
@@ -427,11 +575,11 @@ The following script uses an AAD token to request an 'ACR access token` which ca
 
 set -e
 
-export REGISTRY=" --- you have to fill this out --- "
-export REPOSITORY=" --- you have to fill this out --- "
-export AAD_ACCESS_TOKEN=$(az account get-access-token --query accessToken -o tsv)
+REGISTRY=" --- you have to fill this out --- "
+REPOSITORY=" --- you have to fill this out --- "
+AAD_ACCESS_TOKEN=$(az account get-access-token --query accessToken -o tsv)
 
-export ACR_REFRESH_TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+ACR_REFRESH_TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
 	-d "grant_type=access_token&service=$REGISTRY&access_token=$AAD_ACCESS_TOKEN" \
 	https://$REGISTRY/oauth2/exchange \
 	| jq '.refresh_token' \
@@ -445,7 +593,7 @@ SCOPE="repository:$REPOSITORY:pull"
 # to pull multiple repositories passing in multiple scope arguments. 
 #&scope="repository:repo:pull,push"
 
-export ACR_ACCESS_TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+ACR_ACCESS_TOKEN=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
 	-d "grant_type=refresh_token&service=$REGISTRY&scope=$SCOPE&refresh_token=$ACR_REFRESH_TOKEN" \
 	https://$REGISTRY/oauth2/token \
 	| jq '.access_token' \
@@ -465,29 +613,29 @@ docker pull $REGISTRY/$REPOSITORY
 ```bash
 #!/bin/bash
 
-export registry=" --- you have to fill this out --- "
-export user=" --- you have to fill this out --- "
-export password=" --- you have to fill this out --- "
+registry=" --- you have to fill this out --- "
+user=" --- you have to fill this out --- "
+password=" --- you have to fill this out --- "
 
-export operation="/helm/v1/repo/index.yaml"
+operation="/helm/v1/repo/index.yaml"
  
-export challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
+challenge=$(curl -vs https://$registry$operation 2>&1 | grep "Www-Authenticate:")
 echo "Challenge"
 echo $challenge
  
-export scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
+scope=$(echo $challenge | egrep -o 'scope=\"([^\"]*)\"' | egrep -o '\"([^\"]*)\"' | sed -e 's/^"//' -e 's/"$//')
 echo "Scope"
 echo $scope
  
-export credentials=$(echo -n "$user:$password" | base64 )
+credentials=$(echo -n "$user:$password" | base64 -w 0)
  
-export acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" \
+acr_access_token=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" \
  -H "Authorization: Basic $credentials" "https://$registry/oauth2/token?service=$registry&scope=$scope" | jq '.access_token' | sed -e 's/^"//' -e 's/"$//')
 echo "ACR Access Token"
 echo $acr_access_token
  
 #Retrieve the location header and strip the trailing \r for curl
-export URL=$(curl -sD - -H "Authorization: Bearer $acr_access_token" https://$registry$operation  | grep -Fi Location | awk '{print $2}' | tr -d '\r')
+URL=$(curl -sD - -H "Authorization: Bearer $acr_access_token" https://$registry$operation  | grep -Fi Location | awk '{print $2}' | tr -d '\r')
 echo Location=$URL
 echo index.yaml
 echo ----------

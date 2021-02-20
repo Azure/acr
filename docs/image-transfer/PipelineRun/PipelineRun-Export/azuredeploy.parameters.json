@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "registryName": {
+      "value": "myregistry"
+    },
+    "pipelineRunName": {
+      "value": "myPipelineRunExport"
+    },
+    "pipelineResourceId": {
+      "value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myResourceGroup/providers/Microsoft.ContainerRegistry/registries/myRegistry/exportPipelines/myExportPipeline"
+    },
+    "targetName": {
+      "value": "myblob"
+    },
+    "artifacts": {
+      "value": [
+        "hello-world:latest",
+        "sourceRepository@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      ]
+    }
+  }
+}
