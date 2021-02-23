@@ -2,9 +2,9 @@
 
 This article describes the steps to set up the endpoints of an Azure container registry using your own custom domain name, such as **contoso.com**.
 
-By default, every Azure container registry is accessed using its login server name. If you have a registry called `myregistry`, you access it using its default hostname, `myregistry.azurecr.io` (in the Azure Cloud). As a customer belonging to an organization, you may prefer to access your registry using a custom domain name that is associated with your organization, for example, `myregistry.contoso.com`.
+By default, every Azure container registry is accessed externally using its login server name. If you have a registry called `myregistry`, you access it using its default hostname, `myregistry.azurecr.io` (in the Azure Cloud). As a customer belonging to an organization, you may prefer to access your registry using a custom domain name that is associated with your organization, for example, `myregistry.contoso.com`.
 
-**Important - Using a custom domain name in Azure Container Registry is currently a private preview feature**. It can only be enabled by preparing certificates, your registry, and an Azure key vault as described in this article, and then opening an Azure support request to complete the configuration. 
+**Important - Using a custom domain name in Azure Container Registry is currently a private preview feature**. It can only be enabled by preparing certificates, a Premium container registry, and an Azure key vault as described in this article, and then opening an Azure support request to complete the configuration. 
 
 ## Limitations
 
@@ -22,7 +22,7 @@ By default, every Azure container registry is accessed using its login server na
 
 ## Prepare certificates
   
-For each domain, you must prepare a single PEM-formatted file containing the TLS private key and public certificate. The private key must be exportable.
+For each domain,  prepare a single PEM-formatted file containing the TLS private key and public certificate. The private key must be exportable.
 
  ```
   -----BEGIN PRIVATE KEY-----  
@@ -36,7 +36,7 @@ For each domain, you must prepare a single PEM-formatted file containing the TLS
 You may use your own valid certificates signed by a certificate authority (CA) or self-signed certificates. Self-signed certificates should only be used for test and evaluation purposes.
   
 To create self-signed certificates:
-1. Use [openssl](https://github.com/openssl/openssl) to create a self-signed public certificate and private key
+1. Use [openssl](https://github.com/openssl/openssl) to create a self-signed public certificate and private key.
 
    ```shell
     openssl req -nodes -x509 -newkey rsa:4096 \
@@ -48,9 +48,9 @@ To create self-signed certificates:
 2. Create a single file containing both the public certificate and private key.
    ```shell
     cat container-registry.contoso.com.key.pem \
-       >> container-registry-contoso-com-pem
+       >> container-registry-contoso-com.pem
     cat container-registry.contoso.com.cert.pem \
-       >> container-registry-contoso-com-pem
+       >> container-registry-contoso-com.pem
     ```
   3. For each data domain in your registry, repeat the preceding steps to prepare a PEM-formatted file containing the public certificate and private key.
   
@@ -79,6 +79,9 @@ Use the Azure CLI:
       `az acr identity assign -n myregistry --identities [system]`
     - To enable a user-assigned managed identity, with or without a system-assigned identity: 
       - [Create](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal) a user-assigned managed identity.
+      - Get the resource ID of the user-assigned identity. 
+          - In the portal, go to the identity and select **Properties** under **Settings**.
+          - Alternatively, you may obtain the resource ID using the `az identity show` command in the Azure CLI.
       - Do _one_ of the following:
         - To enable _only_ the user-assigned managed identity:
         
@@ -91,9 +94,9 @@ Use the Azure CLI:
 
 For each domain, the corresponding TLS private key and public certificate pair must be added as a PEM-formatted file to an Azure key vault that is accessible by your registry. We recommend creating a new key vault containing only your TLS certificates and granting the registry's identity access to `get` secrets.
 1. [Create](https://docs.microsoft.com/azure/key-vault/) a new Azure key vault.
-2. [Import](https://docs.microsoft.com/en-us/azure/key-vault/certificates/tutorial-import-certificate) your certificate files to the key vault.
-3. Add an access policy to the key vault that grants your registry's identity access to `get` certificates:\
-   `az keyvault set-policy --name <your-kv-name> --certificate-permissions get --spn <registry-system-or-user-mi-principal-id>`
+2. [Import](https://docs.microsoft.com/en-us/azure/key-vault/certificates/tutorial-import-certificate) certificate PEM files you created to the key vault. Alternatively, generate certificates in the key vault.
+3. Add an access policy to the key vault that grants your registry's identity access to `get` secrets. This policy enables the registry to access the private key portion of the certificate, which is addressed as a secret.\
+   `az keyvault set-policy --name <your-kv-name> --secret-permissions get --spn <registry-system-or-user-mi-principal-id>`
    - The output of the command to enable managed identities on the registry contains the principal IDs of the assiged identity or identities.
    - Alternatively, you may obtain the principal IDs using the Azure CLI:
      - For system-assigned managed identity:
@@ -114,12 +117,12 @@ Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure
    - The output of the command to enable data endpoints on the registry will contain the regional data endpoint.
    
 ## Contact Azure support
-As a final step, share the following with us by creating an [Azure Support](https://azure.microsoft.com/support/create-ticket/) ticket. This information is needed to complete the custom domain configuration.
-- Custom registry domain details
+As a final step, share the following information with us by creating an [Azure Support](https://azure.microsoft.com/support/create-ticket/) ticket. This information is needed to complete the custom domain configuration.
+- **Custom registry domain details**
   - custom registry domain name (`container-registry.contoso.com`)
-  - key vault certificate ID of the corresponding TLS data (a URI of the form `https://myvaultvault.azure.net/certificates/mycertificate/xxxxxxxxxxxxx`)
+  - key vault secret ID of the corresponding TLS data (a URI of the form `https://myvaultvault.azure.net/secrets/myregdomain/xxxxxxxxxxxxx`)
   - client ID of the user-assigned registry identity that has access to this secret (not required in case of system-assigned identity)
-- Custom data domain details (for each data domain)
+- **Custom data domain details, for each data domain**
   - regional custom data domain name (`eastus-registry-data.contoso.com`)
-  - key vault certficate ID of the corresponding TLS data (a URI of the form `https://myvaultvault.azure.net/certificates/mycertificate/xxxxxxxxxxxxx`)
+  - key vault secret ID of the corresponding TLS data (a URI of the form `https://myvaultvault.azure.net/secrets/myregdomain/xxxxxxxxxxxxx`)
   - client ID of the user-assigned registry identity that has access to this secret (not required in case of system-assigned identiity)
