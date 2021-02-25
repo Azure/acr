@@ -13,7 +13,7 @@ To test the same image with and without Project Teleport enabled, two additional
 - `teleporter` - A teleport enabled nodepool, with a single node
 - `shuttle` - The standard method of transport of container images, with a single node.
 
-### AKS & Project Teleport Preview 2.0 Limitations
+## AKS & Project Teleport Preview 2.0 Limitations
 
 - AKS must be configured with service principals. While AKS and ACR support managed identities, the expanded mounts do not yet support managed identities. This should be deployed shortly.
 - k8s version 1.19.7 or later is required, as Project Teleport depends on containerd.
@@ -169,7 +169,7 @@ Deploy the _shuttle_ podspec:
 kubectl apply -f azure-vote-shuttle.yaml
 ```
 
-Get the list of pods to find the azure-vote-front pod. The shorthand version can be used if only one pod is named `azure-vote-front`. You may need to run the command a few times until the image has been pulled and expanded on the node. `Successfully pulled image...`.
+Get the list of pods to find the azure-vote-front pod. The shorthand version can be used if only one pod is named `azure-vote-front`. You may need to run the command a few times until the image has been pulled and expanded on the node.
 
 ```azurecli-interactive
 kubectl get pods
@@ -187,7 +187,7 @@ Events:
   Normal  Pulled     1s    kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:v1" in 34.738162s
 ```
 
-If `already present on machine` is returned, this indicates the image was previously pulled and cached. See recycle nodepool to clear the cache.
+If `already present on machine` is returned, this indicates the image was previously pulled and cached. See [recycle nodepool](#cleanup) to clear the cache.
 
 ```bash
 Events:
@@ -205,7 +205,7 @@ Deploy the _teleport_ podspec:
 kubectl apply -f azure-vote-teleport.yaml
 ```
 
-Get the list of pods to find the azure-vote-front pod. The shorthand version can be used if only one pod is named `azure-vote-front`. You may need to run the command a few times until the image has been pulled and expanded on the node. `Successfully pulled image...`.
+Get the list of pods to find the azure-vote-front pod. The shorthand version can be used if only one pod is named `azure-vote-front`. You may need to run the command a few times until the image has been pulled and expanded on the node.
 
 ```azurecli-interactive
 kubectl describe pod azure-vote-front-teleport
@@ -307,7 +307,7 @@ docker inspect teleport.azurecr.io/azure-vote-front:v1
   ]
 ```
 
-While you might consider flatting your images to one layer for fast mounting, while that would help, you may have contention on a single mount point. The purpose of the Teleport preview is to get further metrics on the usage to understand the art and science of image layers. The Teleport design does not require an image owner to make changes to use Teleport. Teleport works with your existing container images. However, with each technology, there are always optimizations that may be made based on the deployment target.
+While you might consider flattening your images to one layer for fast mounting, while that would help, you may have contention on a single mount point. The purpose of the Teleport preview is to get further metrics on the usage to understand the art and science of image layers. The Teleport design does not require an image owner to make changes to use Teleport. Teleport works with your existing container images. However, with each technology, there are always optimizations that may be made based on the deployment target.
 
 One thing is always common about image performance. The smaller you can make your overall container image, the faster it will run.
 

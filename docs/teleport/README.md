@@ -48,10 +48,10 @@ Preview 2 has the following constraints. Your feedback will help us prioritize t
     | West US 2 | WUS2 |
     | West Europe | WEU |
   - Additional regions, including other continents will come online as we get more feedback.
-- [Geo-replicated](https://aka.ms/acr/geo-replication) registries require *translocation*. For preview 2, only the master region of a geo-replicated registry will support teleportation.
-  - Replica regions will function as normal, pulling compressed blobs
+- [Geo-replication](https://aka.ms/acr/geo-replication): For preview 2, only the master region of a geo-replicated registry will support teleportation.
+  - Replica regions will function as normal, pulling compressed blobs.
 - Linux images are currently supported with Windows images coming in a future release.
-- [ACR Webhook Push notifications][webhooks] occur when the image manifest and compressed blobs are completed. However, layer expansion will take several additional seconds, depending on the size and quantify of layers. We are considering various options when layer expansion has completed within each region, including regionalized `layer-expanded` notifications and enhancements to `az acr repository show`. For now, a `check-expansion.sh` script is provided.
+- [ACR Webhook Push notifications][webhooks] occur when the image manifest and compressed blobs are completed. However, layer expansion will take several additional seconds, depending on the size and quantity of layers. We are considering various options when layer expansion has completed within each region, including regionalized `layer-expanded` notifications and enhancements to `az acr repository show`. For now, a `check-expansion.sh` script is provided.
 
 ## Getting Support
 
