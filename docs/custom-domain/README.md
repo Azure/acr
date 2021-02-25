@@ -9,16 +9,16 @@ By default, every Azure container registry is accessed externally using its logi
 ## Limitations
 
 * This capability is provided without a service level agreement, and isn't currently recommended for production workloads.
-* Azure Container Registry custom domains can't currently be used where key vault access is restricted. 
+* Azure Container Registry custom domains can't currently be configured using an Azure key vault deployed in a virtual network with a Key Vault firewall. 
 
 ## Prerequisites
 - [Azure CLI](https://docs.microsoft.com/cli/azure/): version 2.4.0 or higher, or use [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/overview)
 - An Azure container registry in the Premium service tier. See [this article](https://docs.microsoft.com/azure/container-registry/container-registry-get-started-azure-cli) for instructions to create one. If you have an existing registry, you can [upgrade](https://docs.microsoft.com/azure/container-registry/container-registry-skus#changing-tiers).
 - Your custom domain names. The following two are required:
-  - Custom registry domain to access the registry REST API. Example for the `contoso.com` domain: `container-registry.contoso.com` 
-  - Custom data domain to access the registry content. Example for `contoso.com`: `eastus-registry-data.contoso.com`
+  - Custom domain to access the registry REST API endpoint. Example for the `contoso.com` domain: `registry.contoso.com` 
+  - Custom domain to access the registry data endpoint. Example for `contoso.com`: `eastus.data.registry.contoso.com`
 
-      **Note** - The custom data domain is region specific. If your registry is geo-replicated, each region should have its own custom data domain.
+      **Note** - The custom data domain is region specific. If your registry is geo-replicated, each region should have its own custom data domain. For example: `eastus.data.registry.contoso.com`, `westus.data.registry.contoso.com`.
 
 ## Prepare certificates
   
