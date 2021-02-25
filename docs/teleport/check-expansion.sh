@@ -12,7 +12,7 @@ ACR_TAG=$3
 DEBUG=$4
 
 # Troubleshooting 
-if [ $DEBUG = '--debug' ]; then
+if [[ $DEBUG = '--debug' ]]; then
     echo "Parameter Validation:"
     echo "  ACR_USER: ${ACR_USER}"
     echo "  ACR_PWD : ${ACR_PWD}"
