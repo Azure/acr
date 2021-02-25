@@ -18,7 +18,7 @@ Instancing a custom environment within seconds is one of the many wonders of run
 - [Sign Up for the Project Teleport Preview](#sign-up-for-the-project-teleport-preview)
 - [Supported Services](#supported-services)
 - [Preview Constraints](#preview-constraints)
-- [Getting Started with Teleportation](./getting-started.md)
+- [Getting Started with Teleportation & AKS](./aks-getting-started.md)
 - [Getting Support](#getting-support)
 
 ## Sign Up for the Project Teleport Preview
