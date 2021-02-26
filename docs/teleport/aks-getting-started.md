@@ -320,6 +320,12 @@ docker push ${ACR}.azurecr.io/azure-vote-front:squashed
 
 The resulting times should reflect **31.7 seconds** for the standard docker pull/decompress and **1.9 seconds** for teleportation of a single layer. That's a reduction from 8.0 seconds to 1.9 seconds.
 
+| Size | Layers | Docker |  Teleport|
+|-|-|-|-|-|
+| 944mb | 28 | 34.7 | 8 |
+|929mb | 1 | 31.7 | 1.9 |
+
+
 #### Shuttle deployed single layer image
 
 ```
