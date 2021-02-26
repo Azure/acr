@@ -318,13 +318,14 @@ docker push ${ACR}.azurecr.io/azure-vote-front:squashed
 - Change the `:tag` references in `azure-vote-shuttle.yaml` and `azure-vote-teleport.yaml` files to `:squashed`.
 - Follow the steps above to [recycle](#cleanup) the nodes, and [redeploy the two apps](#deploy-with-standard-pull-performance).
 
-The resulting times should reflect **31.7 seconds** for the standard docker pull/decompress and **1.9 seconds** for teleportation of a single layer. That's a reduction from 8.0 seconds to 1.9 seconds.
+The resulting times should reflect **31.7 seconds** for the standard docker pull/decompress and **1.9 seconds** for teleportation of a single layer.
 
 | Size | Layers | Docker |  Teleport|
-|-|-|-|-|-|
+|-|-|-|-|
 | 944mb | 28 | 34.7 | 8 |
-|929mb | 1 | 31.7 | 1.9 |
+| 929mb | 1 | 31.7 | 1.9 |
 
+That's a _further_ reduction from 8.0 seconds for 28 layers to 1.9 seconds for a single layer. This highlights the performance profile of mounting expanded layers, compared to pulling and decompressing layers.
 
 #### Shuttle deployed single layer image
 
