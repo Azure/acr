@@ -201,7 +201,7 @@ Labels:             agentpool=nodepool1
 
 ## Next steps
 
-- Deploy two nodes, one with Project Teleport, one without to see the start time differences.
+- [Deploy two nodes, one with Project Teleport, one without to see the start time differences.](./aks-teleport-comparison.md)
 
 For more information about pushing an image into your ACR, see [Push your first image to a private container registry using the Docker CLI][acr-push].
 
