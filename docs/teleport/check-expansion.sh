@@ -12,7 +12,7 @@ ACR_TAG=$3
 DEBUG=$4
 
 # Troubleshooting 
-if [[ $DEBUG = '--debug' ]]; then
+if [ $DEBUG = '--debug' ]; then
     echo "Parameter Validation:"
     echo "  ACR_USER: ${ACR_USER}"
     echo "  ACR_PWD : ${ACR_PWD}"
@@ -46,7 +46,7 @@ if [[ $DEBUG == '--debug' ]]; then
 fi
 
 if [[ $ACR_DIGEST == '' ]]; then
-    echo "Could not get image digest, make sure this tag exists"
+    echo "Could not return the image digest. Confirm the identity has access to the repo, and the image exists."
     exit 1
 fi
 

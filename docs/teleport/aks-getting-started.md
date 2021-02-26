@@ -117,8 +117,7 @@ export ACR_USER=teleport-token
 export ACR_PWD=$(az acr token create \
   --name teleport-token \
   --registry $ACR \
-  --repository azure-vote-front \
-  content/read \
+  --scope-map _repositories_pull \
   --query credentials.passwords[0].value -o tsv)
 
 ../check-expansion.sh teleport azure-vote-front v1
@@ -267,7 +266,7 @@ The Voting app has a significant performance delta, comparing a normal pull time
 
 Teleport prototype-1 is based on mounting expanded layers. For each layer of an image, the decompression of a layer is traded off for a mount. Therefore, the larger the layer count, the slightly longer the start time.
 
-The `azure-vote-front` image has 29 layers, which requires 29 mounts. When pulling the image without teleport, the 944mb of content must be decompressed, but multiple decompression threads can run concurrently.
+The `azure-vote-front` image has ***29 layers***, which requires 29 mounts. When pulling the image without teleport, the 944mb of content must be decompressed, but multiple decompression threads can run concurrently.
 
 ```bash
 docker inspect teleport.azurecr.io/azure-vote-front:v1
@@ -307,7 +306,45 @@ docker inspect teleport.azurecr.io/azure-vote-front:v1
   ]
 ```
 
-While you might consider flattening your images to one layer for fast mounting, while that would help, you may have contention on a single mount point. The purpose of the Teleport preview is to get further metrics on the usage to understand the art and science of image layers. The Teleport design does not require an image owner to make changes to use Teleport. Teleport works with your existing container images. However, with each technology, there are always optimizations that may be made based on the deployment target.
+### Comparing fewer layers
+
+To gauge the difference between layers and size, clone the [Azure-Samples/azure-voting-app-redis](https://github.com/Azure-Samples/azure-voting-app-redis) repo and build the image with the `--squash` flag.
+
+```bash
+docker build --force-rm --squash -t ${ACR}.azurecr.io/azure-vote-front:squashed .
+docker push ${ACR}.azurecr.io/azure-vote-front:squashed
+```
+
+- Change the `:tag` references in `azure-vote-shuttle.yaml` and `azure-vote-teleport.yaml` files to `:squashed`.
+- Follow the steps above to [recycle](#cleanup) the nodes, and [redeploy the two apps](#deploy-with-standard-pull-performance).
+
+The resulting times should reflect **31.7 seconds** for the standard docker pull/decompress and **1.9 seconds** for teleportation of a single layer. That's a reduction from 8.0 seconds to 1.9 seconds.
+
+#### Shuttle deployed single layer image
+
+```
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  9m55s  default-scheduler  Successfully assigned default/azure-vote-front-6ff785596-4d62g to aks-shuttle-10583637-vmss000000
+  Normal  Pulling    9m54s  kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:squashed"
+  Normal  Pulled     9m22s  kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:squashed" in 31.711601788s
+```
+
+#### Teleported single layer image
+
+```
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  37s   default-scheduler  Successfully assigned default/azure-vote-front-teleport-5fbc9b754f-lrtpw to aks-teleporter-10583637-vmss000000
+  Normal  Pulling    36s   kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:squashed"
+  Normal  Pulled     34s   kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:squashed" in 1.891985507s
+```
+
+### Balancing layers and size
+
+While you might consider flattening your images to one layer for fast mounting, you may have contention on a single mount point. The purpose of the Teleport preview is to get further metrics on the usage to understand the art and science of image layers. The Teleport design does not require an image owner to make changes to use Teleport. Teleport works with your existing container images. However, with each technology, there are always optimizations that may be made based on the deployment target.
 
 One thing is always common about image performance. The smaller you can make your overall container image, the faster it will run.
 
