@@ -120,7 +120,7 @@ export ACR_PWD=$(az acr token create \
   --scope-map _repositories_pull \
   --query credentials.passwords[0].value -o tsv)
 
-../check-expansion.sh teleport azure-vote-front v1
+./check-expansion.sh teleport azure-vote-front v1
 ```
 
 ## Add nodes for teleporters and shuttles
