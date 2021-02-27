@@ -23,9 +23,7 @@ When complete, the AKS cluster will have (3) nodepools:
 - `teleporter` - A teleport enabled nodepool, with a single node
 - `shuttle` - The standard method of transport of container images, with a single node.
 
-## AKS & Project Teleport Preview 2.0 Limitations
-
-
+This tutorial assumes you've already completed the steps to create a Teleport enabled AKS Cluster, and Teleport enabled ACR Instance. If you haven't already done so, complete the steps in: [Integrate Azure Container Registry and Project Teleport with Azure Kubernetes Service](./aks-getting-started.md)
 
 ## Set environment variables
 
@@ -40,41 +38,15 @@ ACR=myacr
 ACR_URL=${ACR}.azurecr.io
 ```
 
-## Create an AKS Cluster
+## Clone the Teleport samples repo
 
-At the current moment, Teleport does not yet support managed identity access to teleport expanded layers. Until managed identities are supported, configure the cluster with a service principal.
+Sample kubernetes deployment files and a `check-expansion.sh` script are provided at: https://github.com/Azure/acr/tree/main/docs/teleport. Only a few files are necessary. You may either `git clone` the repo, or copy the individual files referenced below.
 
-```azurecli-interactive
-SP_PWD=$(
-  az ad sp create-for-rbac \
-  --skip-assignment \
-  --name ${AKS}-sp 
-  --query password -o tsv)
-
-az aks create \
-    -g ${AKS_RG} \
-    -n ${AKS} \
-    --attach-acr $ACR \
-    --kubernetes-version ${K8S_VERSION} \
-    -l $RG_LOCATION \
-    --service-principal $(az ad sp show \
-        --id http://${AKS}-sp \
-        --query appId \
-        --output tsv) \
-    --client-secret $SP_PWD
-
-az aks get-credentials \
-    -g ${AKS_RG} \
-    -n ${AKS}
+```bash
+git clone https://github.com/Azure/acr.git
 ```
 
-A standard AKS cluster should now exist. Verify with:
-
-```azurecli-interactive
-kubectl get nodes
-```
-
-## Import an image for teleportation
+## Import images for teleportation
 
 For completeness of this walkthrough, the azure-vote application is used, which includes a 944mb `azure-vote-front:v1` image. To expand the layers, import the images into a teleport enabled registry, in the same region as the AKS cluster.
 
@@ -131,7 +103,7 @@ export ACR_PWD=$(az acr token create \
 
 ## Add nodes for teleporters and shuttles
 
-Two nodepools will be added to enable teleportation, and a comparison for standard transport. The system nodepool is avoided to enable clearing the image cache by scaling the nodepool to zero then back to one.
+Two nodepools will be added to enable teleportation, and a comparison for standard transport. An `acr-teleport` label is added for scheduling onto specific nodes. The system nodepool (`nodepool1`) is avoided to enable [clearing the image cache](#cleanup) by scaling the nodepool to zero then back to one.
 
 ```azurecli-interactive
 az aks nodepool add \
@@ -361,4 +333,9 @@ While you might consider flattening your images to one layer for fast mounting, 
 
 One thing is always common about image performance. The smaller you can make your overall container image, the faster it will run.
 
+## Providing feedback
+
+Please contact the Project Teleport technicians, and other fellow Teleport Red-Shirts in the [Teleport Red-Shirts teams channel][acr-teleport-red-shirts]
+
+[acr-teleport-red-shirts]: https://aka.ms/acr/teleport/red-shirts
 [teleport-regions]:     ./README.md#preview-constraints
