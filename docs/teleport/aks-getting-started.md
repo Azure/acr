@@ -16,8 +16,8 @@ Using Project Teleport with ACR and AKS is in preview.
 >
 > - [AKS support policies](../../support-policies.md)
 > - [Azure support FAQ](../../faq.md)
-> 
-> ACR Preview features are available on a self-service, opt-in basis. Previews are provided "as is" and "as available," and they're excluded from the service-level agreements and limited warranty. AKS previews are partially covered by customer support on a best-effort basis. As such, these features aren't meant for production use. ACR preview features aren't available in Azure Government or Azure China 21Vianet clouds.
+>
+> ACR Preview features are available on a self-service, opt-in basis. Previews are provided "as is" and "as available," and they're excluded from the service-level agreements and limited warranty. ACR previews are partially covered by customer support on a best-effort basis. As such, these features aren't meant for production use. ACR preview features aren't available in Azure Government or Azure China 21Vianet clouds.
 > - Project Teleport Support is provided through a [Microsoft Teams channel][acr-teleport-red-shirts]. [Requesting access to Project Teleport][teleport-signup-form]
 
 ## Prerequisites
@@ -29,26 +29,43 @@ Using Project Teleport with ACR and AKS is in preview.
 
 ## Limitations
 
-* Requires node pools in your AKS cluster to use Kubernetes 1.19.0 or greater.
-* To use Project Teleport with ACR and AKS, your node pools must use `contanerd` as the container runtime. AKS clusters with node pools using Kubernetes before 1.19.0 use Moby as the container runtime.
+* AKS node pools must use Kubernetes 1.19.7 or greater.
+* AKS node pools must use `containerd` as the container runtime. AKS clusters with node pools using Kubernetes before 1.19.0 use Moby as the container runtime.
 * Each ACR used must have Project Teleport enabled.
-* Each ACR must use the *Premium* Tier and be in the same region as your AKS cluster. See [Project Teleport supported regions][teleport-regions].
+* Each ACR must use the [*Premium* Tier][acr-tiers].
+* ACR and AKS must be in the same region. See [Project Teleport supported regions][teleport-regions].  
+This is less of a limitation, rather a design constraint. It's always a best practice to have the content required for deployment to be within the same region. Project Teleport depends on this best practice to mount layers within an Azure network regional boundary.
 * At this time, Project Teleport supports Linux containers on AKS clusters. Windows support is not yet available.
+* At this time, enabling Teleport on an existing registry will not convert images already in the registry. To expand existing content, pull and push the image to trigger expansion.  
+_In a future release, enabling Project Teleport on a repository will convert the images. This work is not yet complete._
+* ACR Geo-replicated registries are not currently supported on Project Teleport enabled registries.
+* [Private Links](https://aka.ms/acr/privatelink) are not currently supported on Project Teleport enabled registries.
 
 ### Enable Project Teleport on an ACR
 
 Create a [premium instance][acr-tiers] of Azure Container Registry in one of the [Project Teleport supported regions][teleport-regions].
 
-Sign up for ACR Project Teleport using [the signup form][teleport-signup-form] and provide the resource ID of the ACR. Once enabled, you'll receive an email confirming your ACR has been enabled for Project Teleport.
+Sign up for ACR Project Teleport using [the signup form][teleport-signup-form], providing the resource ID of a **Premium Tier** ACR instance. Once Project Teleport is enabled, you'll receive an confirmation email.
+
+#### Confirming an ACR repository is set to expand
 
 Once you receive a confirmation email, push an image to a new repository. You may also use `az acr import` to copy an image from another registry.
 
-To confirm the image has been teleport expanded, use the following command, replacing `<acr-name>` and `<namespace/image>` with your acr and image name.
+To confirm an ACR repository has been configured for teleport expansion, use the following command, replacing `$ACR` and `<namespace/image>` with your acr and image name.
 
 ```azurecli
-az acr repository show -n <acr-name> \
-  --repository <namespace/image> \
-  -o jsonc
+az acr import \
+  --source mcr.microsoft.com/azuredocs/azure-vote-front:v1 \
+  --name $ACR \
+  --image azure-vote-front:v1
+
+az acr import \
+  --source mcr.microsoft.com/oss/bitnami/redis:6.0.8 \
+  --name $ACR \
+  --image redis:6.0.8
+
+az acr repository show -n ${ACR} -o jsonc \
+  --repository <namespace/image> 
 ```
 
 The following example output shows *"teleportEnabled": true*, verifying Project Teleport is enabled on your ACR.
@@ -64,6 +81,22 @@ The following example output shows *"teleportEnabled": true*, verifying Project 
   },
   ...
 }
+```
+
+#### Confirming an image has been expanded
+
+At this point in the Teleport preview, check image expansion using the [check-expansion.sh](./check-expansion.sh) script. As the script uses a `/mount` api, basic auth is required. An [ACR Token](https://aka.ms/acr/tokens) is created and saved as environment variable.
+
+```azurecli-interactive
+export ACR_USER=teleport-token
+export ACR_PWD=$(az acr token create \
+  --name teleport-token \
+  --registry $ACR \
+  --scope-map _repositories_pull \
+  --query credentials.passwords[0].value -o tsv)
+
+./check-expansion.sh ${ACR} <namespace/repo> <tag>
+# example: ./check-expansion.sh myacr azure-vote-front v1
 ```
 
 ### Install aks-preview CLI extension

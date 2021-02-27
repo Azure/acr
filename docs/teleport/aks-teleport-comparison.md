@@ -1,13 +1,23 @@
-# Getting Started with AKS & Project Teleport
+---
+title: Comparing Azure Container Registry Project Teleport with standard docker pull, using Azure Kubernetes Service
+description: Perform A/B comparison of the same image across two nodes in an AKS Cluster. One with Project Teleport enabled, one without.
+services: container-service
+ms.topic: article
+ms.date: 02/26/2021
+---
+
+# Comparing Azure Container Registry Project Teleport with standard docker pull, using Azure Kubernetes Service
 
 > Note: this is a first draft, to get folks started.
 
-To get a sense of the performance benefits of Project Teleport two deployments will be made.
+To get a sense of the performance benefits of Project Teleport two deployments will be made allowing the same image to be deployed to an AKS node with project teleport, and another without Project Teleport enabled.
 
 Project Teleport is node specific. If an image is pulled to a node, with teleport enabled, the expanded layers are mounted.
-If a second copy of the same image is pulled to the same node, even if pulled from a non-teleport expanded repository, the node will identify the image is the same and mount the layers from the previously pulled and teleport expanded image.
+If a second copy of the same image is pulled to the same node, even if pulled from a non-teleport expanded repository, the node will identify common layers and mount the layers from the previously pulled and teleport expanded image.
 
-To test the same image with and without Project Teleport enabled, two additional nodepools will be created. The additional nodepools will enable clearing any cached images and layers by scaling the nodepool to zero, then back to one.
+To avoid layer sharing, testing the same image with and without Project Teleport enabled, two additional nodepools will be created. The additional nodepools will enable clearing any cached images and layers by scaling the nodepool to zero, then back to one.
+
+When complete, the AKS cluster will have (3) nodepools:
 
 - `nodepool1` - The system nodepool. No workloads will be scheduled here.
 - `teleporter` - A teleport enabled nodepool, with a single node
@@ -15,11 +25,7 @@ To test the same image with and without Project Teleport enabled, two additional
 
 ## AKS & Project Teleport Preview 2.0 Limitations
 
-- AKS must be configured with service principals. While AKS and ACR support managed identities, the expanded mounts do not yet support managed identities. This should be deployed shortly.
-- k8s version 1.19.7 or later is required, as Project Teleport depends on containerd.
-- ACR and AKS must be in the same regions. This is less of a limitation, rather a design constraint. It's always a best practice to have the content required for deployment to be within the same region. Project Teleport depends on this standard to mount layers within an Azure network, regional boundary.
-- To manage storage costs, geo-replication is not yet supported. The ACR must be created in the same region as the AKS cluster. Future versions will support geo-replication.
-- VNet support is not yet enabled.
+
 
 ## Set environment variables
 
