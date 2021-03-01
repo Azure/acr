@@ -9,7 +9,6 @@ By default, every Azure container registry is accessed externally using its logi
 ## Limitations
 
 * This capability is provided without a service level agreement, and isn't currently recommended for production workloads.
-* Azure Container Registry custom domains can't currently be configured using an Azure key vault deployed in a virtual network with a Key Vault firewall. 
 
 ## Prerequisites
 - [Azure CLI](https://docs.microsoft.com/cli/azure/): version 2.4.0 or higher, or use [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/overview)
@@ -63,7 +62,7 @@ You need to enable two features on your registry:
   
 - [Managed identities](https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/overview) - Managed identities associate an Azure Active Directory identity with your registry, relieving you of the burden of managing credentials to access certain Azure resources.
  
-  Azure Container Registry supports both user-assigned and system-assigned managed identities. We recommend using a system-assigned managed identity to access secrets for a custom domain managed in Azure Key Vault.
+  Azure Container Registry supports both user-assigned and system-assigned managed identities. We recommend using a system-assigned managed identity to access secrets for a custom domain managed in Azure Key Vault. 
 
 ### Enable data endpoints and managed identities
 
@@ -107,7 +106,9 @@ For each domain, the corresponding TLS private key and public certificate pair m
 For greater isolation, we recommend that you put each certificate in its own key vault and set its access policy independently. The registry should always have access to the key vault certficates.
 
 ### Enhanced security with virtual networks
-Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. Azure Container Registry custom domains can't currently be used where key vault access is restricted. This work is in progress and will be available with system-managed identities only.
+Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. Azure Container Registry can access a key vault that has restricted network access with the following configuration:
+* the key vault must [allow trusted services](https://docs.microsoft.com/azure/key-vault/general/network-security#key-vault-firewall-enabled-trusted-services-only) to bypass the Key Vault firewall
+* the container registry must use a system-assigned managed identity to access secrets in the key vault
    
 ## Prepare your DNS zone
 1. The custom registry domain must have a CNAME record with the target registry login server:\
