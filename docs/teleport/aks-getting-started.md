@@ -1,16 +1,8 @@
----
-title: Integrate Azure Container Registry and Project Teleport with Azure Kubernetes Service
-description: Learn how to integrate Azure Kubernetes Service (AKS) with Azure Container Registry (ACR) and Project Teleport
-services: container-service
-ms.topic: article
-ms.date: 02/22/2021
----
-
 # Integrate Azure Container Registry and Project Teleport with Azure Kubernetes Service (preview)
 
 [Project Teleport][project-teleport] allows container hosts to access pre-expanded layers within an [Azure Container Registry (ACR)][acr] that is in the same region as the container host. Using pre-expanded layers removes the time for compute and memory to decompress layers that are already available within the Azure network. Removing this decompression also reduces the time to create the instance of the running container.
 
-Using Project Teleport with ACR and AKS is in preview.
+Using Project Teleport with ACR and AKS is in private preview. See [Enable Project Teleport on an ACR](#enable-project-teleport-on-an-acr) for access.
 
 > AKS preview features are available on a self-service, opt-in basis. Previews are provided "as is" and "as available," and they're excluded from the service-level agreements and limited warranty. AKS previews are partially covered by customer support on a best-effort basis. As such, these features aren't meant for production use. AKS preview features aren't available in Azure Government or Azure China 21Vianet clouds. For more information, see the following support articles:
 >
@@ -27,7 +19,7 @@ Using Project Teleport with ACR and AKS is in preview.
 * Ensure you have Project Teleport enabled on your ACR.
 * Ensure you have the AKS `EnableACRTeleport` feature flag under `Microsoft.ContainerService` enabled.
 
-## Limitations
+## Preview Limitations
 
 * AKS node pools must use Kubernetes 1.19.7 or greater.
 * AKS node pools must use `containerd` as the container runtime. AKS clusters with node pools using Kubernetes before 1.19.0 use Moby as the container runtime.
@@ -35,8 +27,8 @@ Using Project Teleport with ACR and AKS is in preview.
 * Each ACR must use the [*Premium* Tier][acr-tiers].
 * ACR and AKS must be in the same region. See [Project Teleport supported regions][teleport-regions].  
 This is less of a limitation, rather a design constraint. It's always a best practice to have the content required for deployment to be within the same region. Project Teleport depends on this best practice to mount layers within an Azure network regional boundary.
-* At this time, Project Teleport supports Linux containers on AKS clusters. Windows support is not yet available.
-* At this time, enabling Teleport on an existing registry will not convert images already in the registry. To expand existing content, pull and push the image to trigger expansion.  
+* Linux containers on AKS clusters are supported. Windows support is not yet available.
+* Enabling Project Teleport on an existing registry will not convert images already in the registry. To expand existing content, pull and push the image to trigger expansion.  
 _In a future release, enabling Project Teleport on a repository will convert the images. This work is not yet complete._
 * ACR Geo-replicated registries are not currently supported on Project Teleport enabled registries.
 * [Private Links](https://aka.ms/acr/privatelink) are not currently supported on Project Teleport enabled registries.
@@ -46,6 +38,19 @@ _In a future release, enabling Project Teleport on a repository will convert the
 Create a [premium instance][acr-tiers] of Azure Container Registry in one of the [Project Teleport supported regions][teleport-regions].
 
 Sign up for ACR Project Teleport using [the signup form][teleport-signup-form], providing the resource ID of a **Premium Tier** ACR instance. Once Project Teleport is enabled, you'll receive an confirmation email.
+
+#### Set environment variables
+
+Configure variables unique to your environment.
+
+```azurecli-interactive
+AKS=myaks
+AKS_RG=${AKS}-rg
+ACR=myacr
+LOCATION=westus2
+K8S_VERSION=1.19.7
+ACR_URL=${ACR}.azurecr.io
+```
 
 #### Confirming an ACR repository is set to expand
 
@@ -65,7 +70,7 @@ az acr import \
   --image redis:6.0.8
 
 az acr repository show -n ${ACR} -o jsonc \
-  --repository <namespace/image> 
+  --repository azure-vote-front
 ```
 
 The following example output shows *"teleportEnabled": true*, verifying Project Teleport is enabled on your ACR.
@@ -85,7 +90,9 @@ The following example output shows *"teleportEnabled": true*, verifying Project 
 
 #### Confirming an image has been expanded
 
-At this point in the Teleport preview, check image expansion using the [check-expansion.sh](./check-expansion.sh) script. As the script uses a `/mount` api, basic auth is required. An [ACR Token](https://aka.ms/acr/tokens) is created and saved as environment variable.
+At this point in the Teleport preview, check image expansion using the [check-expansion.sh][acr-check-expansion] script. As the script uses a `/mount` api, basic auth is required. An [ACR Token](https://aka.ms/acr/tokens) is created and saved as environment variable.
+
+> Note: Assure [check-expansion.sh](./check-expansion.sh) is set to execute: `sudo chmod +x check-expansion.sh`
 
 ```azurecli-interactive
 export ACR_USER=teleport-token
@@ -145,16 +152,7 @@ az provider register --namespace Microsoft.ContainerService
 
 ## Create a new AKS cluster with Teleport enabled
 
-To use Teleport with ACR and AKS on a new cluster, create a new AKS cluster and specify your ACR with Project Teleport enabled as well as the `EnableACRTeleport=true` custom header. Set environment variables to create an AKS cluster attached to an ACR instance. 
-
-```azurecli
-AKS=myaks
-AKS_RG=${AKS}-rg
-LOCATION=westus2
-K8S_VERSION=1.19.7
-ACR=myacr
-ACR_URL=${ACR}.azurecr.io
-```
+To use Teleport with ACR and AKS on a new cluster, create a new AKS cluster and specify your ACR with Project Teleport enabled as well as the `EnableACRTeleport=true` custom header.
 
 Project Teleport _does not yet_ support managed identity access to teleport expanded layers. Until managed identities are supported, configure the cluster with a service principal.
 
@@ -180,13 +178,13 @@ az aks get-credentials \
     -n ${AKS}
 ```
 
-## Add a Project Teleport enabled node pool to an existing AKS cluster
+## Add a Project Teleport enabled node pool to an _existing_ AKS cluster
 
 To use Project Teleport on an existing AKS cluster, add a node pool to your cluster and set the `EnableACRTeleport=true` custom header.
 
 ```azurecli
 az aks nodepool add \
-  --name teleportPool \
+  --name teleportpool \
   --cluster-name ${AKS} \
   --resource-group ${AKS_RG} \
   --kubernetes-version ${K8S_VERSION} \
@@ -241,10 +239,11 @@ For more information about pushing an image into your ACR, see [Push your first 
 For more information about importing images into your ACR, see [Import container images to a container registry][acr-import].
 
 [acr]:                     https://aka.ms/acr
-[acr-import]:              ../container-registry/container-registry-import-images.md
+[acr-check-expansion]:     ./check-expansion.sh
+[acr-import]:              https://aka.ms/acr/import
 [acr-teleport-red-shirts]: https://aka.ms/acr/teleport/red-shirts
 [acr-tiers]:               https://aka.ms/acr/tiers
-[acr-push]:                ../container-registry/container-registry-get-started-docker-cli.md
+[acr-push]:                https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli
 [az-extension-add]:        /cli/azure/extension#az-extension-add
 [az-extension-update]:     /cli/azure/extension#az-extension-update
 [az-feature-list]:         /cli/azure/feature#az-feature-list
@@ -252,6 +251,6 @@ For more information about importing images into your ACR, see [Import container
 [az-provider-register]:    /cli/azure/provider#az-provider-register
 [teleport-signup-form]:    https://aka.ms/acr/teleport/signup
 [project-teleport]:        https://github.com/azurecr/teleport
-[teleport-regions]:        ./aks-teleport-comparison.md#preview-constraints
+[teleport-regions]:        ./README.md#preview-constraints
 [aks-support-policies]:    https://docs.microsoft.com/azure/aks/support-policies
 [aks-support-faq]:         https://docs.microsoft.com/en-us/azure/aks/faq

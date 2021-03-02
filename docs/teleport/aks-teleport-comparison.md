@@ -1,26 +1,16 @@
----
-title: Comparing Azure Container Registry Project Teleport with standard docker pull, using Azure Kubernetes Service
-description: Perform A/B comparison of the same image across two nodes in an AKS Cluster. One with Project Teleport enabled, one without.
-services: container-service
-ms.topic: article
-ms.date: 02/26/2021
----
-
 # Comparing Azure Container Registry Project Teleport with standard docker pull, using Azure Kubernetes Service
 
-> Note: this is a first draft, to get folks started.
-
-To get a sense of the performance benefits of Project Teleport two deployments will be made allowing the same image to be deployed to an AKS node with project teleport, and another without Project Teleport enabled.
+To compare the performance benefits of Project Teleport two deployments will be made allowing the same image to be deployed to an AKS node with Project Teleport, and another without Project Teleport, allowing node recycling to reset the nodes, clearing any cached images.
 
 Project Teleport is node specific. If an image is pulled to a node, with teleport enabled, the expanded layers are mounted.
-If a second copy of the same image is pulled to the same node, even if pulled from a non-teleport expanded repository, the node will identify common layers and mount the layers from the previously pulled and teleport expanded image.
+If a second copy of the same image is pulled to the same node, even if pulled from Project Teleport expanded repository, the node will identify common layers and mount the local layers from the previously pulled image.
 
 To avoid layer sharing, testing the same image with and without Project Teleport enabled, two additional nodepools will be created. The additional nodepools will enable clearing any cached images and layers by scaling the nodepool to zero, then back to one.
 
 When complete, the AKS cluster will have (3) nodepools:
 
 - `nodepool1` - The system nodepool. No workloads will be scheduled here.
-- `teleporter` - A teleport enabled nodepool, with a single node
+- `teleporter` - A Project Teleport enabled nodepool, with a single node
 - `shuttle` - The standard method of transport of container images, with a single node.
 
 This tutorial assumes you've already completed the steps to create a Teleport enabled AKS Cluster, and Teleport enabled ACR Instance. If you haven't already done so, complete the steps in: [Integrate Azure Container Registry and Project Teleport with Azure Kubernetes Service](./aks-getting-started.md)
@@ -32,7 +22,7 @@ Configure variables unique to your environment. Note the ACR and AKS instances m
 ```azurecli-interactive
 AKS=myaks
 AKS_RG=${AKS}-rg
-RG_LOCATION=westus2
+LOCATION=westus2
 K8S_VERSION=1.19.7
 ACR=myacr
 ACR_URL=${ACR}.azurecr.io
@@ -86,9 +76,11 @@ Look for `"teleportEnabled": true,` in the output
 
 Although the repository is configured for teleport expansion, each image upload will take time to be expanded on push. The length of time is based on the quantity and size of layers, however the expansion should be completed within seconds.
 
-> **Note:** ACR webhooks indicate when an artifact is pushed and available. A new webhook notification will be added at a future date to indicate the image has been expanded, and ready for teleportation.
+> **Note:** ACR webhooks indicate when an artifact is pushed and available. The push event occurs prior to layer expansion. In a future release, a new webhook and EventGrid notification will be added indicating the image has been expanded, and ready for teleportation.
 
-At this point in the Teleport preview, check expansion using the `check-expansion.sh` script. As the script uses a `/mount` api, basic auth is required. An [ACR Token](https://aka.ms/acr/tokens) is created and saved as environment variable.
+At this point in the Teleport preview, check expansion using the [check-expansion.sh][acr-check-expansion] script. As the script uses a `/mount` api, basic auth is required. An [ACR Token](https://aka.ms/acr/tokens) is created and saved as environment variables.
+
+> Note: If `check-expansion.sh` fails to execute (`-bash: ./check-expansion.sh: Permission denied`), assure the file is set to executable: `sudo chmod +x ./check-expansion.sh`
 
 ```azurecli-interactive
 export ACR_USER=teleport-token
@@ -124,7 +116,7 @@ az aks nodepool add \
 
 ## Deploy to AKS
 
-Update the `azure-vote-teleport.yaml` and `azure-vote-shuttle.yaml` files to reference your registry name:
+Update the [azure-vote-teleport.yaml](./samples/azure-vote-teleport.yaml) and [azure-vote-shuttle.yaml](./samples/azure-vote-shuttle.yaml) files to reference your registry name:
 
 ```yml
 spec:
@@ -150,7 +142,7 @@ Get the list of pods to find the azure-vote-front pod. The shorthand version can
 
 ```azurecli-interactive
 kubectl get pods
-kubectl describe pod azure-vote-front
+kubectl describe pod azure-vote-front-shuttle
 ```
 
 Under the `events` list, an entry for `Successfully pulled image...` provides the pull time. Note the length before proceeding to the teleport version.
@@ -160,8 +152,8 @@ Events:
   Type    Reason     Age   From               Message
   ----    ------     ----  ----               -------
   Normal  Scheduled  36s   default-scheduler  Successfully assigned default/azure-vote-front-5c976dbbd9-tckdz to aks-shuttle-10583637-vmss000000
-  Normal  Pulling    35s   kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:v1"
-  Normal  Pulled     1s    kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:v1" in 34.738162s
+  Normal  Pulling    35s   kubelet            Pulling image "<registryName>.azurecr.io/azure-vote-front:v1"
+  Normal  Pulled     1s    kubelet            Successfully pulled image "<registryName>.azurecr.io/azure-vote-front:v1" in 34.738162s
 ```
 
 If `already present on machine` is returned, this indicates the image was previously pulled and cached. See [recycle nodepool](#cleanup) to clear the cache.
@@ -171,7 +163,7 @@ Events:
   Type    Reason     Age    From               Message
   ----    ------     ----   ----               -------
   Normal  Scheduled  2m12s  default-scheduler  Successfully assigned default/azure-vote-front-5bdfc85f9c-d7z8b to aks-shuttle-10583637-vmss000000
-  Normal  Pulled     2m11s  kubelet            Container image "teleport.azurecr.io/azure-vote-front:v1" already present on machine
+  Normal  Pulled     2m11s  kubelet            Container image "<registryName>.azurecr.io/azure-vote-front:v1" already present on machine
 ```
 
 ### Deploy with Teleport performance
@@ -195,8 +187,8 @@ Events:
   Type    Reason     Age   From               Message
   ----    ------     ----  ----               -------
   Normal  Scheduled  12s   default-scheduler  Successfully assigned default/azure-vote-front-teleport-5bf865d976-lm4bj to aks-teleporter-10583637-vmss000000
-  Normal  Pulling    11s   kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:v1"
-  Normal  Pulled     3s    kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:v1" in 8.011045191s
+  Normal  Pulling    11s   kubelet            Pulling image "<registryName>.azurecr.io/azure-vote-front:v1"
+  Normal  Pulled     3s    kubelet            Successfully pulled image "<registryName>.azurecr.io/azure-vote-front:v1" in 8.011045191s
   Normal  Created    3s    kubelet            Created container azure-vote-front-teleport
   Normal  Started    3s    kubelet            Started container azure-vote-front-teleport
 ```
@@ -222,14 +214,14 @@ az aks scale \
 az aks scale \
   --resource-group $AKS_RG \
   --name $AKS \
-  --nodepool-name shuttle \
-  --node-count 0
+  --nodepool-name teleporter \
+  --node-count 1
 
 az aks scale \
   --resource-group $AKS_RG \
   --name $AKS \
-  --nodepool-name teleporter \
-  --node-count 1
+  --nodepool-name shuttle \
+  --node-count 0
 
 az aks scale \
   --resource-group $AKS_RG \
@@ -247,7 +239,7 @@ Teleport prototype-1 is based on mounting expanded layers. For each layer of an 
 The `azure-vote-front` image has ***29 layers***, which requires 29 mounts. When pulling the image without teleport, the 944mb of content must be decompressed, but multiple decompression threads can run concurrently.
 
 ```bash
-docker inspect teleport.azurecr.io/azure-vote-front:v1
+docker inspect <registryName>.azurecr.io/azure-vote-front:v1
 ...
 "RootFS": {
   "Type": "layers",
@@ -293,10 +285,15 @@ docker build --force-rm --squash -t ${ACR}.azurecr.io/azure-vote-front:squashed 
 docker push ${ACR}.azurecr.io/azure-vote-front:squashed
 ```
 
-- Change the `:tag` references in `azure-vote-shuttle.yaml` and `azure-vote-teleport.yaml` files to `:squashed`.
+- Change the `:tag` references in `azure-vote-shuttle.yaml` and `azure-vote-teleport.yaml` files to reference the `:squashed` tag.
+  ```yaml
+      containers:
+      - name: azure-vote-front-teleport
+        image: <registryName>.azurecr.io/azure-vote-front:squashed
+  ```
 - Follow the steps above to [recycle](#cleanup) the nodes, and [redeploy the two apps](#deploy-with-standard-pull-performance).
 
-The resulting times should reflect **31.7 seconds** for the standard docker pull/decompress and **1.9 seconds** for teleportation of a single layer.
+The resulting times should reflect **~31.7 seconds** for the standard docker pull/decompress and **~1.9 seconds** for teleportation of a single layer.
 
 | Size | Layers | Docker |  Teleport|
 |-|-|-|-|
@@ -312,8 +309,8 @@ Events:
   Type    Reason     Age    From               Message
   ----    ------     ----   ----               -------
   Normal  Scheduled  9m55s  default-scheduler  Successfully assigned default/azure-vote-front-6ff785596-4d62g to aks-shuttle-10583637-vmss000000
-  Normal  Pulling    9m54s  kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:squashed"
-  Normal  Pulled     9m22s  kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:squashed" in 31.711601788s
+  Normal  Pulling    9m54s  kubelet            Pulling image "<registryName>.azurecr.io/azure-vote-front:squashed"
+  Normal  Pulled     9m22s  kubelet            Successfully pulled image "<registryName>.azurecr.io/azure-vote-front:squashed" in 31.711601788s
 ```
 
 #### Teleported single layer image
@@ -323,13 +320,13 @@ Events:
   Type    Reason     Age   From               Message
   ----    ------     ----  ----               -------
   Normal  Scheduled  37s   default-scheduler  Successfully assigned default/azure-vote-front-teleport-5fbc9b754f-lrtpw to aks-teleporter-10583637-vmss000000
-  Normal  Pulling    36s   kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:squashed"
-  Normal  Pulled     34s   kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:squashed" in 1.891985507s
+  Normal  Pulling    36s   kubelet            Pulling image "<registryName>.azurecr.io/azure-vote-front:squashed"
+  Normal  Pulled     34s   kubelet            Successfully pulled image "<registryName>.azurecr.io/azure-vote-front:squashed" in 1.891985507s
 ```
 
 ### Balancing layers and size
 
-While you might consider flattening your images to one layer for fast mounting, you may have contention on a single mount point. The purpose of the Teleport preview is to get further metrics on the usage to understand the art and science of image layers. The Teleport design does not require an image owner to make changes to use Teleport. Teleport works with your existing container images. However, with each technology, there are always optimizations that may be made based on the deployment target.
+While you might consider flattening your images to one layer for fast mounting, you may have contention on a single mount point. The purpose of the Project Teleport preview is to get further metrics on the usage to understand the art and science of image layers. The Project Teleport design does not require an image owner to make changes to use Teleport. Teleport works with your existing container images. However, with each technology, there are always optimizations that may be made based on the deployment target.
 
 One thing is always common about image performance. The smaller you can make your overall container image, the faster it will run.
 
@@ -337,5 +334,6 @@ One thing is always common about image performance. The smaller you can make you
 
 Please contact the Project Teleport technicians, and other fellow Teleport Red-Shirts in the [Teleport Red-Shirts teams channel][acr-teleport-red-shirts]
 
+[acr-check-expansion]:     ./check-expansion.sh
 [acr-teleport-red-shirts]: https://aka.ms/acr/teleport/red-shirts
 [teleport-regions]:     ./README.md#preview-constraints
