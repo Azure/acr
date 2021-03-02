@@ -193,6 +193,22 @@ Events:
   Normal  Started    3s    kubelet            Started container azure-vote-front-teleport
 ```
 
+### Browse the apps
+
+To view the voting apps:
+
+```azurecli-interactive
+kubectl get services
+NAME                        TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
+azure-vote-back-shuttle     ClusterIP      10.0.159.177   <none>          6379/TCP       15m
+azure-vote-back-teleport    ClusterIP      10.0.229.255   <none>          6379/TCP       21m
+azure-vote-front-shuttle    LoadBalancer   10.0.155.50    x.x.x.x         80:30276/TCP   15m
+azure-vote-front-teleport   LoadBalancer   10.0.60.1      x.x.x.x         80:30259/TCP   21m
+kubernetes                  ClusterIP      10.0.0.1       <none>          443/TCP        118m
+```
+
+Copy the EXTERNAL-IP, and paste in the browser to view each voting app.
+
 ### Cleanup
 
 To reset the nodes, delete the two deployments:
