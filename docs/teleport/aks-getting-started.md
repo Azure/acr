@@ -1,78 +1,64 @@
-# Getting Started with AKS & Project Teleport
+# Integrate Azure Container Registry and Project Teleport with Azure Kubernetes Service (preview)
 
-> Note: this is a first draft, to get folks started.
+[Project Teleport][project-teleport] allows container hosts to access pre-expanded layers within an [Azure Container Registry (ACR)][acr] that is in the same region as the container host. Using pre-expanded layers removes the time for compute and memory to decompress layers that are already available within the Azure network. Removing this decompression also reduces the time to create the instance of the running container.
 
-To get a sense of the performance benefits of Project Teleport two deployments will be made.
+Using Project Teleport with ACR and AKS is in private preview. See [Enable Project Teleport on an ACR](#enable-project-teleport-on-an-acr) for access.
 
-Project Teleport is node specific. If an image is pulled to a node, with teleport enabled, the expanded layers are mounted.
-If a second copy of the same image is pulled to the same node, even if pulled from a non-teleport expanded repository, the node will identify the image is the same and mount the layers from the previously pulled and teleport expanded image.
+> AKS preview features are available on a self-service, opt-in basis. Previews are provided "as is" and "as available," and they're excluded from the service-level agreements and limited warranty. AKS previews are partially covered by customer support on a best-effort basis. As such, these features aren't meant for production use. AKS preview features aren't available in Azure Government or Azure China 21Vianet clouds. For more information, see the following support articles:
+>
+> - [AKS support policies][aks-support-policies]
+> - [Azure support FAQ][aks-support-faq]
+>
+> ACR Preview features are available on a self-service, opt-in basis. Previews are provided "as is" and "as available," and they're excluded from the service-level agreements and limited warranty. ACR previews are partially covered by customer support on a best-effort basis. As such, these features aren't meant for production use. ACR preview features aren't available in Azure Government or Azure China 21Vianet clouds.
+> - Project Teleport Support is provided through a [Microsoft Teams channel][acr-teleport-red-shirts]. [Requesting access to Project Teleport][teleport-signup-form]
 
-To test the same image with and without Project Teleport enabled, two additional nodepools will be created. The additional nodepools will enable clearing any cached images and layers by scaling the nodepool to zero, then back to one.
+## Prerequisites
 
-- `nodepool1` - The system nodepool. No workloads will be scheduled here.
-- `teleporter` - A teleport enabled nodepool, with a single node
-- `shuttle` - The standard method of transport of container images, with a single node.
+* Ensure you have the Azure CLI, version 2.13.0 or greater installed.  
+* Ensure you have the `aks-preview` CLI extension 0.4.73 or greater installed.
+* Ensure you have Project Teleport enabled on your ACR.
+* Ensure you have the AKS `EnableACRTeleport` feature flag under `Microsoft.ContainerService` enabled.
 
-## AKS & Project Teleport Preview 2.0 Limitations
+## Preview Limitations
 
-- AKS must be configured with service principals. While AKS and ACR support managed identities, the expanded mounts do not yet support managed identities. This should be deployed shortly.
-- k8s version 1.19.7 or later is required, as Project Teleport depends on containerd.
-- ACR and AKS must be in the same regions. This is less of a limitation, rather a design constraint. It's always a best practice to have the content required for deployment to be within the same region. Project Teleport depends on this standard to mount layers within an Azure network, regional boundary.
-- To manage storage costs, geo-replication is not yet supported. The ACR must be created in the same region as the AKS cluster. Future versions will support geo-replication.
-- VNet support is not yet enabled.
+* AKS node pools must use Kubernetes 1.19.7 or greater.
+* AKS node pools must use `containerd` as the container runtime. AKS clusters with node pools using Kubernetes before 1.19.0 use Moby as the container runtime.
+* Each ACR used must have Project Teleport enabled.
+* Each ACR must use the [*Premium* Tier][acr-tiers].
+* ACR and AKS must be in the same region. See [Project Teleport supported regions][teleport-regions].  
+This is less of a limitation, rather a design constraint. It's always a best practice to have the content required for deployment to be within the same region. Project Teleport depends on this best practice to mount layers within an Azure network regional boundary.
+* Linux containers on AKS clusters are supported. Windows support is not yet available.
+* Enabling Project Teleport on an existing registry will not convert images already in the registry. To expand existing content, pull and push the image to trigger expansion.  
+_In a future release, enabling Project Teleport on a repository will convert the images. This work is not yet complete._
+* ACR Geo-replicated registries are not currently supported on Project Teleport enabled registries.
+* [Private Links](https://aka.ms/acr/privatelink) are not currently supported on Project Teleport enabled registries.
 
-## Set environment variables
+### Enable Project Teleport on an ACR
 
-Configure variables unique to your environment. Note the ACR and AKS instances must both be in one of the [teleport supported regions][teleport-regions].
+Create a [premium instance][acr-tiers] of Azure Container Registry in one of the [Project Teleport supported regions][teleport-regions].
+
+Sign up for ACR Project Teleport using [the signup form][teleport-signup-form], providing the resource ID of a **Premium Tier** ACR instance. Once Project Teleport is enabled, you'll receive an confirmation email.
+
+#### Set environment variables
+
+Configure variables unique to your environment.
 
 ```azurecli-interactive
 AKS=myaks
 AKS_RG=${AKS}-rg
-RG_LOCATION=westus2
-K8S_VERSION=1.19.7
 ACR=myacr
+LOCATION=westus2
+K8S_VERSION=1.19.7
 ACR_URL=${ACR}.azurecr.io
 ```
 
-## Create an AKS Cluster
+#### Confirming an ACR repository is set to expand
 
-At the current moment, Teleport does not yet support managed identity access to teleport expanded layers. Until managed identities are supported, configure the cluster with a service principal.
+Once you receive a confirmation email, push an image to a new repository. You may also use `az acr import` to copy an image from another registry.
 
-```azurecli-interactive
-SP_PWD=$(
-  az ad sp create-for-rbac \
-  --skip-assignment \
-  --name ${AKS}-sp 
-  --query password -o tsv)
+To confirm an ACR repository has been configured for teleport expansion, use the following command, replacing `$ACR` and `<namespace/image>` with your acr and image name.
 
-az aks create \
-    -g ${AKS_RG} \
-    -n ${AKS} \
-    --attach-acr $ACR \
-    --kubernetes-version ${K8S_VERSION} \
-    -l $RG_LOCATION \
-    --service-principal $(az ad sp show \
-        --id http://${AKS}-sp \
-        --query appId \
-        --output tsv) \
-    --client-secret $SP_PWD
-
-az aks get-credentials \
-    -g ${AKS_RG} \
-    -n ${AKS}
-```
-
-A standard AKS cluster should now exist. Verify with:
-
-```azurecli-interactive
-kubectl get nodes
-```
-
-## Import an image for teleportation
-
-For completeness of this walkthrough, the azure-vote application is used, which includes a 944mb `azure-vote-front:v1` image. To expand the layers, import the images into a teleport enabled registry, in the same region as the AKS cluster.
-
-```azurecli-interactive
+```azurecli
 az acr import \
   --source mcr.microsoft.com/azuredocs/azure-vote-front:v1 \
   --name $ACR \
@@ -82,35 +68,31 @@ az acr import \
   --source mcr.microsoft.com/oss/bitnami/redis:6.0.8 \
   --name $ACR \
   --image redis:6.0.8
+
+az acr repository show -n ${ACR} -o jsonc \
+  --repository azure-vote-front
 ```
 
-## Confirm import and teleport expansion
+The following example output shows *"teleportEnabled": true*, verifying Project Teleport is enabled on your ACR.
 
-Confirm the `azure-vote-front` repository is set for teleport expansion:
-
-```azurecli
-az acr repository show \
-  --repository azure-vote-front \
-  -o jsonc
-```
-
-Look for `"teleportEnabled": true,` in the output
-
-```json
-"changeableAttributes": {
-  "deleteEnabled": true,
-  "listEnabled": true,
-  "readEnabled": true,
-  "teleportEnabled": true,
-  "writeEnabled": true
+```console
+{
+  "changeableAttributes": {
+    "deleteEnabled": true,
+    "listEnabled": true,
+    "readEnabled": true,
+    "teleportEnabled": true,
+    "writeEnabled": true
+  },
+  ...
 }
 ```
 
-Although the repository is configured for teleport expansion, each image upload will take time to be expanded on push. The length of time is based on the quantity and size of layers, however the expansion should be completed within seconds.
+#### Confirming an image has been expanded
 
-> **Note:** ACR webhooks indicate when an artifact is pushed and available. A new webhook notification will be added at a future date to indicate the image has been expanded, and ready for teleportation.
+At this point in the Teleport preview, check image expansion using the [check-expansion.sh][acr-check-expansion] script. As the script uses a `/mount` api, basic auth is required. An [ACR Token](https://aka.ms/acr/tokens) is created and saved as environment variable.
 
-At this point in the Teleport preview, check expansion using the `check-expansion.sh` script. As the script uses a `/mount` api, basic auth is required. An [ACR Token](https://aka.ms/acr/tokens) is created and saved as environment variable.
+> Note: Assure [check-expansion.sh](./check-expansion.sh) is set to execute: `sudo chmod +x check-expansion.sh`
 
 ```azurecli-interactive
 export ACR_USER=teleport-token
@@ -120,239 +102,155 @@ export ACR_PWD=$(az acr token create \
   --scope-map _repositories_pull \
   --query credentials.passwords[0].value -o tsv)
 
-./check-expansion.sh teleport azure-vote-front v1
+./check-expansion.sh ${ACR} <namespace/repo> <tag>
+# example: ./check-expansion.sh myacr azure-vote-front v1
 ```
 
-## Add nodes for teleporters and shuttles
+### Install aks-preview CLI extension
 
-Two nodepools will be added to enable teleportation, and a comparison for standard transport. The system nodepool is avoided to enable clearing the image cache by scaling the nodepool to zero then back to one.
+To use Project Teleport with ACR and AKS, you need version 0.4.73, or greater, of the *aks-preview* CLI extension. Install the *aks-preview* Azure CLI extension using the [az extension add][az-extension-add] command, or install any available updates using the [az extension update][az-extension-update] command:
 
 ```azurecli-interactive
+# Check the current Azure CLI version
+az version
+
+# Check the current aks-preview extension version
+az extension list
+
+# Install the aks-preview extension
+az extension add --name aks-preview
+
+# Update the extension to make sure you have the latest version installed
+az extension update --name aks-preview
+```
+
+### Register the AKS `EnableACRTeleport` preview feature
+
+To use Teleport with ACR and AKS, you must enable the `EnableACRTeleport` feature flag on your subscription. This feature flag provisions the teleportd client to AKS nodes.
+
+Register the AKS `EnableACRTeleport` feature flag using the [az feature register][az-feature-register] command as shown in the following example:
+
+```azurecli-interactive
+az feature register \
+  --namespace "Microsoft.ContainerService" \
+  --name "EnableACRTeleport"
+```
+
+It may take 15 minutes or more to complete registration. You can check on the registration status using the [az feature list][az-feature-list] command:
+
+```azurecli-interactive
+az feature list \
+  --query "[?contains(name, 'Microsoft.ContainerService/EnableACRTeleport')].{Name:name,State:properties.state}" \
+  -o table
+```
+
+When ready, refresh the registration of the *Microsoft.ContainerService* resource provider using the [az provider register][az-provider-register] command:
+
+```azurecli-interactive
+az provider register --namespace Microsoft.ContainerService
+```
+
+## Create a new AKS cluster with Teleport enabled
+
+To use Teleport with ACR and AKS on a new cluster, create a new AKS cluster and specify your ACR with Project Teleport enabled as well as the `EnableACRTeleport=true` custom header.
+
+Project Teleport _does not yet_ support managed identity access to teleport expanded layers. Until managed identities are supported, configure the cluster with a service principal.
+
+```azurecli-interactive
+# Create a Service Principal for authentication to Teleport expanded layers
+
+AKS_SP_PWD=$(az ad sp create-for-rbac --skip-assignment --name ${AKS}-sp --query password -o tsv)
+AKS_SP_ID=$(az ad sp show --id http://${AKS}-sp --query appId -o tsv)
+
+# Create the AKS Cluster, attached to ACR, with Project Teleport Enabled
+az aks create \
+    -g ${AKS_RG} \
+    -n ${AKS} \
+    --attach-acr $ACR \
+    --kubernetes-version ${K8S_VERSION} \
+    -l $LOCATION \
+    --client-secret $AKS_SP_PWD \
+    --service-principal ${AKS_SP_ID} \
+    --aks-custom-headers EnableACRTeleport=true
+
+az aks get-credentials \
+    -g ${AKS_RG} \
+    -n ${AKS}
+```
+
+## Add a Project Teleport enabled node pool to an _existing_ AKS cluster
+
+To use Project Teleport on an existing AKS cluster, add a node pool to your cluster and set the `EnableACRTeleport=true` custom header.
+
+```azurecli
 az aks nodepool add \
-  --resource-group $AKS_RG \
-  --cluster-name $AKS \
-  --name teleporter \
-  --node-count 1 \
-  --aks-custom-headers EnableACRTeleport=true \
-  --labels acr-teleport=enabled
-
-az aks nodepool add \
-  --resource-group $AKS_RG \
-  --cluster-name $AKS \
-  --name shuttle \
-  --node-count 1 \
-  --labels acr-teleport=disabled
+  --name teleportpool \
+  --cluster-name ${AKS} \
+  --resource-group ${AKS_RG} \
+  --kubernetes-version ${K8S_VERSION} \
+  --aks-custom-headers EnableACRTeleport=true
 ```
 
-## Deploy to AKS
+If your AKS cluster doesn't have access to your Project Teleport enabled ACR, attach it.
 
-Update the `azure-vote-teleport.yaml` and `azure-vote-shuttle.yaml` files to reference your registry name:
-
-```yml
-spec:
-  ...
-  containers:
-  - name: azure-vote-back
-    image: <registryName>.azurecr.io/redis:6.0.8
-  ...
-  containers:
-  - name: azure-vote-front
-    image: <registryName>.azurecr.io/azure-vote-front:v1
+```azurecli
+az aks update \
+  -n ${AKS} \
+  -g ${AKS_RG} \
+  --attach-acr ${ACR}
 ```
 
-### Deploy with standard pull performance
+## Verify your cluster has Project Teleport enabled
 
-Deploy the _shuttle_ podspec:
+When your cluster has a node pool with Project Teleport enabled, any nodes in that node pool have the `kubernetes.azure.com/enable-acr-teleport-plugin:true` label. You can target this label with a node selector when running pods on your cluster to have specific applications take advantage of Project Teleport.
 
-```azurecli-interactive
-kubectl apply -f azure-vote-shuttle.yaml
+To show the labels on your nodes, get the credentials for your cluster and use `kubectl` to show your nodes.
+
+```azurecli
+az aks get-credentials g ${AKS_RG} -n ${AKS}
+kubectl get nodes
 ```
 
-Get the list of pods to find the azure-vote-front pod. The shorthand version can be used if only one pod is named `azure-vote-front`. You may need to run the command a few times until the image has been pulled and expanded on the node.
+Use `kubectl` to get the details of a specific node. Confirm the `kubernetes.azure.com/enable-acr-teleport-plugin:true` label appears in the node details. Note: the full name of the nodepool is not required. Only enough of the name to be unique is required.
 
-```azurecli-interactive
-kubectl get pods
-kubectl describe pod azure-vote-front
+```azurecli
+kubectl describe node aks-nodepool1
 ```
 
-Under the `events` list, an entry for `Successfully pulled image...` provides the pull time. Note the length before proceeding to the teleport version.
+The following example output shows the `kubernetes.azure.com/enable-acr-teleport-plugin:true` label in the node details.
 
-```bash
-Events:
-  Type    Reason     Age   From               Message
-  ----    ------     ----  ----               -------
-  Normal  Scheduled  36s   default-scheduler  Successfully assigned default/azure-vote-front-5c976dbbd9-tckdz to aks-shuttle-10583637-vmss000000
-  Normal  Pulling    35s   kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:v1"
-  Normal  Pulled     1s    kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:v1" in 34.738162s
-```
-
-If `already present on machine` is returned, this indicates the image was previously pulled and cached. See [recycle nodepool](#cleanup) to clear the cache.
-
-```bash
-Events:
-  Type    Reason     Age    From               Message
-  ----    ------     ----   ----               -------
-  Normal  Scheduled  2m12s  default-scheduler  Successfully assigned default/azure-vote-front-5bdfc85f9c-d7z8b to aks-shuttle-10583637-vmss000000
-  Normal  Pulled     2m11s  kubelet            Container image "teleport.azurecr.io/azure-vote-front:v1" already present on machine
-```
-
-### Deploy with Teleport performance
-
-Deploy the _teleport_ podspec:
-
-```azurecli-interactive
-kubectl apply -f azure-vote-teleport.yaml
-```
-
-Get the list of pods to find the azure-vote-front pod. The shorthand version can be used if only one pod is named `azure-vote-front`. You may need to run the command a few times until the image has been pulled and expanded on the node.
-
-```azurecli-interactive
-kubectl describe pod azure-vote-front-teleport
-```
-
-Under the `events` list, an entry for `Successfully pulled image...` provides the pull time. Note the length should be dramatically faster.
-
-```bash
-Events:
-  Type    Reason     Age   From               Message
-  ----    ------     ----  ----               -------
-  Normal  Scheduled  12s   default-scheduler  Successfully assigned default/azure-vote-front-teleport-5bf865d976-lm4bj to aks-teleporter-10583637-vmss000000
-  Normal  Pulling    11s   kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:v1"
-  Normal  Pulled     3s    kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:v1" in 8.011045191s
-  Normal  Created    3s    kubelet            Created container azure-vote-front-teleport
-  Normal  Started    3s    kubelet            Started container azure-vote-front-teleport
-```
-
-### Cleanup
-
-To reset the nodes, delete the two deployments:
-
-```azurecli-interactive
-kubectl delete -f azure-vote-teleport.yaml
-kubectl delete -f azure-vote-shuttle.yaml
-```
-
-Clear the image cache, and any teleport mounts:
-
-```azurecli-interactive
-az aks scale \
-  --resource-group $AKS_RG \
-  --name $AKS \
-  --nodepool-name teleporter \
-  --node-count 0
-
-az aks scale \
-  --resource-group $AKS_RG \
-  --name $AKS \
-  --nodepool-name shuttle \
-  --node-count 0
-
-az aks scale \
-  --resource-group $AKS_RG \
-  --name $AKS \
-  --nodepool-name teleporter \
-  --node-count 1
-
-az aks scale \
-  --resource-group $AKS_RG \
-  --name $AKS \
-  --nodepool-name shuttle \
-  --node-count 1
-```
-
-## Performance profile of teleport
-
-The Voting app has a significant performance delta, comparing a normal pull time of 34.7 seconds, with 8.0 seconds of teleport. While impressive, you may have assumed a larger difference.
-
-Teleport prototype-1 is based on mounting expanded layers. For each layer of an image, the decompression of a layer is traded off for a mount. Therefore, the larger the layer count, the slightly longer the start time.
-
-The `azure-vote-front` image has ***29 layers***, which requires 29 mounts. When pulling the image without teleport, the 944mb of content must be decompressed, but multiple decompression threads can run concurrently.
-
-```bash
-docker inspect teleport.azurecr.io/azure-vote-front:v1
+```console
+$ kubectl describe node aks-nodepool1-00000000-vmss000000
 ...
-"RootFS": {
-  "Type": "layers",
-  "Layers": [
-      "sha256:e27a10675c5656bafb7bfa9e4631e871499af0a5ddfda3cebc0ac401dfe19382",
-      "sha256:851f3e348c69d8959d326f0bab975c03f9813eec33aba389aa7c569953510433",
-      "sha256:06f4de5fefeae30802d336e8c234b9c0989542fb80efd4f83be06c41aba26d9f",
-      "sha256:b31411566900643c38169980a21093c23e0a12a12ffea78b1921d07dd40372bd",
-      "sha256:6662dddae6aa455371366ed12400556a29e049373ea27c089a24634e3098cb48",
-      "sha256:4ea12feed6a9386d7bdac8b26073b1209f0f39781a5d157026dfb5a918c95db7",
-      "sha256:e7cee6196d865755606c73b82004784273cd423217cba8faf650b6707d3b5059",
-      "sha256:b15d32f8b6aa975b8be84e825952094d2f20296777a2bb5fad3fb270ca05a776",
-      "sha256:5e8efc7c6f4fee7fecfc685b742293a5300cc3180262a144a2fed54c46597129",
-      "sha256:4f6e0a34a0535f5cd6b76d06aae861c3ced179b3b115d2850af0e2f0bcefeffc",
-      "sha256:5ac43729c58be5ecb0fc13b164fb4f06f0afc13394735e8ac10cdb0f75311195",
-      "sha256:491bd929c5bfcb0639a6c43d07be0aac225dc0da28379e99f617480599825e5f",
-      "sha256:b18e79d2742360b7b0d81493e8a8beced51953c8a8f73fe4b228e47e8aeb292b",
-      "sha256:55ebcfb2ad17cafdada768b6ca43e3f4e51bc589757b22337b94a499354aa052",
-      "sha256:1a350e9420b7eac6b50172334afd6354d89749c62822951596bac9085cb9fb1e",
-      "sha256:7b3929993879466a3abee028d3fb490d83c211ab5723e29765ed17c98db5b4e3",
-      "sha256:ddeb470c209923815a410d35dd45a6710bc285955b5ef30d92a003d38bd68f3b",
-      "sha256:c30da5f5d23cec0997d05337dd1113872ba56b38a59bf96922572f07d65b94a0",
-      "sha256:a7364327f2826e4991e3675271350c9e7b858e33abbe77aacfbbff00a4b59455",
-      "sha256:f8af872e501840a2de13260830960f612560d9ee755ae07a37c30758e8568444",
-      "sha256:57fe04427c69233864b729d60d3c9c7fe8a43e950cb442a650101a357998c8c2",
-      "sha256:cde1a4e95d8bea636972733fde8f223d1dda2c2425ec7de8ca5b078391723c11",
-      "sha256:efa870440d9c6defc6447ad9d3d214312ba3dc0c665c723b793d14d241d811e1",
-      "sha256:a9f64da753644ba8e18846cb23010c8e730de34701b5f519591167722a89784b",
-      "sha256:2131d41261d2d13cae8b024c5a20e65fe8ee8f98d04bfd238124210b94115d69",
-      "sha256:9d93163e41ffdad4659db82f267091b4a478f1235be1b25438407e79e80ed28b",
-      "sha256:d9aeb057eef2070b1260cceeefb0933755f62504cf34efe2bf4f113043bf7493",
-      "sha256:5e85a99d34e4a9aea5bdc845fb30587b172393ebf7d71ddbb1b325e3fa728090",
-      "sha256:ab48c9fa73df063cfafaa0338c06ec44ba3d29a3ce6adde3fedf42d2d0c0ee91"
-  ]
+Name:               aks-nodepool1-00000000-vmss000000
+Roles:              agent
+Labels:             agentpool=nodepool1
+                    ...
+                    kubernetes.azure.com/enable-acr-teleport-plugin=true
+                    ...
 ```
 
-### Comparing fewer layers
+## Next steps
 
-To gauge the difference between layers and size, clone the [Azure-Samples/azure-voting-app-redis](https://github.com/Azure-Samples/azure-voting-app-redis) repo and build the image with the `--squash` flag.
+- [Deploy two nodes, one with Project Teleport, one without to see the start time differences.](./aks-teleport-comparison.md)
 
-```bash
-docker build --force-rm --squash -t ${ACR}.azurecr.io/azure-vote-front:squashed .
-docker push ${ACR}.azurecr.io/azure-vote-front:squashed
-```
+For more information about pushing an image into your ACR, see [Push your first image to a private container registry using the Docker CLI][acr-push].
 
-- Change the `:tag` references in `azure-vote-shuttle.yaml` and `azure-vote-teleport.yaml` files to `:squashed`.
-- Follow the steps above to [recycle](#cleanup) the nodes, and [redeploy the two apps](#deploy-with-standard-pull-performance).
+For more information about importing images into your ACR, see [Import container images to a container registry][acr-import].
 
-The resulting times should reflect **31.7 seconds** for the standard docker pull/decompress and **1.9 seconds** for teleportation of a single layer.
-
-| Size | Layers | Docker |  Teleport|
-|-|-|-|-|
-| 944mb | 28 | 34.7 | 8 |
-| 929mb | 1 | 31.7 | 1.9 |
-
-That's a _further_ reduction from 8.0 seconds for 28 layers to 1.9 seconds for a single layer. This highlights the performance profile of mounting expanded layers, compared to pulling and decompressing layers.
-
-#### Shuttle deployed single layer image
-
-```
-Events:
-  Type    Reason     Age    From               Message
-  ----    ------     ----   ----               -------
-  Normal  Scheduled  9m55s  default-scheduler  Successfully assigned default/azure-vote-front-6ff785596-4d62g to aks-shuttle-10583637-vmss000000
-  Normal  Pulling    9m54s  kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:squashed"
-  Normal  Pulled     9m22s  kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:squashed" in 31.711601788s
-```
-
-#### Teleported single layer image
-
-```
-Events:
-  Type    Reason     Age   From               Message
-  ----    ------     ----  ----               -------
-  Normal  Scheduled  37s   default-scheduler  Successfully assigned default/azure-vote-front-teleport-5fbc9b754f-lrtpw to aks-teleporter-10583637-vmss000000
-  Normal  Pulling    36s   kubelet            Pulling image "teleport.azurecr.io/azure-vote-front:squashed"
-  Normal  Pulled     34s   kubelet            Successfully pulled image "teleport.azurecr.io/azure-vote-front:squashed" in 1.891985507s
-```
-
-### Balancing layers and size
-
-While you might consider flattening your images to one layer for fast mounting, you may have contention on a single mount point. The purpose of the Teleport preview is to get further metrics on the usage to understand the art and science of image layers. The Teleport design does not require an image owner to make changes to use Teleport. Teleport works with your existing container images. However, with each technology, there are always optimizations that may be made based on the deployment target.
-
-One thing is always common about image performance. The smaller you can make your overall container image, the faster it will run.
-
-[teleport-regions]:     ./README.md#preview-constraints
+[acr]:                     https://aka.ms/acr
+[acr-check-expansion]:     ./check-expansion.sh
+[acr-import]:              https://aka.ms/acr/import
+[acr-teleport-red-shirts]: https://aka.ms/acr/teleport/red-shirts
+[acr-tiers]:               https://aka.ms/acr/tiers
+[acr-push]:                https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli
+[az-extension-add]:        /cli/azure/extension#az-extension-add
+[az-extension-update]:     /cli/azure/extension#az-extension-update
+[az-feature-list]:         /cli/azure/feature#az-feature-list
+[az-feature-register]:     /cli/azure/feature#az-feature-register
+[az-provider-register]:    /cli/azure/provider#az-provider-register
+[teleport-signup-form]:    https://aka.ms/acr/teleport/signup
+[project-teleport]:        https://github.com/azurecr/teleport
+[teleport-regions]:        ./README.md#preview-constraints
+[aks-support-policies]:    https://docs.microsoft.com/azure/aks/support-policies
+[aks-support-faq]:         https://docs.microsoft.com/en-us/azure/aks/faq
