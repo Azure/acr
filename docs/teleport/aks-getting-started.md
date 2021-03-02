@@ -14,8 +14,8 @@ Using Project Teleport with ACR and AKS is in preview.
 
 > AKS preview features are available on a self-service, opt-in basis. Previews are provided "as is" and "as available," and they're excluded from the service-level agreements and limited warranty. AKS previews are partially covered by customer support on a best-effort basis. As such, these features aren't meant for production use. AKS preview features aren't available in Azure Government or Azure China 21Vianet clouds. For more information, see the following support articles:
 >
-> - [AKS support policies](../../support-policies.md)
-> - [Azure support FAQ](../../faq.md)
+> - [AKS support policies][aks-support-policies]
+> - [Azure support FAQ][aks-support-faq]
 >
 > ACR Preview features are available on a self-service, opt-in basis. Previews are provided "as is" and "as available," and they're excluded from the service-level agreements and limited warranty. ACR previews are partially covered by customer support on a best-effort basis. As such, these features aren't meant for production use. ACR preview features aren't available in Azure Government or Azure China 21Vianet clouds.
 > - Project Teleport Support is provided through a [Microsoft Teams channel][acr-teleport-red-shirts]. [Requesting access to Project Teleport][teleport-signup-form]
@@ -101,7 +101,7 @@ export ACR_PWD=$(az acr token create \
 
 ### Install aks-preview CLI extension
 
-To use Project Teleport with ACR and AKS, you need version 2.13.0, or greater, of the *aks-preview* CLI extension. Install the *aks-preview* Azure CLI extension using the [az extension add][az-extension-add] command, or install any available updates using the [az extension update][az-extension-update] command:
+To use Project Teleport with ACR and AKS, you need version 0.4.73, or greater, of the *aks-preview* CLI extension. Install the *aks-preview* Azure CLI extension using the [az extension add][az-extension-add] command, or install any available updates using the [az extension update][az-extension-update] command:
 
 ```azurecli-interactive
 # Check the current Azure CLI version
@@ -240,7 +240,7 @@ For more information about pushing an image into your ACR, see [Push your first 
 
 For more information about importing images into your ACR, see [Import container images to a container registry][acr-import].
 
-[acr]:                     ../container-registry/container-registry-intro.md
+[acr]:                     https://aka.ms/acr
 [acr-import]:              ../container-registry/container-registry-import-images.md
 [acr-teleport-red-shirts]: https://aka.ms/acr/teleport/red-shirts
 [acr-tiers]:               https://aka.ms/acr/tiers
@@ -253,3 +253,5 @@ For more information about importing images into your ACR, see [Import container
 [teleport-signup-form]:    https://aka.ms/acr/teleport/signup
 [project-teleport]:        https://github.com/azurecr/teleport
 [teleport-regions]:        ./aks-teleport-comparison.md#preview-constraints
+[aks-support-policies]:    https://docs.microsoft.com/azure/aks/support-policies
+[aks-support-faq]:         https://docs.microsoft.com/en-us/azure/aks/faq
