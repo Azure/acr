@@ -154,23 +154,16 @@ az provider register --namespace Microsoft.ContainerService
 
 To use Teleport with ACR and AKS on a new cluster, create a new AKS cluster and specify your ACR with Project Teleport enabled as well as the `EnableACRTeleport=true` custom header.
 
-Project Teleport _does not yet_ support managed identity access to teleport expanded layers. Until managed identities are supported, configure the cluster with a service principal.
-
 ```azurecli-interactive
-# Create a Service Principal for authentication to Teleport expanded layers
-
-AKS_SP_PWD=$(az ad sp create-for-rbac --skip-assignment --name ${AKS}-sp --query password -o tsv)
-AKS_SP_ID=$(az ad sp show --id http://${AKS}-sp --query appId -o tsv)
 
 # Create the AKS Cluster, attached to ACR, with Project Teleport Enabled
 az aks create \
+    --generate-ssh-keys \
     -g ${AKS_RG} \
     -n ${AKS} \
     --attach-acr $ACR \
     --kubernetes-version ${K8S_VERSION} \
     -l $LOCATION \
-    --client-secret $AKS_SP_PWD \
-    --service-principal ${AKS_SP_ID} \
     --aks-custom-headers EnableACRTeleport=true
 
 az aks get-credentials \
@@ -207,7 +200,7 @@ When your cluster has a node pool with Project Teleport enabled, any nodes in th
 To show the labels on your nodes, get the credentials for your cluster and use `kubectl` to show your nodes.
 
 ```azurecli
-az aks get-credentials g ${AKS_RG} -n ${AKS}
+az aks get-credentials -g ${AKS_RG} -n ${AKS}
 kubectl get nodes
 ```
 
