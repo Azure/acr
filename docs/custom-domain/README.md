@@ -2,13 +2,15 @@
 
 **Important - Using a custom domain in Azure Container Registry is a private preview feature.**
 
-**The Azure Container Registry team is not currently accepting new customers for this private preview. The feature will be made more widely available in the coming months.**
+**The Azure Container Registry team is not currently accepting new customers for this private preview. The feature will be made more widely available in the future.**
 
-**If your registry has already been enabled for a custom domain and you need support, please open an issue in this repository. For feature requests, go to https://aka.ms/acr/uservoice**.  
+**If your registry has already been enabled for a custom domain and you need support, please open an issue in this repository.**  
 
 Every ACR is accessed using its login server. If you have a registry called `myregistry`, you access it using its default hostname, `myregistry.azurecr.io` (in Azure Public Cloud.) As a customer belonging to an organization, you may prefer to access your registry using a custom domain that is associated with your organization, for instance, `container-registry.contoso.com`.
 
 The following steps describe how you can achieve this.
+
+**The following sections describe preparation steps for the private preview. They are not sufficient to enable a custom domain for your registry without acceptance into the private preview.**
 
 ## Prerequisites
 - [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest): version 2.4.0 or higher
