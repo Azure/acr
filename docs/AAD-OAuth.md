@@ -70,15 +70,15 @@ Internally, the CLI will follow these steps:
 
 When listing the tags of a repository, every step above is the same except for the call to the endpoint that gives the tags which is `GET /v2/contosoregistry/tags/list` instead of `GET /v2/_catalog`.
 
-# Azure Container Registry refresh tokens and access tokens
+# Azure Container Registry token claim sets
 
-Let's follow an example call to list a repository:
+Following the command of repository list in the previous section:
 
 ```bash
 az acr repository list -n contosoregistry
 ```
 
-This will produce a JWT refresh token with the following payload:
+A JWT refresh token extracted at step 5 has the following claim set:
 
 ```json
 {
@@ -90,19 +90,19 @@ This will produce a JWT refresh token with the following payload:
   "iss": "Azure Container Registry",
   "aud": "contosoregistry.azurecr.io",
   "version": "1.0",
-  "grant_type": "access_token_refresh_token",
+  "grant_type": "refresh_token",
   "tenant": "409520d4-8100-4d1d-ad47-72432ddcc120",
-  "credential": "AQA...iAA",
   "permissions": {
     "actions": [
       "*"
     ],
     "notActions": []
-  }
+  },
+  "roles": []
 }
 ```
 
-Followed by an access token with the following payload:
+Followed by an access token at step 7 with the following claim set:
 
 ```json
 {
@@ -113,6 +113,7 @@ Followed by an access token with the following payload:
   "iat": 1497988907,
   "iss": "Azure Container Registry",
   "aud": "contosoregistry.azurecr.io",
+  "version": "1.0",
   "access": [
     {
       "type": "registry",
@@ -121,7 +122,9 @@ Followed by an access token with the following payload:
         "*"
       ]
     }
-  ]
+  ],
+  "roles": [],
+  "grant_type": "access_token"
 }
 ```
 
