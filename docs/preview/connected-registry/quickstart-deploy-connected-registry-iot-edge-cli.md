@@ -308,80 +308,85 @@ Update the proxy config for the connected registry following the steps:
 ```
 The value of the proxy_config is the base64 encoded string of the following nginx config.
 
-``` json
-{
-    "modulesContent": {
-        "$edgeAgent": {
-            "properties.desired": {
-                "schemaVersion": "1.1",
-                "runtime": {...},
-                "systemModules": {...}
-                "modules": {
-                    "connected-registry": {
-                        "settings": {
-                            "image": "mcr.microsoft.com/acr/connected-registry",
-                            "createOptions": "{\"HostConfig\":{\"Binds\":[\"<path to data volume>:/var/acr/data\"]}}"
-                        },
-                        "type": "docker",
-                        "version": "1.0",
-                        "env": {
-                            "ACR_REGISTRY_NAME": {
-                                "value": "<connected-registry-name>"
-                            },
-                            "ACR_PARENT_GATEWAY_ENDPOINT": {
-                                "value": "acr.westus.data.azurecr.io"
-                            },
-                            "ACR_PARENT_LOGIN_SERVER": {
-                                "value": "acr.azurecr.io"
-                            },
-                            "ACR_SYNC_TOKEN_NAME": {
-                                "value": "<sync token username>"
-                            },
-                            "ACR_SYNC_TOKEN_PASSWORD": {
-                                "value": "<sync token password>"
-                            },
-                            "ACR_REGISTRY_LOGIN_SERVER": {
-                                "value": "iot-edge-device"
-                            },
-                            "ACR_PARENT_PROTOCOL": {
-                                "value": "https"
-                            }
-                        },
-                        "status": "running",
-                        "restartPolicy": "always"
-                    },
-                    "IoTEdgeAPIProxy": {
-                        "settings": {
-                            "image": "mcr.microsoft.com/azureiotedge-api-proxy",
-                            "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"8000/tcp\":[{\"HostPort\":\"8000\"}]}}}"
-                        },
-                        "type": "docker",
-                        "version": "1.0",
-                        "env": {
-                            "NGINX_DEFAULT_PORT": {
-                                "value": "8000"
-                            },
-                            "NGINX_CONFIG_ENV_VAR_LIST": {
-                                "value": "NGINX_DEFAULT_PORT,BLOB_UPLOAD_ROUTE_ADDRESS,CONNECTED_ACR_ROUTE_ADDRESS,IOTEDGE_PARENTHOSTNAME"
-                            },
-                            "CONNECTED_ACR_ROUTE_ADDRESS": {
-                                "value": "connected-registry:8080"
-                            }
-                        },
-                        "status": "running",
-                        "restartPolicy": "always"
-                    }
-                },
-            }
-        },
-        "$edgeHub": {...},
-        "connected-acr": {
-            "properties.desired": {}
-        },
-        "IoTEdgeAPIProxy": {
-            "properties.desired": {
-                "proxy_config": "<nginx config>"
-            }
+``` nginx
+events { }
+
+
+http {
+    proxy_buffers 32 160k;
+    proxy_buffer_size 160k;
+    proxy_read_timeout 3600;
+    error_log /dev/stdout info;
+    access_log /dev/stdout;
+
+    server {
+        listen ${NGINX_DEFAULT_PORT} ssl default_server;
+
+        chunked_transfer_encoding on;
+
+        ssl_certificate        server.crt;
+        ssl_certificate_key    private_key_server.pem;
+        ssl_client_certificate trustedCA.crt;
+        #ssl_verify_depth 7;
+        ssl_verify_client optional_no_ca;
+
+        #if_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
+        if ($http_x_ms_version)
+        {
+            rewrite ^(.*)$ /storage$1 last;
+        }
+        #endif_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
+        #if_tag !${BLOB_UPLOAD_ROUTE_ADDRESS}
+        if ($http_x_ms_version)
+        {
+            rewrite ^(.*)$ /parent$1 last;
+        }
+        #endif_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
+
+        #if_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
+        location ~^/storage/(.*){
+            resolver 127.0.0.11;
+            proxy_http_version 1.1;
+            proxy_pass          http://${BLOB_UPLOAD_ROUTE_ADDRESS}/$1$is_args$args;
+        }
+        #endif_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
+
+        #if_tag ${CONNECTED_ACR_ROUTE_ADDRESS}
+        location /v2 {
+            resolver 127.0.0.11;
+            proxy_http_version 1.1;
+            proxy_pass         http://${CONNECTED_ACR_ROUTE_ADDRESS};
+            proxy_set_header   X-Forwarded-Host $http_host;
+            proxy_set_header   X-Forwarded-Proto $scheme;
+        }
+
+        location /acr {
+            resolver 127.0.0.11;
+            proxy_http_version 1.1;
+            proxy_pass         http://${CONNECTED_ACR_ROUTE_ADDRESS};
+            proxy_set_header   X-Forwarded-Host $http_host;
+            proxy_set_header   X-Forwarded-Proto $scheme;
+        }
+        #endif_tag ${CONNECTED_ACR_ROUTE_ADDRESS}
+
+        #if_tag ${IOTEDGE_PARENTHOSTNAME}
+        location ~^/parent/(.*) {
+            proxy_http_version 1.1;
+            resolver 127.0.0.11;
+            #proxy_ssl_certificate     identity.crt;
+            #proxy_ssl_certificate_key private_key_identity.pem;
+            proxy_ssl_trusted_certificate trustedCA.crt;
+            proxy_ssl_verify_depth 7;
+            proxy_ssl_verify       on;
+            proxy_pass          https://${IOTEDGE_PARENTHOSTNAME}:${NGINX_DEFAULT_PORT}/$1$is_args$args;
+        }
+        #endif_tag ${IOTEDGE_PARENTHOSTNAME}
+
+        location ~^/devices|twins/ {
+            proxy_http_version  1.1;
+            proxy_ssl_verify    off;
+            proxy_set_header    x-ms-edge-clientcert    $ssl_client_escaped_cert;
+            proxy_pass          https://edgeHub;
         }
     }
 }
