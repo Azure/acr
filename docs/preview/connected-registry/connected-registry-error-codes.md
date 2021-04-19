@@ -1,7 +1,7 @@
 ---
 title: Connected registry error code reference
 description: Details about error codes shown in the statusDetails property of a connected registry resource. For each error, possible solutions are listed.
-ms.topic: article
+ms.topic: troubleshooting
 ms.date: 04/13/2021
 ms.author: jeburke
 author: jaysterp
@@ -65,7 +65,7 @@ Create or update the docker daemon file `/etc/docker/daemon.json` to add logging
 
 Restart the container engine in order for the configuration to take effect.
 
-#### Option 2: Place log limits only for the connected registry container only
+#### Option 2: Place log limits only for the connected registry container
 
 You can also update the log level of the connected registry container only. Add the following flags to your `docker run` command:
 
@@ -83,4 +83,4 @@ The configuration will take effect on-premises during the next scheduled sync wi
 
 ### DISK_ERROR
 
-This is the default error code when the connected registry is unable create, write, or delete a file on the local disk.
+This is the default error code when the connected registry is unable to create, write, or delete a file on the local disk.
