@@ -42,7 +42,10 @@ In this overview, you learned about the use of the connected registry in hierarc
 
 > [Quickstart - Deploy a connected registry to an IoT Edge device][overview-connected-registry-and-iot-edge]
 
+> [Quickstart: Deploy connected registry on nested IoT Edge device][quickstart-pull-images-from-connected-registry]
+
 <!-- LINKS - internal -->
 [quickstart-connected-registry-cli]:quickstart-connected-registry-cli.md
 [overview-connected-registry-and-iot-edge]:quickstart-deploy-connected-registry-iot-edge-cli.md
 [tutorial-nested-iot-edge]: https://docs.microsoft.com/azure/iot-edge/tutorial-nested-iot-edge?view=iotedge-2020-11&tabs=azure-portal
+[quickstart-connected-registry-nested]: quickstart-connected-registry-nested-iot-edge-cli.md
