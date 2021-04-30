@@ -282,7 +282,7 @@ You may need to a wait few minutes until the deployment of the connected registr
 
 ## Deploy the api proxy module on IoT Edge
 
-Add api proxy module from Azure Marketplace `IoT Edge API Proxy`
+Add api proxy module from Azure Marketplace `IoT Edge API Proxy` as described in the [https://docs.microsoft.com/en-us/azure/iot-edge/how-to-configure-api-proxy-module?view=iotedge-2020-11]
 
 Add the following two environment variables in addition to the existing ones:
 
@@ -394,7 +394,7 @@ http {
 
 - Click 'Save'
 
-Make sure you open the the ports `8000`, `443`, `5671`, `8883`.
+Make sure you open the the ports `8000`, `5671`, `8883`.
 
 The api proxy will now listen on port 8000 configued as `NGINX_DEFAULT_PORT`.
 
