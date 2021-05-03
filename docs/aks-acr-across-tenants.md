@@ -1,4 +1,4 @@
-# AKS and ACR in different tenants
+# Set up AKS to pull from ACR in a different AD tenant
 
 ## Introduction
 
@@ -10,9 +10,11 @@ Sometimes, you may have your AKS and ACR in different Azure Active Directories (
 
 ## Instruction
 
-In this example, the AKS cluster is in `Tenant A` and the ACR is in `Tenant B`. 
+In this example, the AKS cluster is in `Tenant A` and the ACR is in `Tenant B`.
 
 `Tenant A` is also the service principal home tenant.
+
+You will need the contributor role of AKS subscription and the owner role of ACR subscription.
 
 ### Step 1: Enable multi-tenant AAD Application
 
@@ -49,7 +51,7 @@ In this example, the AKS cluster is in `Tenant A` and the ACR is in `Tenant B`.
 
 ### Step 4: Update AKS with the AAD Application secret
 
-- Use the `Application (clinet) ID` and `client secret` collected in `step 1` to [update AKS service principal credential](https://docs.microsoft.com/en-us/azure/aks/update-credentials#update-aks-cluster-with-new-service-principal-credentials).
+- Use the `Application (client) ID` and `client secret` collected in `step 1` to [update AKS service principal credential](https://docs.microsoft.com/en-us/azure/aks/update-credentials#update-aks-cluster-with-new-service-principal-credentials).
 
 ## Reference
 
