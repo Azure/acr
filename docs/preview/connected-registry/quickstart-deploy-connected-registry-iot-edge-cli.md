@@ -284,14 +284,16 @@ You may need to a wait few minutes until the deployment of the connected registr
 
 Add api proxy module from Azure Marketplace `IoT Edge API Proxy` as described in the [https://docs.microsoft.com/en-us/azure/iot-edge/how-to-configure-api-proxy-module?view=iotedge-2020-11]
 
-Add the following two environment variables in addition to the existing ones:
+Remove the existing env DOCKER_REQUEST_ROUTE_ADDRESS.
+
+Add the following two environment variables:
 
 ```
 "CONNECTED_ACR_ROUTE_ADDRESS": {
       "value": "connected-registry:8080"
 },
 "NGINX_CONFIG_ENV_VAR_LIST": {
-        "value": "NGINX_DEFAULT_PORT,BLOB_UPLOAD_ROUTE_ADDRESS,CONNECTED_ACR_ROUTE_ADDRESS,IOTEDGE_PARENTHOSTNAME,DOCKER_REQUEST_ROUTE_ADDRESS"
+        "value": "NGINX_DEFAULT_PORT,BLOB_UPLOAD_ROUTE_ADDRESS,CONNECTED_ACR_ROUTE_ADDRESS,IOTEDGE_PARENTHOSTNAME"
 }
 ```
 
