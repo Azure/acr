@@ -38,7 +38,7 @@ The access the connected registry via HTTP, you must configure the client Docker
 
 ### Configure the connected registry to sync the repository
 
-In order to access this image, you must update the connected registry configuration to sync the repository. From the Az CLI run
+In order to access this image, you must update the connected registry configuration to sync the repository. From the Azure CLI run
 `az acr connected-registry repo -r <ACR-name> -n <connected-registry-name> --add <repository-name>`
 
 Wait a few minutes for the connected registry to sync the repository and try pulling the image again.
@@ -56,13 +56,13 @@ Wait a few minutes for the connected registry to sync the repository and try pul
 
 ### Assign permissions to the connected registry client token
 
-To update the permissions of the client token, you must update the corresponding scope map. To view the scope map resource ID associated with a token, run the following on the Az CLI:
+To update the permissions of the client token, you must update the corresponding scope map. To view the scope map resource ID associated with a token, run the following from the Azure CLI:
 
 `az acr token show -r <ACR-name> -n <client-token-name> -o tsv --query scopeMapId`
 
 #### Pull permissions
 
-To give the client token pull permissions to the repository, run the following from the Az CLI:
+To give the client token pull permissions to the repository, run the following from the Azure CLI:
 
 ```
 az acr scope-map update \
@@ -73,7 +73,7 @@ az acr scope-map update \
 
 #### Push permissions
 
-To give the client token push permissions to the repository, run the following from the Az CLI:
+If the connected registry is in Registry mode, the client may need push access. To give the client token push permissions to the repository, run the following from the Azure CLI:
 
 ```
 az acr scope-map update \
@@ -85,7 +85,7 @@ az acr scope-map update \
 Wait a few minutes for the updated client token permissions to sync to the connected registry.
 
   > [!TIP]
-  > After updating the permissions of the client token, you may want to generate new passwords. Run `az acr token credential generate` from the Az CLI to refresh your client token passwords. Allow a few minutes for the credentials to sync to the connected registry. Login using your new credentials with `docker login`.
+  > After updating the permissions of the client token, you may want to generate new passwords. Run `az acr token credential generate` from the Azure CLI to refresh your client token passwords. Allow a few minutes for the credentials to sync to the connected registry. Login using your new credentials with `docker login`.
 
 For more information on ACR token management please reference [Create a token with repository-scoped permissions](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-repository-scoped-permissions]).
 
@@ -104,7 +104,7 @@ For more information on ACR token management please reference [Create a token wi
 
 Once a connected registry is created, the mode cannot be changed. If you would like to push images to your connected registry, create a new resource in Registry mode. Ensure the client token linked to the new connected registry has push permissions to the synced repositories.
 
-From the Az CLI run 
+From the Azure CLI run 
 
 `az acr connected-registry create --registry <ACR-name> --name <connected-registry-name> --repository app/hello-world service/mycomponent --client-tokens <client-token-name>`
 
