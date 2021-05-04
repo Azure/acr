@@ -62,7 +62,7 @@ To update the permissions of the client token, you must update the corresponding
 
 #### Pull permissions
 
-To give the client token read-only permissions to the repository, run the following from the Az CLI:
+To give the client token pull permissions to the repository, run the following from the Az CLI:
 
 ```
 az acr scope-map update \
@@ -85,7 +85,7 @@ az acr scope-map update \
 Wait a few minutes for the updated client token permissions to sync to the connected registry.
 
   > [!TIP]
-  > After updating the permissions of the client tokens, you may want to generate new passwords. Run `az acr token credential generate` from the Az CLI to refresh your client token passwords. Allow a few minutes for the credentials to sync to the connected registry. Login using your new credentials with `docker login`.
+  > After updating the permissions of the client token, you may want to generate new passwords. Run `az acr token credential generate` from the Az CLI to refresh your client token passwords. Allow a few minutes for the credentials to sync to the connected registry. Login using your new credentials with `docker login`.
 
 For more information on ACR token management please reference [Create a token with repository-scoped permissions](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-repository-scoped-permissions]).
 
@@ -102,7 +102,7 @@ For more information on ACR token management please reference [Create a token wi
 
 ### Create a new connected registry in Registry mode
 
-Once a connected registry is created, the mode cannot be updated. If you would like to push images to your connected registry, create a new resource in Registry mode. Ensure your client token linked to the new connected registry has push permissions to the synced repositories.
+Once a connected registry is created, the mode cannot be changed. If you would like to push images to your connected registry, create a new resource in Registry mode. Ensure the client token linked to the new connected registry has push permissions to the synced repositories.
 
 From the Az CLI run 
 
