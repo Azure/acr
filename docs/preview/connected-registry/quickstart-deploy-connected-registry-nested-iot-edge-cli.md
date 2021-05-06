@@ -69,7 +69,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                     "connected-registry": {
                         "settings": {
                             "image": "10.16.7.4/acr/connected-registry:0.2.0",
-                            "createOptions": "{\"HostConfig\":{\"Binds\":[\"/home/azureuser/connected-registry:/var/acr/data\",,\"/usr/local/share/ca-certificates:/usr/local/share/ca-certificates\",\"/etc/ssl/certs:/etc/ssl/certs\"]}}"
+                            "createOptions": "{\"HostConfig\":{\"Binds\":[\"/home/azureuser/connected-registry:/var/acr/data\",\"/usr/local/share/ca-certificates:/usr/local/share/ca-certificates\",\"/etc/ssl/certs:/etc/ssl/certs\",\"LogConfig\":{ \"Type\": \"json-file\", \"Config\": {\"max-size\": \"10m\",\"max-file\": \"3\"}}]}}"
                         },
                         "type": "docker",
                         "env": {
@@ -97,9 +97,6 @@ To deploy the connected registry module using the Azure CLI, save the following 
                             },
                             "NGINX_CONFIG_ENV_VAR_LIST": {
                                     "value": "NGINX_DEFAULT_PORT,BLOB_UPLOAD_ROUTE_ADDRESS,CONNECTED_ACR_ROUTE_ADDRESS,IOTEDGE_PARENTHOSTNAME,DOCKER_REQUEST_ROUTE_ADDRESS"
-                            },
-                            "DOCKER_REQUEST_ROUTE_ADDRESS": {
-                                "value": "registry:5000"
                             },
                             "BLOB_UPLOAD_ROUTE_ADDRESS": {
                                 "value": "AzureBlobStorageonIoTEdge:11002"
