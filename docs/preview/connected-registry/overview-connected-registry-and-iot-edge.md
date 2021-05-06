@@ -38,9 +38,9 @@ In this architecture, the connected registries deployed on each layer are config
 
 In this overview, you learned about the use of the connected registry in hierarchical IoT Edge scenarios. Continue to the one of the following articles to learn how to configure and deploy a connected registry to your IoT Edge device.
 
-> [Quickstart - Create connected registry using the CLI][quickstart-connected-registry-cli]
+> [Quickstart: Create connected registry using the CLI][quickstart-connected-registry-cli]
 
-> [Quickstart - Deploy a connected registry to an IoT Edge device][overview-connected-registry-and-iot-edge]
+> [Quickstart: Deploy a connected registry to an IoT Edge device][overview-connected-registry-and-iot-edge]
 
 > [Quickstart: Deploy connected registry on nested IoT Edge device][quickstart-pull-images-from-connected-registry]
 
