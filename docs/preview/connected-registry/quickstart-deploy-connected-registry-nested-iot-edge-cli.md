@@ -1,6 +1,6 @@
 ---
 title: Quickstart - Deploy a connected registry to a nested IoT Edge device
-description: Use Azure Container Registry CLI commands and Azure portal to deploy a connected registry to a mested Azure IoT Edge device.
+description: Use Azure Container Registry CLI commands and Azure portal to deploy a connected registry to a nested Azure IoT Edge device.
 ms.topic: quickstart
 ms.date: 04/28/2021
 ms.author: memladen
@@ -58,7 +58,7 @@ A deployment manifest is a JSON document that describes which modules to deploy 
 
 To deploy the connected registry module using the Azure CLI, save the following deployment manifest locally as a `.json` file. 
 
-[!IMPORTANT] In the bellow deployment manifest, the IP address `10.16.7.4` is the IP address of the device hosting parent connected registry. Make sure you replace this IP address with the one your parent device uses.
+[!IMPORTANT] In the following deployment manifest, the IP address `10.16.7.4` is the IP address of the device hosting parent connected registry. Make sure you replace this IP address with the one your parent device uses.
 
 ```json
 {
