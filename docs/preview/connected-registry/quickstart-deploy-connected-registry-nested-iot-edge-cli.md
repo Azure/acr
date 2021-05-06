@@ -192,6 +192,12 @@ az acr connected-registry show \
 
 You may need to a wait few minutes until the deployment of the connected registry completes.
 
+Successful response from the command will include the following:
+
+```azurecli
+connectionState: Online
+```
+
 ## Next steps
 
 In this quickstart, you learned how to deploy a connected registry to an IoT Edge device. Continue to the next guide to learn how to pull images from the newly deployed connected registry.
