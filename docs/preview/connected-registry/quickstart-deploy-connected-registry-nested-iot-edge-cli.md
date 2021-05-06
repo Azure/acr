@@ -161,7 +161,10 @@ To deploy the connected registry module using the Azure CLI, save the following 
 }
 ```
 
-Use the information from the previous sections to update the relevant JSON values.
+Use the information from the previous sections to update the relevant JSON values:
+
+- The environment variable `ACR_REGISTRY_CONNECTION_STRING` needs to be updated with the output from the `az acr connected-registry install renew-credentials` command above. You will need to manually add the `ParentGatewayEndpoint` with the IP or host address of the parent registry, `10.16.7.4` in this case. You will also need to select the proper protocol in `ParentEndpointProtocol`.
+- For each module in the manifest, you should update the registry endpoint to the IP address or hostname of the parent, `10.16.7.4` in this case.
 
 You will use the file path in the next section when you run the command to apply the configuration to your device.
 
