@@ -119,23 +119,12 @@ az acr connected-registry install renew-credentials \
   --name myconnectedregistry \
 ```
 
-This will return the configuration for the connected registry including the newly generated passwords.
+This will return the connection string for the connected registry including the newly generated passwords.
 
 ```json
 {
-  "ACR_PARENT_GATEWAY_ENDPOINT": "mycontainerregistry001.westus2.data.azurecr.io",
-  "ACR_PARENT_LOGIN_SERVER": "mycontainerregistry001.azurecr.io",
-  "ACR_PARENT_PROTOCOL": "https",
-  "ACR_REGISTRY_CERTIFICATE_VOLUME": "<myvolume>",
-  "ACR_REGISTRY_DATA_VOLUME": "<myvolume>",
-  "ACR_REGISTRY_LOGIN_SERVER": "<myloginservername>",
-  "ACR_REGISTRY_NAME": "myconnectedregistry",
-  "ACR_SYNC_TOKEN_NAME": "myconnectedregistry-sync-token",
-  "ACR_SYNC_TOKEN_PASSWORD": {
-    "password1": "s0meCoMPL3xP4$$W0rd001!@#",
-    "password2": "an0TH3rCoMPL3xP4ssW0rd002!"
-  },
-  "ACR_SYNC_TOKEN_USERNAME": "myconnectedregistry-sync-token"
+  "ACR_REGISTRY_CONNECTION_STRING": "ConnectedRegistryName=myconnectedregistry;SyncTokenName=myconnectedregistry-sync-token;SyncTokenPassword=s0meCoMPL3xP4$$W0rd001!@#;ParentGatewayEndpoint=mycontainerregistry001.westus2.data.azurecr.io;ParentEndpointProtocol=https",
+  "ACR_REGISTRY_LOGIN_SERVER": "<Optional: connected registry login server. More info at https://aka.ms/acr/connected-registry>"
 }
 ```
 
@@ -168,26 +157,8 @@ To deploy the connected registry module using the Azure CLI, save the following 
                         },
                         "type": "docker",
                         "env": {
-                            "ACR_REGISTRY_NAME": {
-                                "value": "myconnectedregistry"
-                            },
-                            "ACR_PARENT_GATEWAY_ENDPOINT": {
-                                "value": "mycontainerregistry001.westus2.data.azurecr.io"
-                            },
-                            "ACR_SYNC_TOKEN_NAME": {
-                                "value": "myconnectedregistry-sync-token"
-                            },
-                            "ACR_SYNC_TOKEN_PASSWORD": {
-                                "value": "s0meCoMPL3xP4$$W0rd001!@#"
-                            },
-                            "ACR_REGISTRY_LOGIN_SERVER": {
-                                "value": "<use_the_ip_address_of_the_iot_edge_device>"
-                            },
-                            "ACR_PARENT_PROTOCOL": {
-                                "value": "https"
-                            },
-                            "ACR_PARENT_LOGIN_SERVER": {
-                                "value": "mycontainerregistry001.azurecr.io"
+                            "ACR_REGISTRY_CONNECTION_STRING": {
+                                "value": "ConnectedRegistryName=myconnectedregistry;SyncTokenName=myconnectedregistry-sync-token;SyncTokenPassword=s0meCoMPL3xP4$$W0rd001!@#;ParentGatewayEndpoint=mycontainerregistry001.westus2.data.azurecr.io;ParentEndpointProtocol=https"
                             }
                         },
                         "status": "running",
