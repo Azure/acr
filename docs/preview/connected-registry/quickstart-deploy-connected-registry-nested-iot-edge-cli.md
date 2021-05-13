@@ -124,7 +124,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                 "systemModules": {
                     "edgeAgent": {
                         "settings": {
-                            "image": "10.16.7.4/azureiotedge-agent:1.0",
+                            "image": "10.16.7.4/azureiotedge-agent:1.2",
                             "createOptions": ""
                         },
                         "type": "docker",
@@ -136,7 +136,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                     },
                     "edgeHub": {
                         "settings": {
-                            "image": "10.16.7.4/azureiotedge-hub:1.0",
+                            "image": "10.16.7.4/azureiotedge-hub:1.2",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
                         },
                         "type": "docker",
@@ -202,7 +202,6 @@ connectionState: Online
 
 In this quickstart, you learned how to deploy a connected registry to an IoT Edge device. Continue to the next guide to learn how to pull images from the newly deployed connected registry.
 
-> [!div class="nextstepaction"]
 > [Quickstart: Pull images from a connected registry][quickstart-pull-images-from-connected-registry]
 
 <!-- LINKS - internal -->
