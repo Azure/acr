@@ -195,7 +195,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                     },
                     "edgeHub": {
                         "settings": {
-                            "image": "mcr.microsoft.com/azureiotedge-hub:1.0",
+                            "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
                         },
                         "type": "docker",
