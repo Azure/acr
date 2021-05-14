@@ -47,6 +47,15 @@ az acr create --resource-group myResourceGroup \
 
 This example creates a *Premium* registry. Connected registries are supported only in the *Premium* tier of Azure container registry. For details on available service tiers, see [Container registry service tiers][container-registry-skus].
 
+## Enable the dedicated data endpoint for the cloud registry
+
+For the connected registries to communicate with the cloud registry, the dedicated data endpoint for the Azure Container Registry in the cloud should be enabled by using the [az acr update][az-acr-update] command as follows:
+
+```azurecli
+az acr update -n mycontainerregistry001 \
+  --data-endpoint-enabled
+```
+
 ## Import images into the container registry
 
 This and subsequent quickstart guides use two repositories:
@@ -109,15 +118,6 @@ NAME                 MODE      STATUS    PARENT    LOGIN SERVER    LAST SYNC
 -------------------  --------  --------  --------  --------------  -----------
 myconnectedregistry  registry
 myconnectedmirror    mirror
-```
-
-## Enable the data endpoint for the cloud registry
-
-For the connected registries to communicate with the cloud registry, the data endpoint for the Azure Container Registry in the cloud should be enabled by using the [az acr update][az-acr-update] command as follows:
-
-```azurecli
-az acr update -n mycontainerregistry001 \
-  --data-endpoint-enabled
 ```
 
 ## Next steps
