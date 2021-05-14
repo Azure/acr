@@ -31,7 +31,6 @@ The stamp name is one of the aliases returned by the above command. Currently, c
 
 Here is a list of known limitations for the connected registry functionality in limited preview:
 
-- Nested connected registry mode is still under development and requires additional testing. Currently nested registries are blocked and will be released in a few weeks.
 - Number of tokens and scopemaps is limited to 20K for a single ACR. This indirectly limits the number of connected registries for an ACR registry because every connected registry needs a sync and client token.
 - Number of repository permissions in a scope map is limited to 500.
 - Number of clients for the connected registry is currently limited to 20.
@@ -58,6 +57,7 @@ In limited preview, the connected registry targets IoT scenarios. Below are link
 - [Using connected registry with Azure IoT Edge](./overview-connected-registry-and-iot-edge.md)
 - [Quickstart: Create a connected registry using Azure Container Registry CLI commands](./quickstart-connected-registry-cli.md)
 - [Quickstart: Deploy a connected registry to an IoT Edge device](./quickstart-deploy-connected-registry-iot-edge-cli.md)
+- [Quickstart: Deploy a connected registry to an nested IoT Edge device](./quickstart-deploy-connected-quickstart-deploy-connected-registry-nested-iot-edge-cli.md)
 - [Quickstart: Pull images from a connected registry](./quickstart-pull-images-from-connected-registry.md)
 
 ## Troubleshooting
