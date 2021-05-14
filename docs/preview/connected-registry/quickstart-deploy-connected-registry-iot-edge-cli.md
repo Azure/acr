@@ -25,7 +25,7 @@ In this quickstart, you use [Azure Container Registry][container-registry-intro]
 
 ## Before you begin
 
-This tutorial requires an Azure IoT Edge device to be set up upfront. You can use the [Deploy your first IoT Edge module to a virtual Linux device](../iot-edge/quickstart-linux.md) quickstart guide to learn how to deploy a virtual IoT Edge device. The connected registry is deployed as a module on the IoT Edge device. 
+This tutorial requires an Azure IoT Edge device to be set up upfront. You can use the [Deploy your first IoT Edge module to a virtual Linux device](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/quickstart-linux.md) quickstart guide to learn how to deploy a virtual IoT Edge device. The connected registry is deployed as a module on the IoT Edge device. 
 
 To install the latest 1.2 version of iotedge agent, login to the IoT device, open `/etc/iotedge/config.yaml`, search the section for `edgeAgent`, update the image version to 1.2.0 as the following.
 
@@ -53,7 +53,7 @@ az acr import \
   --source mcr.microsoft.com/acr/connected-registry:0.2.0
 ```
 
-To learn more about nested IoT Edge scenarios, please visit [Tutorial: Create a hierarchy of IoT Edge devices (Preview)](../iot-edge/tutorial-nested-iot-edge.md).
+To learn more about nested IoT Edge scenarios, please visit [Tutorial: Create a hierarchy of IoT Edge devices](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/tutorial-nested-iot-edge.md).
 
 ## Create a client token for access to the cloud registry
 
@@ -140,7 +140,7 @@ You will need the information for the IoT Edge manifest below.
 
 ## Configure a deployment manifest for IoT Edge
 
-A deployment manifest is a JSON document that describes which modules to deploy to the IoT Edge device. For more information about how deployment manifests work and how to create them, see [Understand how IoT Edge modules can be used, configured, and reused](../iot-edge/module-composition.md).
+A deployment manifest is a JSON document that describes which modules to deploy to the IoT Edge device. For more information about how deployment manifests work and how to create them, see [Understand how IoT Edge modules can be used, configured, and reused](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/module-composition.md).
 
 To deploy the connected registry module using the Azure CLI, save the following deployment manifest locally as a `.json` file. 
 
@@ -238,7 +238,7 @@ az iot edge set-modules \
   --content [file path]
 ```
 
-For more details you can refer to the [Deploy Azure IoT Edge modules with Azure CLI](../iot-edge/how-to-deploy-modules-cli.md) article.
+For more details you can refer to the [Deploy Azure IoT Edge modules with Azure CLI](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/how-to-deploy-modules-cli.md) article.
 
 To check the status of the connected registry, use the following CLI command:
 
