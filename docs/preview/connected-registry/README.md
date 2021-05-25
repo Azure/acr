@@ -57,7 +57,7 @@ In limited preview, the connected registry targets IoT scenarios. Below are link
 - [Using connected registry with Azure IoT Edge](./overview-connected-registry-and-iot-edge.md)
 - [Quickstart: Create a connected registry using Azure Container Registry CLI commands](./quickstart-connected-registry-cli.md)
 - [Quickstart: Deploy a connected registry to an IoT Edge device](./quickstart-deploy-connected-registry-iot-edge-cli.md)
-- [Quickstart: Deploy a connected registry to an nested IoT Edge device](./quickstart-deploy-connected-quickstart-deploy-connected-registry-nested-iot-edge-cli.md)
+- [Quickstart: Deploy a connected registry to an nested IoT Edge device](./quickstart-deploy-connected-registry-nested-iot-edge-cli.md)
 - [Quickstart: Pull images from a connected registry](./quickstart-pull-images-from-connected-registry.md)
 
 ## Troubleshooting
