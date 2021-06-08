@@ -134,7 +134,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                     },
                     "edgeHub": {
                         "settings": {
-                            "image": "10.16.7.4/azureiotedge-hub:1.2",
+                            "image": "$upstream/azureiotedge-hub:1.2",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
                         },
                         "type": "docker",
@@ -174,51 +174,59 @@ Based on the tutorial, it overall includes the following steps:
 
 2. Use the iotedge-config tool to create and configure your hierarchy, follow the steps below in the Azure CLI:
 
-mkdir nestedIotEdgeTutorial
-cd ~/nestedIotEdgeTutorial
-wget -O iotedge_config.tar "https://github.com/Azure-Samples/iotedge_config_cli/releases/download/latest/iotedge_config_cli.tar.gz"
-tar -xvf iotedge_config.tar
+    ```json
+    mkdir nestedIotEdgeTutorial
+    cd ~/nestedIotEdgeTutorial
+    wget -O iotedge_config.tar "https://github.com/Azure-Samples/iotedge_config_cli/releases/download/latest/iotedge_config_cli.tar.gz"
+    tar -xvf iotedge_config.tar
+    ```
 
-This will create the iotedge_config_cli_release folder in your tutorial directory. The template file used to create your device hierarchy is the iotedge_config.yaml file found in ~/nestedIotEdgeTutorial/iotedge_config_cli_release/templates/tutorial. In the same directory, there're two deployment manifests for top and lower level deploymentTopLayer.json and deploymentLowerLayer.json files. Refer the #4 below on how to prepare them.
+    This will create the iotedge_config_cli_release folder in your tutorial directory. The template file used to create your device hierarchy is the iotedge_config.yaml file found in ~/nestedIotEdgeTutorial/iotedge_config_cli_release/templates/tutorial. In the same directory, there're two deployment manifests for top and lower level deploymentTopLayer.json and deploymentLowerLayer.json files. Refer the #4 below on how to prepare them.
 
 3. Edit iotedge_config.yaml with your information. This include the iothub_hostname, iot_name, deployment template file for both top layer and child. 
 
 4. Prepare the top level and lower level deployment files (deploymentTopLayer.json and deploymentLowerLayer.json). 
 
-The top level deployment file is the same as the one you used to set up a connected registry on a IoT Edge device. Refer [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md). 
+    The top level deployment file is the same as the one you used to set up a connected registry on a IoT Edge device. Refer [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md). 
 
-For the lower level deployment file, please refer the above section 'Configure a deployment manifest for the nested IoT Edge' about the difference to the top level deployment file. Overall, the lowever level deployment file is similar as the top level deployment file. The differences are: 
+    For the lower level deployment file, please refer the above section 'Configure a deployment manifest for the nested IoT Edge' about the difference to the top level deployment file. Overall, the lowever level deployment file is similar as the top level deployment file. The differences are: 
 
-- It need pull all the images required from top level connected registry instead of from cloud registry or MCR. 
-When you set up the top level connected registry, you need make sure it will sync up all the IoT agent, hub and connected registry images locally (azureiotedge-agent, azureiotedge-hub, connected-registry). The lower level IoT device need pull these images from the top level connected registry.
-- It need configure the parent gateway endpoint with the top level connected registry IP or FQDN instead of cloud registry. 
+    - It need pull all the images required from top level connected registry instead of from cloud registry or MCR. 
+    When you set up the top level connected registry, you need make sure it will sync up all the IoT agent, hub and connected registry images locally (azureiotedge-agent, azureiotedge-hub, connected-registry). The lower level IoT device need pull these images from the top level connected registry.
+    - It need configure the parent gateway endpoint with the top level connected registry IP or FQDN instead of cloud registry. 
 
 5. Install in the top and lower level devices.
-Navigate to your iotedge_config_cli_releae directory and run the tool to create your hierarchy of IoT Edge devices.
-cd ~/nestedIotEdgeTutorial/iotedge_config_cli_release
-./iotedge_config --config ~/nestedIotEdgeTutorial/iotedge_config_cli_release/templates/tutorial/iotedge_config.yaml --output ~/nestedIotEdgeTutorial/iotedge_config_cli_release/outputs -f
+    Navigate to your iotedge_config_cli_releae directory and run the tool to create your hierarchy of IoT Edge devices.
+    ```json
+    cd ~/nestedIotEdgeTutorial/iotedge_config_cli_release
+    ./iotedge_config --config ~/nestedIotEdgeTutorial/iotedge_config_cli_release/templates/tutorial/iotedge_config.yaml --output ~/nestedIotEdgeTutorial/iotedge_config_cli_release/outputs -f
+    ```
 
-With the --output flag, the toos creates the device certificates, certificate bundles, and a log file in a directory of your choice. With the -f flag set, the tool will automatically look for existing IoT Edge devices in your IoT Hub and remove them, to avoid errors and keep your hub clean.
+    With the --output flag, the toos creates the device certificates, certificate bundles, and a log file in a directory of your choice. With the -f flag set, the tool will automatically look for existing IoT Edge devices in your IoT Hub and remove them, to avoid errors and keep your hub clean.
 
-Copy the generated top-layer.zip and lower-layer.zip in above steps to the corresponding top and lower vms using scp
+    Copy the generated top-layer.zip and lower-layer.zip in above steps to the corresponding top and lower vms using scp
 
-scp <PATH_TO_CONFIGURATION_BUNDLE>   <USER>@<VM_IP_OR_FQDN>:~
+    ```json
+    scp <PATH_TO_CONFIGURATION_BUNDLE>   <USER>@<VM_IP_OR_FQDN>:~
+    ```
 
-Go to each device, unzip the configuration bundle. You'll need to install zip first.
-sudo apt install zip
-unzip ~/<PATH_TO_CONFIGURATION_BUNDLE>/<CONFIGURATION_BUNDLE>.zip (unzip top-layer.zip)
+    Go to each device, unzip the configuration bundle. You'll need to install zip first.
+    ```json
+    sudo apt install zip
+    unzip ~/<PATH_TO_CONFIGURATION_BUNDLE>/<CONFIGURATION_BUNDLE>.zip (unzip top-layer.zip)
+    ···
+    
+    For lower level device, update config.toml. The lower device need pull the IoT edge images from top level connected registry and you need provide the token info in the config file. After you unzip the installation files and before run ./install.sh on the lower device, open the config.toml file, and add the following section to pass the client token info. Please refer [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md) if you are not familar how to create a client token. And you also make sure the client token get the permissions to pull all the required images.
 
-For lower level device, update config.toml. The lower device need pull the IoT edge images from top level connected registry and you need provide the token info in the config file. After you unzip the installation files and before run ./install.sh on the lower device, open the config.toml file, and add the following section to pass the client token info. Please refer [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md) if you are not familar how to create a client token. And you also make sure the client token get the permissions to pull all the required images.
+    ```json
+    [agent.config.auth]
+    serveraddress = "$upstream:8000"
+    username = "huangliconnectedregistryeuap15-client-token"
+    password = "COkPGJ84ZnClqytxmNSKaP=8ocMEESli"
+    ```
 
-```json
-[agent.config.auth]
-serveraddress = "$upstream:8000"
-username = "huangliconnectedregistryeuap15-client-token"
-password = "COkPGJ84ZnClqytxmNSKaP=8ocMEESli"
-```
-
-Run ./install.sh, input the ip and host name and parent hostname. 
-All are done for upper and lower layer deployment. Double check if all modules are running well on both devices. If there're any problems e.g. invalid deployment manifest during the deployment. Refer the next session on how to make a deployment manually on top or lower device.
+    Run ./install.sh, input the ip and host name and parent hostname. 
+    All are done for upper and lower layer deployment. Double check if all modules are running well on both devices. If there're any problems e.g. invalid deployment manifest during the deployment. Refer the next session on how to make a deployment manually on top or lower device.
 
 ## Manully Deploy the connected registry module on IoT Edge
 
