@@ -204,7 +204,7 @@ Based on the tutorial, it overall includes the following steps:
 
     With the --output flag, the toos creates the device certificates, certificate bundles, and a log file in a directory of your choice. With the -f flag set, the tool will automatically look for existing IoT Edge devices in your IoT Hub and remove them, to avoid errors and keep your hub clean.
 
-    Copy the generated top-layer.zip and lower-layer.zip in above steps to the corresponding top and lower vms using scp
+    Copy the generated top-layer.zip and lower-layer.zip in above steps to the corresponding top and lower vms using scp。
 
     ```json
     scp <PATH_TO_CONFIGURATION_BUNDLE>   <USER>@<VM_IP_OR_FQDN>:~
@@ -214,8 +214,8 @@ Based on the tutorial, it overall includes the following steps:
     ```json
     sudo apt install zip
     unzip ~/<PATH_TO_CONFIGURATION_BUNDLE>/<CONFIGURATION_BUNDLE>.zip (unzip top-layer.zip)
-    ···
-    
+    ```
+
     For lower level device, update config.toml. The lower device need pull the IoT edge images from top level connected registry and you need provide the token info in the config file. After you unzip the installation files and before run ./install.sh on the lower device, open the config.toml file, and add the following section to pass the client token info. Please refer [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md) if you are not familar how to create a client token. And you also make sure the client token get the permissions to pull all the required images.
 
     ```json
