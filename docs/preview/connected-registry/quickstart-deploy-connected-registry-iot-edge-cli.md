@@ -50,7 +50,7 @@ To support nested IoT Edge scenarios, the container image for the connected regi
 ```azurecli
 az acr import \
   --name mycontainerregistry001 \
-  --source mcr.microsoft.com/acr/connected-registry:0.2.0
+  --source mcr.microsoft.com/acr/connected-registry:0.3.0
 ```
 
 To learn more about nested IoT Edge scenarios, please visit [Tutorial: Create a hierarchy of IoT Edge devices](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/tutorial-nested-iot-edge.md).
@@ -156,7 +156,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                 "modules": {
                     "connected-registry": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/acr/connected-registry:0.2.0",
+                            "image": "mycontainerregistry001.azurecr.io/acr/connected-registry:0.3.0",
                             "createOptions": "{\"HostConfig\":{\"Binds\":[\"/home/azureuser/connected-registry:/var/acr/data\"],\"PortBindings\":{\"8080/tcp\":[{\"HostPort\":\"8080\"}]}}}"
                         },
                         "type": "docker",
