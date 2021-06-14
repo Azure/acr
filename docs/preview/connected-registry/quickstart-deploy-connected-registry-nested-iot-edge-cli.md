@@ -8,6 +8,8 @@ author: toddysm
 ms.custom:
 ---
 
+[[_TOC_]]
+
 # Quickstart: Deploy a connected registry to a nested IoT Edge device
 
 In this quickstart, you use [Azure Container Registry][container-registry-intro] commands to deploy a connected registry to a nested Azure IoT Edge device. You can review the [ACR connected registry introduction](intro-connected-registry.md) for details about the connected registry feature of Azure Container Registry.
@@ -183,7 +185,47 @@ Based on the tutorial, it overall includes the following steps:
 
     This will create the iotedge_config_cli_release folder in your tutorial directory. The template file used to create your device hierarchy is the iotedge_config.yaml file found in ~/nestedIotEdgeTutorial/iotedge_config_cli_release/templates/tutorial. In the same directory, there're two deployment manifests for top and lower level deploymentTopLayer.json and deploymentLowerLayer.json files. Refer the #4 below on how to prepare them.
 
-3. Edit iotedge_config.yaml with your information. This include the iothub_hostname, iot_name, deployment template file for both top layer and child. 
+3. Edit iotedge_config.yaml with your information. This include the iothub_hostname, iot_name, deployment template file for both top layer and child as well as the credentials used to pull the image from upstream. Please refer [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md) if you are not familar how to create a client token. And you also make sure the client token get the permissions to pull all the required images. Below is a sample config.
+
+    ```json
+    config_version: "1.0"
+
+    iothub:
+    iothub_hostname: myiothub.azure-devices.net
+    iothub_name: myiothub
+    ## Authentication method used by IoT Edge devices: symmetric_key or x509_certificate
+    authentication_method: symmetric_key 
+
+    ## Root certificate used to generate device CA certificates. Optional. If not provided a self-signed CA will be generated
+    # certificates:
+    #   root_ca_cert_path: ""
+    #   root_ca_cert_key_path: ""
+
+    ## IoT Edge configuration template to use
+    configuration:
+    template_config_path: "./templates/tutorial/device_config.toml"
+    default_edge_agent: "$upstream:8000/azureiotedge-agent:1.2"
+
+    ## Hierarchy of IoT Edge devices to create
+    edgedevices:
+    device_id: top-layerx
+    edge_agent: "mycontainerregistry001.azurecr.io/azureiotedge-agent:1.2" ## Optional. If not provided, default_edge_agent will be used
+    deployment: "./templates/tutorial/deploymentTopLayer.json" ## Optional. If provided, the given deployment file will be applied to the newly created device
+    # hostname: "FQDN or IP" ## Optional. If provided, install.sh will not prompt user for this value nor the parent_hostname value
+    container_auth: // The token used to pull the image from cloud registry
+        serveraddress: "mycontainerregistry001.azurecr.io"
+        username: "crimagepulltokentop"
+        password: "HwBU+ZhB+X9AOmeAq6ZG2G/y2QD=8sfT"
+    child:
+        - device_id: lower-layerx
+        deployment: "./templates/tutorial/deploymentLowerLayer.json" ## Optional. If provided, the given deployment file will be applied to the newly created device
+        # hostname: "FQDN or IP" ## Optional. If provided, install.sh will not prompt user for this value nor the parent_hostname value
+        container_auth: //The token used to pull the image from parent connected registry
+            serveraddress: "$upstream:8000"
+            username: "crimagepulltokenlower"
+            password: "$$$0meCoMPL3xP4$$W0rd001!@#$$"
+    ```
+
 
 4. Prepare the top level and lower level deployment files (deploymentTopLayer.json and deploymentLowerLayer.json). 
 
@@ -216,30 +258,9 @@ Based on the tutorial, it overall includes the following steps:
     unzip ~/<PATH_TO_CONFIGURATION_BUNDLE>/<CONFIGURATION_BUNDLE>.zip (unzip top-layer.zip)
     ```
 
-    Update config.toml in top level device as the following. After you unzip the installation files and before run ./install.sh on the top level device, open the config.toml file, update the image url and add the client token info (this is only required if the url is for a private repo). Please refer [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md) if you are not familar how to create a client token. And you also make sure the client token get the permissions to pull all the required images.
+    Unzip the installation files and run ./install.sh, input the ip and host name. All are done for top layer device deployment. Run iotedge list to double check if all modules are running well.
 
-    ```json
-    [agent.config]
-    image = "mycontainerregistry001.azurecr.io/azureiotedge-agent:1.2"
-
-    [agent.config.auth]
-    serveraddress = "mycontainerregistry001.azurecr.io"
-    username = "huangliconnectedregistryeuap15-client-token"
-    password = "COkPGJ84ZnClqytxmNSKaP=8ocMEESli"
-    ```
-
-    Run ./install.sh, input the ip and host name. All are done for top layer device deployment. Run iotedge list to double check if all modules are running well.
-
-    Update config.toml in lower level device as the following. The lower device need pull the IoT edge images from top level connected registry and it is required to provide the token info in the config file. After you unzip the installation files and before run ./install.sh on the lower device, open the config.toml file, and add the following section to pass the client token info. And you also make sure the client token get the permissions to pull all the required images.
-
-    ```json
-    [agent.config.auth]
-    serveraddress = "$upstream:8000"
-    username = "huangliconnectedregistryeuap15-client-token"
-    password = "COkPGJ84ZnClqytxmNSKaP=8ocMEESli"
-    ```
-
-    Run ./install.sh, input the ip and host name and parent hostname. 
+    Repeat the same steps in lower level device. Unzip files and run ./install.sh. Input the ip, host name and parent hostname. 
     All are done for lower layer deployment. Run iotedge list to double check if all modules are running well. 
     
     If there're any problems e.g. invalid deployment manifest. You need manually redeploy the modules. Refer the next session on how to make a deployment manually on top or lower device.
