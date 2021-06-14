@@ -8,8 +8,6 @@ author: toddysm
 ms.custom:
 ---
 
-[[_TOC_]]
-
 # Quickstart: Deploy a connected registry to a nested IoT Edge device
 
 In this quickstart, you use [Azure Container Registry][container-registry-intro] commands to deploy a connected registry to a nested Azure IoT Edge device. You can review the [ACR connected registry introduction](intro-connected-registry.md) for details about the connected registry feature of Azure Container Registry.
