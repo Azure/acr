@@ -81,7 +81,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                     },
                     "IoTEdgeApiProxy": {
                         "settings": {
-                            "image": "$upstream/azureiotedge-api-proxy:latest",
+                            "image": "$upstream/acr/microsoft/azureiotedge-api-proxy:9.9.9-dev",
                             "createOptions": "{\"HostConfig\": {\"PortBindings\": {\"443/tcp\": [{\"HostPort\": \"443\"}]}}}"
                         },
                         "type": "docker",
@@ -122,7 +122,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                 "systemModules": {
                     "edgeAgent": {
                         "settings": {
-                            "image": "$upstream/azureiotedge-agent:1.2",
+                            "image": "$upstream/acr/microsoft/azureiotedge-agent:20210609.5",
                             "createOptions": ""
                         },
                         "type": "docker",
@@ -134,7 +134,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                     },
                     "edgeHub": {
                         "settings": {
-                            "image": "$upstream/azureiotedge-hub:1.2",
+                            "image": "$upstream/acr/microsoft/azureiotedge-hub:20210609.5",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
                         },
                         "type": "docker",
@@ -202,12 +202,12 @@ Based on the tutorial, it overall includes the following steps:
     ## IoT Edge configuration template to use
     configuration:
     template_config_path: "./templates/tutorial/device_config.toml"
-    default_edge_agent: "$upstream:8000/azureiotedge-agent:1.2"
+    default_edge_agent: "$upstream:8000/acr/microsoft/azureiotedge-agent:20210609.5"
 
     ## Hierarchy of IoT Edge devices to create
     edgedevices:
     device_id: top-layerx
-    edge_agent: "mycontainerregistry001.azurecr.io/azureiotedge-agent:1.2" ## Optional. If not provided, default_edge_agent will be used
+    edge_agent: "mycontainerregistry001.azurecr.io/acr/microsoft/azureiotedge-agent:20210609.5" ## Optional. If not provided, default_edge_agent will be used
     deployment: "./templates/tutorial/deploymentTopLayer.json" ## Optional. If provided, the given deployment file will be applied to the newly created device
     # hostname: "FQDN or IP" ## Optional. If provided, install.sh will not prompt user for this value nor the parent_hostname value
     container_auth: // The token used to pull the image from cloud registry

@@ -27,20 +27,6 @@ In this quickstart, you use [Azure Container Registry][container-registry-intro]
 
 This tutorial requires an Azure IoT Edge device to be set up upfront. You can use the [Deploy your first IoT Edge module to a virtual Linux device](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/quickstart-linux.md) quickstart guide to learn how to deploy a virtual IoT Edge device. The connected registry is deployed as a module on the IoT Edge device. 
 
-To install the latest 1.2 version of iotedge agent, login to the IoT device, open `/etc/iotedge/config.yaml`, search the section for `edgeAgent`, update the image version to 1.2.0 as the following.
-
-```
-agent:
-  name: "edgeAgent"
-  type: "docker"
-  env: {}
-  config:
-    image: "mcr.microsoft.com/azureiotedge-agent:1.2"
-    auth: {}
-```
-
-Save the config and restart the module using command `sudo systemctl restart iotedge`.
-
 Also, make sure that you have created the connected registry resource in Azure as described in the [Create connected registry using the CLI][quickstart-connected-registry-cli] quickstart guide. Both, `registry` and `mirror` modes will work for this scenario.
 
 ## Import the connected registry image to your registry
@@ -57,7 +43,13 @@ To learn more about nested IoT Edge scenarios, please visit [Tutorial: Create a 
 
 ## Import the IotEdge and API Proxy images into your registry
 
-Import the images azureiotedge-api-proxy, azureiotedge-agent, azureiotedge-hub from mcr into your private registry using the same command as above. For security purpose, for top level device, you can pull those images from MCR but it is recommended to import those images into your private registry so your deployment can pull the images from your own repo.
+Import the images azureiotedge-api-proxy, azureiotedge-agent, azureiotedge-hub to your private registry using the same command as above. 
+
+You can import those images from MCR. But if you'll create nested connected registry, you need import the images from the following locations. The following images will be referenced in the sample manifest below.
+
+acronpremiot.azurecr.io/acr/microsoft/azureiotedge-agent:20210609.5
+acronpremiot.azurecr.io/acr/microsoft/azureiotedge-hub:20210609.5
+acronpremiot.azurecr.io/acr/microsoft/azureiotedge-api-proxy:9.9.9-dev
 
 ## Create a client token for access to the cloud registry
 
@@ -171,7 +163,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                     },
                     "IoTEdgeAPIProxy": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-api-proxy:1.0",
+                            "image": "mycontainerregistry001.azurecr.io/acr/microsoft/azureiotedge-api-proxy:9.9.9-dev",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"8000/tcp\":[{\"HostPort\":\"8000\"}]}}}"
                         },
                         "type": "docker",
@@ -208,7 +200,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                 "systemModules": {
                     "edgeAgent": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-agent:1.2",
+                            "image": "mycontainerregistry001.azurecr.io/acr/microsoft/azureiotedge-agent:20210609.5",
                             "createOptions": ""
                         },
                         "type": "docker",
@@ -220,7 +212,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                     },
                     "edgeHub": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-hub:1.2",
+                            "image": "mycontainerregistry001.azurecr.io/acr/microsoft/azureiotedge-hub:20210609.5",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
                         },
                         "type": "docker",
