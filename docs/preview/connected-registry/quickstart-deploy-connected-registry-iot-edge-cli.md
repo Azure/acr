@@ -43,14 +43,23 @@ To learn more about nested IoT Edge scenarios, please visit [Tutorial: Create a 
 
 ## Import the IotEdge and API Proxy images into your registry
 
-Import the images azureiotedge-api-proxy, azureiotedge-agent, azureiotedge-hub to your private registry using the same command as above. 
+To support the connected registry on nested IoT Edge, you need import and set up the IoT and API proxy using the private images from acronpremiot registry.  
 
-You can import those images from MCR. But if you'll create nested connected registry, you need import the images from the following locations. The following images will be referenced in the sample manifest below.
+Notes: You can import those images from MCR if you don't need create nested connected registry. 
 
-acronpremiot.azurecr.io/acr/microsoft/azureiotedge-agent:20210609.5
-acronpremiot.azurecr.io/acr/microsoft/azureiotedge-hub:20210609.5
-acronpremiot.azurecr.io/acr/microsoft/azureiotedge-api-proxy:9.9.9-dev
+```azurecli
+az acr import \
+  --name mycontainerregistry001 \
+  --source acronpremiot.azurecr.io/acr/microsoft/azureiotedge-agent:20210609.5 -t azureiotedge-agent:20210609.5
 
+az acr import \
+  --name mycontainerregistry001 \
+  --source acronpremiot.azurecr.io/acr/microsoft/azureiotedge-hub:20210609.5 -t azureiotedge-hub:20210609.5
+
+az acr import \
+  --name mycontainerregistry001 \
+  --source acronpremiot.azurecr.io/acr/microsoft/azureiotedge-api-proxy:9.9.9-dev -t azureiotedge-api-proxy:9.9.9-dev
+```
 ## Create a client token for access to the cloud registry
 
 The IoT Edge runtime will need to authenticate with the cloud registry to pull the images and deploy it. First, use the following command to create a scope map for the iotedge, api proxy and connected registry image repository:
@@ -163,7 +172,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                     },
                     "IoTEdgeAPIProxy": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/acr/microsoft/azureiotedge-api-proxy:9.9.9-dev",
+                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-api-proxy:9.9.9-dev",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"8000/tcp\":[{\"HostPort\":\"8000\"}]}}}"
                         },
                         "type": "docker",
@@ -200,7 +209,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                 "systemModules": {
                     "edgeAgent": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/acr/microsoft/azureiotedge-agent:20210609.5",
+                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-agent:20210609.5",
                             "createOptions": ""
                         },
                         "type": "docker",
@@ -212,7 +221,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                     },
                     "edgeHub": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/acr/microsoft/azureiotedge-hub:20210609.5",
+                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-hub:20210609.5",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
                         },
                         "type": "docker",
