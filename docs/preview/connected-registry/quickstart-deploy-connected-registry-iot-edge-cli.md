@@ -27,20 +27,6 @@ In this quickstart, you use [Azure Container Registry][container-registry-intro]
 
 This tutorial requires an Azure IoT Edge device to be set up upfront. You can use the [Deploy your first IoT Edge module to a virtual Linux device](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/quickstart-linux.md) quickstart guide to learn how to deploy a virtual IoT Edge device. The connected registry is deployed as a module on the IoT Edge device. 
 
-To install the latest 1.2 version of iotedge agent, login to the IoT device, open `/etc/iotedge/config.yaml`, search the section for `edgeAgent`, update the image version to 1.2.0 as the following.
-
-```
-agent:
-  name: "edgeAgent"
-  type: "docker"
-  env: {}
-  config:
-    image: "mcr.microsoft.com/azureiotedge-agent:1.2"
-    auth: {}
-```
-
-Save the config and restart the module using command `sudo systemctl restart iotedge`.
-
 Also, make sure that you have created the connected registry resource in Azure as described in the [Create connected registry using the CLI][quickstart-connected-registry-cli] quickstart guide. Both, `registry` and `mirror` modes will work for this scenario.
 
 ## Import the connected registry image to your registry
@@ -50,21 +36,40 @@ To support nested IoT Edge scenarios, the container image for the connected regi
 ```azurecli
 az acr import \
   --name mycontainerregistry001 \
-  --source mcr.microsoft.com/acr/connected-registry:0.2.0
+  --source mcr.microsoft.com/acr/connected-registry:0.3.0
 ```
 
 To learn more about nested IoT Edge scenarios, please visit [Tutorial: Create a hierarchy of IoT Edge devices](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/tutorial-nested-iot-edge.md).
 
+## Import the IotEdge and API Proxy images into your registry
+
+To support the connected registry on nested IoT Edge, you need import and set up the IoT and API proxy using the private images from acronpremiot registry.  
+
+Notes: You can import those images from MCR if you don't need create nested connected registry. 
+
+```azurecli
+az acr import \
+  --name mycontainerregistry001 \
+  --source acronpremiot.azurecr.io/acr/microsoft/azureiotedge-agent:20210609.5 -t azureiotedge-agent:20210609.5
+
+az acr import \
+  --name mycontainerregistry001 \
+  --source acronpremiot.azurecr.io/acr/microsoft/azureiotedge-hub:20210609.5 -t azureiotedge-hub:20210609.5
+
+az acr import \
+  --name mycontainerregistry001 \
+  --source acronpremiot.azurecr.io/acr/microsoft/azureiotedge-api-proxy:9.9.9-dev -t azureiotedge-api-proxy:9.9.9-dev
+```
 ## Create a client token for access to the cloud registry
 
-The IoT Edge runtime will need to authenticate with the cloud registry to pull the connected registry image and deploy it. First, use the following command to create a scope map for the connected registry image repository:
+The IoT Edge runtime will need to authenticate with the cloud registry to pull the images and deploy it. First, use the following command to create a scope map for the iotedge, api proxy and connected registry image repository:
 
 ```azurecli
 az acr scope-map create \
   --description "Connected registry repo pull scope map." \
   --name conected-registry-pull \
   --registry mycontainerregistry001 \
-  --repository "acr/connected-registry" content/read
+  --repository "acr/connected-registry" "azureiotedge-api-proxy" "azureiotedge-agent" "azureiotedge-hub" content/read
 ```
 
 Next, use the following command to create a client token for the IoT Edge device and associate it to the scope map:
@@ -142,7 +147,7 @@ You will need the information for the IoT Edge manifest below.
 
 A deployment manifest is a JSON document that describes which modules to deploy to the IoT Edge device. For more information about how deployment manifests work and how to create them, see [Understand how IoT Edge modules can be used, configured, and reused](https://github.com/MicrosoftDocs/azure-docs/blob/master/articles/iot-edge/module-composition.md).
 
-To deploy the connected registry module using the Azure CLI, save the following deployment manifest locally as a `.json` file. 
+To deploy the connected registry and api proxy module using the Azure CLI, save the following deployment manifest locally as a `.json` file. 
 
 ```json
 {
@@ -152,13 +157,34 @@ To deploy the connected registry module using the Azure CLI, save the following 
                 "modules": {
                     "connected-registry": {
                         "settings": {
-                            "image": "mycontainerregistry001.azurecr.io/acr/connected-registry:0.2.0",
+                            "image": "mycontainerregistry001.azurecr.io/acr/connected-registry:0.3.0",
                             "createOptions": "{\"HostConfig\":{\"Binds\":[\"/home/azureuser/connected-registry:/var/acr/data\"],\"PortBindings\":{\"8080/tcp\":[{\"HostPort\":\"8080\"}]}}}"
                         },
                         "type": "docker",
                         "env": {
                             "ACR_REGISTRY_CONNECTION_STRING": {
                                 "value": "ConnectedRegistryName=myconnectedregistry;SyncTokenName=myconnectedregistry-sync-token;SyncTokenPassword=s0meCoMPL3xP4$$W0rd001!@#;ParentGatewayEndpoint=mycontainerregistry001.westus2.data.azurecr.io;ParentEndpointProtocol=https"
+                            }
+                        },
+                        "status": "running",
+                        "restartPolicy": "always",
+                        "version": "1.0"
+                    },
+                    "IoTEdgeAPIProxy": {
+                        "settings": {
+                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-api-proxy:9.9.9-dev",
+                            "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"8000/tcp\":[{\"HostPort\":\"8000\"}]}}}"
+                        },
+                        "type": "docker",
+                        "env": {
+                            "NGINX_DEFAULT_PORT": {
+                                "value": "8000"
+                            },
+                            "CONNECTED_ACR_ROUTE_ADDRESS": {
+                                "value": "connected-registry:8080"
+                            },
+                            "BLOB_UPLOAD_ROUTE_ADDRESS": {
+                                "value": "AzureBlobStorageonIoTEdge:11002"
                             }
                         },
                         "status": "running",
@@ -183,7 +209,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                 "systemModules": {
                     "edgeAgent": {
                         "settings": {
-                            "image": "mcr.microsoft.com/azureiotedge-agent:1.2",
+                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-agent:20210609.5",
                             "createOptions": ""
                         },
                         "type": "docker",
@@ -195,7 +221,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                     },
                     "edgeHub": {
                         "settings": {
-                            "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
+                            "image": "mycontainerregistry001.azurecr.io/azureiotedge-hub:20210609.5",
                             "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
                         },
                         "type": "docker",
@@ -227,9 +253,9 @@ Use the information from the previous sections to update the relevant JSON value
 
 You will use the file path in the next section when you run the command to apply the configuration to your device.
 
-## Deploy the connected registry module on IoT Edge
+## Deploy the connected registry and api proxy modules on IoT Edge
 
-Use the following command to deploy the connected registry module on the IoT Edge device:
+Use the following command to deploy the connected registry and api proxy modules on the IoT Edge device:
 
 ```azurecli
 az iot edge set-modules \
@@ -249,129 +275,9 @@ az acr connected-registry show \
   --output table
 ```
 
-You may need to a wait few minutes until the deployment of the connected registry completes.
+You may need to a wait few minutes until the deployment of the connected registry and api proxy complete.
 
-## Deploy the api proxy module on IoT Edge
-
-Add api proxy module from Azure Marketplace `IoT Edge API Proxy` as described in the [https://docs.microsoft.com/en-us/azure/iot-edge/how-to-configure-api-proxy-module?view=iotedge-2020-11]
-
-Remove the existing env DOCKER_REQUEST_ROUTE_ADDRESS.
-
-Add the following two environment variables:
-
-```
-"CONNECTED_ACR_ROUTE_ADDRESS": {
-      "value": "connected-registry:8080"
-},
-"NGINX_CONFIG_ENV_VAR_LIST": {
-        "value": "NGINX_DEFAULT_PORT,BLOB_UPLOAD_ROUTE_ADDRESS,CONNECTED_ACR_ROUTE_ADDRESS,IOTEDGE_PARENTHOSTNAME"
-}
-```
-
-Update the proxy config for the connected registry following the steps:
-- Click into the api proxy module from the portal.
-- Click `Module Identity Twin`
-- Add `proxy_config` in the desired propeties as the following.
-
-```
-"desired": {
-            "proxy_config": "ZXZlbnRzIHsgfQoKCmh0dHAgewogICAgcHJveHlfYnVmZmVycyAzMiAxNjBrOwogICAgcHJveHlfYnVmZmVyX3NpemUgMTYwazsKICAgIHByb3h5X3JlYWRfdGltZW91dCAzNjAwOwogICAgZXJyb3JfbG9nIC9kZXYvc3Rkb3V0IGluZm87CiAgICBhY2Nlc3NfbG9nIC9kZXYvc3Rkb3V0OwoKICAgIHNlcnZlciB7CiAgICAgICAgbGlzdGVuICR7TkdJTlhfREVGQVVMVF9QT1JUfSBzc2wgZGVmYXVsdF9zZXJ2ZXI7CgogICAgICAgIGNodW5rZWRfdHJhbnNmZXJfZW5jb2Rpbmcgb247CgogICAgICAgIHNzbF9jZXJ0aWZpY2F0ZSAgICAgICAgc2VydmVyLmNydDsKICAgICAgICBzc2xfY2VydGlmaWNhdGVfa2V5ICAgIHByaXZhdGVfa2V5X3NlcnZlci5wZW07CiAgICAgICAgc3NsX2NsaWVudF9jZXJ0aWZpY2F0ZSB0cnVzdGVkQ0EuY3J0OwogICAgICAgICNzc2xfdmVyaWZ5X2RlcHRoIDc7CiAgICAgICAgc3NsX3ZlcmlmeV9jbGllbnQgb3B0aW9uYWxfbm9fY2E7CgogICAgICAgICNpZl90YWcgJHtCTE9CX1VQTE9BRF9ST1VURV9BRERSRVNTfQogICAgICAgIGlmICgkaHR0cF94X21zX3ZlcnNpb24pCiAgICAgICAgewogICAgICAgICAgICByZXdyaXRlIF4oLiopJCAvc3RvcmFnZSQxIGxhc3Q7CiAgICAgICAgfQogICAgICAgICNlbmRpZl90YWcgJHtCTE9CX1VQTE9BRF9ST1VURV9BRERSRVNTfQogICAgICAgICNpZl90YWcgISR7QkxPQl9VUExPQURfUk9VVEVfQUREUkVTU30KICAgICAgICBpZiAoJGh0dHBfeF9tc192ZXJzaW9uKQogICAgICAgIHsKICAgICAgICAgICAgcmV3cml0ZSBeKC4qKSQgL3BhcmVudCQxIGxhc3Q7CiAgICAgICAgfQogICAgICAgICNlbmRpZl90YWcgJHtCTE9CX1VQTE9BRF9ST1VURV9BRERSRVNTfQoKICAgICAgICAjaWZfdGFnICR7QkxPQl9VUExPQURfUk9VVEVfQUREUkVTU30KICAgICAgICBsb2NhdGlvbiB+Xi9zdG9yYWdlLyguKil7CiAgICAgICAgICAgIHJlc29sdmVyIDEyNy4wLjAuMTE7CiAgICAgICAgICAgIHByb3h5X2h0dHBfdmVyc2lvbiAxLjE7CiAgICAgICAgICAgIHByb3h5X3Bhc3MgICAgICAgICAgaHR0cDovLyR7QkxPQl9VUExPQURfUk9VVEVfQUREUkVTU30vJDEkaXNfYXJncyRhcmdzOwogICAgICAgIH0KICAgICAgICAjZW5kaWZfdGFnICR7QkxPQl9VUExPQURfUk9VVEVfQUREUkVTU30KCiAgICAgICAgI2lmX3RhZyAke0NPTk5FQ1RFRF9BQ1JfUk9VVEVfQUREUkVTU30KICAgICAgICBsb2NhdGlvbiAvdjIgewogICAgICAgICAgICBjbGllbnRfbWF4X2JvZHlfc2l6ZSAxMDAwRzsKICAgICAgICAgICAgcmVzb2x2ZXIgMTI3LjAuMC4xMTsKICAgICAgICAgICAgcHJveHlfaHR0cF92ZXJzaW9uIDEuMTsKICAgICAgICAgICAgcHJveHlfcGFzcyAgICAgICAgIGh0dHA6Ly8ke0NPTk5FQ1RFRF9BQ1JfUk9VVEVfQUREUkVTU307CiAgICAgICAgICAgIHByb3h5X3NldF9oZWFkZXIgICBYLUZvcndhcmRlZC1Ib3N0ICRodHRwX2hvc3Q7CiAgICAgICAgICAgIHByb3h5X3NldF9oZWFkZXIgICBYLUZvcndhcmRlZC1Qcm90byAkc2NoZW1lOwogICAgICAgIH0KCiAgICAgICAgbG9jYXRpb24gL2FjciB7CiAgICAgICAgICAgIGNsaWVudF9tYXhfYm9keV9zaXplIDEwTTsKICAgICAgICAgICAgcmVzb2x2ZXIgMTI3LjAuMC4xMTsKICAgICAgICAgICAgcHJveHlfaHR0cF92ZXJzaW9uIDEuMTsKICAgICAgICAgICAgcHJveHlfcGFzcyAgICAgICAgIGh0dHA6Ly8ke0NPTk5FQ1RFRF9BQ1JfUk9VVEVfQUREUkVTU307CiAgICAgICAgICAgIHByb3h5X3NldF9oZWFkZXIgICBYLUZvcndhcmRlZC1Ib3N0ICRodHRwX2hvc3Q7CiAgICAgICAgICAgIHByb3h5X3NldF9oZWFkZXIgICBYLUZvcndhcmRlZC1Qcm90byAkc2NoZW1lOwogICAgICAgIH0KICAgICAgICAjZW5kaWZfdGFnICR7Q09OTkVDVEVEX0FDUl9ST1VURV9BRERSRVNTfQoKICAgICAgICAjaWZfdGFnICR7SU9URURHRV9QQVJFTlRIT1NUTkFNRX0KICAgICAgICBsb2NhdGlvbiB+Xi9wYXJlbnQvKC4qKSB7CiAgICAgICAgICAgIHByb3h5X2h0dHBfdmVyc2lvbiAxLjE7CiAgICAgICAgICAgIHJlc29sdmVyIDEyNy4wLjAuMTE7CiAgICAgICAgICAgICNwcm94eV9zc2xfY2VydGlmaWNhdGUgICAgIGlkZW50aXR5LmNydDsKICAgICAgICAgICAgI3Byb3h5X3NzbF9jZXJ0aWZpY2F0ZV9rZXkgcHJpdmF0ZV9rZXlfaWRlbnRpdHkucGVtOwogICAgICAgICAgICBwcm94eV9zc2xfdHJ1c3RlZF9jZXJ0aWZpY2F0ZSB0cnVzdGVkQ0EuY3J0OwogICAgICAgICAgICBwcm94eV9zc2xfdmVyaWZ5X2RlcHRoIDc7CiAgICAgICAgICAgIHByb3h5X3NzbF92ZXJpZnkgICAgICAgb247CiAgICAgICAgICAgIHByb3h5X3Bhc3MgICAgICAgICAgaHR0cHM6Ly8ke0lPVEVER0VfUEFSRU5USE9TVE5BTUV9OiR7TkdJTlhfREVGQVVMVF9QT1JUfS8kMSRpc19hcmdzJGFyZ3M7CiAgICAgICAgfQogICAgICAgICNlbmRpZl90YWcgJHtJT1RFREdFX1BBUkVOVEhPU1ROQU1FfQoKICAgICAgICBsb2NhdGlvbiB+Xi9kZXZpY2VzfHR3aW5zLyB7CiAgICAgICAgICAgIHByb3h5X2h0dHBfdmVyc2lvbiAgMS4xOwogICAgICAgICAgICBwcm94eV9zc2xfdmVyaWZ5ICAgIG9mZjsKICAgICAgICAgICAgcHJveHlfc2V0X2hlYWRlciAgICB4LW1zLWVkZ2UtY2xpZW50Y2VydCAgICAkc3NsX2NsaWVudF9lc2NhcGVkX2NlcnQ7CiAgICAgICAgICAgIHByb3h5X3Bhc3MgICAgICAgICAgaHR0cHM6Ly9lZGdlSHViOwogICAgICAgIH0KICAgIH0KfQ==",
-
-            "$metadata": {...}
-```
-The value of the proxy_config is the base64 encoded string of the following nginx config.
-
-``` nginx
-events { }
-
-
-http {
-    proxy_buffers 32 160k;
-    proxy_buffer_size 160k;
-    proxy_read_timeout 3600;
-    error_log /dev/stdout info;
-    access_log /dev/stdout;
-
-    server {
-        listen ${NGINX_DEFAULT_PORT} ssl default_server;
-
-        chunked_transfer_encoding on;
-
-        ssl_certificate        server.crt;
-        ssl_certificate_key    private_key_server.pem;
-        ssl_client_certificate trustedCA.crt;
-        #ssl_verify_depth 7;
-        ssl_verify_client optional_no_ca;
-
-        #if_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
-        if ($http_x_ms_version)
-        {
-            rewrite ^(.*)$ /storage$1 last;
-        }
-        #endif_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
-        #if_tag !${BLOB_UPLOAD_ROUTE_ADDRESS}
-        if ($http_x_ms_version)
-        {
-            rewrite ^(.*)$ /parent$1 last;
-        }
-        #endif_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
-
-        #if_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
-        location ~^/storage/(.*){
-            resolver 127.0.0.11;
-            proxy_http_version 1.1;
-            proxy_pass          http://${BLOB_UPLOAD_ROUTE_ADDRESS}/$1$is_args$args;
-        }
-        #endif_tag ${BLOB_UPLOAD_ROUTE_ADDRESS}
-
-        #if_tag ${CONNECTED_ACR_ROUTE_ADDRESS}
-        location /v2 {
-            client_max_body_size 1000G;
-            resolver 127.0.0.11;
-            proxy_http_version 1.1;
-            proxy_pass         http://${CONNECTED_ACR_ROUTE_ADDRESS};
-            proxy_set_header   X-Forwarded-Host $http_host;
-            proxy_set_header   X-Forwarded-Proto $scheme;
-        }
-
-        location /acr {
-            client_max_body_size 10M;
-            resolver 127.0.0.11;
-            proxy_http_version 1.1;
-            proxy_pass         http://${CONNECTED_ACR_ROUTE_ADDRESS};
-            proxy_set_header   X-Forwarded-Host $http_host;
-            proxy_set_header   X-Forwarded-Proto $scheme;
-        }
-        #endif_tag ${CONNECTED_ACR_ROUTE_ADDRESS}
-
-        #if_tag ${IOTEDGE_PARENTHOSTNAME}
-        location ~^/parent/(.*) {
-            proxy_http_version 1.1;
-            resolver 127.0.0.11;
-            #proxy_ssl_certificate     identity.crt;
-            #proxy_ssl_certificate_key private_key_identity.pem;
-            proxy_ssl_trusted_certificate trustedCA.crt;
-            proxy_ssl_verify_depth 7;
-            proxy_ssl_verify       on;
-            proxy_pass          https://${IOTEDGE_PARENTHOSTNAME}:${NGINX_DEFAULT_PORT}/$1$is_args$args;
-        }
-        #endif_tag ${IOTEDGE_PARENTHOSTNAME}
-
-        location ~^/devices|twins/ {
-            proxy_http_version  1.1;
-            proxy_ssl_verify    off;
-            proxy_set_header    x-ms-edge-clientcert    $ssl_client_escaped_cert;
-            proxy_pass          https://edgeHub;
-        }
-    }
-}
-```
-
-- Click 'Save'
-
-Make sure you open the the ports `8000`, `5671`, `8883`.
-
-The api proxy will now listen on port 8000 configued as `NGINX_DEFAULT_PORT`.
+Make sure you open the the ports `8000`, `5671`, `8883`. The api proxy will listen on port 8000 configued as `NGINX_DEFAULT_PORT`.
 
 You can find more information about API Proxy in the [https://github.com/Azure/iotedge/tree/master/edge-modules/api-proxy-module]
 
