@@ -83,7 +83,7 @@ The outcome of this operation will be a response with status 200 OK and a body w
 {"access_token":"eyJ...xcg"}
 ```
 
-This response is the ACR access token which you can inspect with [jwt.io](https://jwt.io/). You can now use it to call APIs exposed by the Azure Container Registry.
+This response is the ACR access token which you can inspect with [jwt.ms](https://jwt.ms/). You can now use it to call APIs exposed by the Azure Container Registry.
 
 ### Calling an Azure Container Registry API
 
