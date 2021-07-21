@@ -175,7 +175,7 @@ The body of the POST message is a querystring-like text that specifies the follo
   - `grant_type`, which can take a value of `access_token`, or `access_token_refresh_token` [Deprecated], or `refresh_token` [Deprecated].
   - `service`, which must indicate the name of your Azure container registry.
   - `tenant`, which is the AAD tenant associated to the AAD credentials.
-  - `access_token`, the AAD access token, mandatory when `grant_type` is `access_token_refresh_token` or `access_token`.  
+  - `access_token`, the AAD access token, mandatory when `grant_type` is `access_token` or `access_token_refresh_token` [Deprecated].  
   - [Deprecated] `refresh_token`, the AAD refresh token, mandatory when `grant_type` is `access_token_refresh_token` or `refresh_token`.
 
 
