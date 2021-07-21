@@ -7,15 +7,22 @@ title: "AAD Integration"
 
 <!-- TOC depthFrom:2 orderedList:false -->
 
-- [Overview](#overview)
-- [Authenticating to a registry with Azure CLI](#authenticating-to-a-registry-with-azure-cli)
-- [Listing a repository with Azure CLI](#listing-a-repository-with-azure-cli)
-- [Calling `POST /oauth2/exchange` to get an ACR refresh token](#calling-post-oauth2exchange-to-get-an-acr-refresh-token)
-- [Authenticating docker with an ACR refresh token](#authenticating-docker-with-an-acr-refresh-token)
-- [Calling `POST /oauth2/token` to get an ACR access token](#calling-post-oauth2token-to-get-an-acr-access-token)
-- [Calling `POST /oauth2/token` to get an ACR access token for Helm repository](#calling-post-oauth2token-to-get-an-acr-access-token-for-helm-repository)
-- [Calling an Azure Container Registry API](#calling-an-azure-container-registry-api)
-- [Samples API Call scripts](#samples-api-call-scripts)
+- [Azure Container Registry integration with Azure Active Directory](#azure-container-registry-integration-with-azure-active-directory)
+  - [Overview](#overview)
+  - [Authenticating to a registry with Azure CLI](#authenticating-to-a-registry-with-azure-cli)
+  - [Listing a repository with Azure CLI](#listing-a-repository-with-azure-cli)
+- [Azure Container Registry token claim sets](#azure-container-registry-token-claim-sets)
+- [Getting credentials programmatically](#getting-credentials-programmatically)
+  - [Calling `POST /oauth2/exchange` to get an ACR refresh token](#calling-post-oauth2exchange-to-get-an-acr-refresh-token)
+  - [Authenticating docker with an ACR refresh token](#authenticating-docker-with-an-acr-refresh-token)
+  - [Calling `POST /oauth2/token` to get an ACR access token](#calling-post-oauth2token-to-get-an-acr-access-token)
+  - [Calling `POST /oauth2/token` to get an ACR access token for Helm repository](#calling-post-oauth2token-to-get-an-acr-access-token-for-helm-repository)
+  - [Calling an Azure Container Registry API](#calling-an-azure-container-registry-api)
+    - [Catalog Listing](#catalog-listing)
+      - [Pagination](#pagination)
+    - [Tag Listing](#tag-listing)
+      - [Pagination](#pagination-1)
+  - [Samples API Call scripts](#samples-api-call-scripts)
     - [Catalog Listing with AAD refresh token](#catalog-listing-with-aad-refresh-token)
     - [Catalog listing using SP/Admin with Basic Auth](#catalog-listing-using-spadmin-with-basic-auth)
     - [Catalog listing using Admin Keys with Bearer Auth](#catalog-listing-using-admin-keys-with-bearer-auth)
@@ -128,19 +135,21 @@ Followed by an access token at step 7 with the following claim set:
 }
 ```
 
-# Getting credentials programatically
+# Getting credentials programmatically
 
 In order to sign in to a container you'll need to exchange AAD credentials for ACR credentials. The accepted form of credential exchange are:
   - AAD access token.
-  - AAD refresh token.
-  - AAD access token and refresh token.
+  - [Deprecated] AAD refresh token.
+  - [Deprecated] AAD access token and refresh token.
 
-Ideally you'll present both the AAD access token and the AAD refresh token. The AAD access token is used to talk to the Azure Resource Manager and query for the set of permissions that the user has for the container registry resource. The AAD refresh token is used in two ways:
+ The AAD access token is used to talk to the Azure Resource Manager and query for the set of permissions that the user has for the container registry resource.
+
+ [Deprecated] The AAD refresh token is used in two ways:
   1. If no AAD access token was presented, the AAD refresh token is used to obtain an AAD access token.
   2. The AAD refresh token is sent back to the user so they can initiate a token refresh cycle against AAD. If no AAD refresh token is sent, then the client won't have this credential at hand to initiate a credential refresh.
 
 The cycle to get credentials looks as follows:
-  1. Call `POST /oauth2/exchange` presenting the AAD refresh token and the AAD access token. The service will return you an ACR refresh token.
+  1. Call `POST /oauth2/exchange` presenting the AAD access token or the AAD refresh token [Deprecated]. The service will return you an ACR refresh token.
   2. Call `POST /oauth2/token` presenting the ACR refresh token. The service will return you an ACR access token which you can use to call the Azure Container Registry's APIs.
 
 ## Calling `POST /oauth2/exchange` to get an ACR refresh token
@@ -148,9 +157,9 @@ The cycle to get credentials looks as follows:
 In this example, we'll try to obtain an ACR refresh token from existing AAD tokens. Assume you have the following:
   1. A valid container registry, which here we'll call `contosoregistry.azurecr.io`.
   2. The AAD tenant identifier associated to the credentials, which here we'll take to be `409520d4-8100-4d1d-ad47-72432ddcc120`.
-  3. Valid AAD access token and AAD refresh token credentials with access to the aforementioned container registry.
+  3. Valid AAD access token credential with access to the aforementioned container registry.
 
-The AAD access token and AAD refresh token can be obtained from the Azure CLI. After running `az login` check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
+The AAD access token can be obtained from the Azure CLI. After running `az login` check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
 
 We'll now call `POST /oauth2/exchange` to exchange the AAD tokens for an ACR refresh token. Here's how such a call looks when done via `curl`:
 ```bash
@@ -163,11 +172,12 @@ curl -v -X POST -H "Content-Type: application/x-www-form-urlencoded" -d \
 ```
 
 The body of the POST message is a querystring-like text that specifies the following values:
-  - `grant_type`, which can take a value of `access_token_refresh_token`, or `access_token`, or `refresh_token`.
+  - `grant_type`, which can take a value of `access_token`, or `access_token_refresh_token` [Deprecated], or `refresh_token` [Deprecated].
   - `service`, which must indicate the name of your Azure container registry.
   - `tenant`, which is the AAD tenant associated to the AAD credentials.
-  - `refresh_token`, the AAD refresh token, mandatory when `grant_type` is `access_token_refresh_token` or `refresh_token`.
-  - `access_token`, the AAD access token, mandatory when `grant_type` is `access_token_refresh_token` or `access_token`.
+  - `access_token`, the AAD access token, mandatory when `grant_type` is `access_token` or `access_token_refresh_token` [Deprecated].  
+  - [Deprecated] `refresh_token`, the AAD refresh token, mandatory when `grant_type` is `access_token_refresh_token` or `refresh_token`.
+
 
 The outcome of this operation will be a response with status 200 OK and a body with the following JSON payload:
 
