@@ -187,7 +187,7 @@ After, new images pushed to the enabled repository will be expanded and teleport
 
  - Can the Teleport 10 repository limit be raised?
 
-    ``` The 10 repository limit is a temporary measure that we have included due to cost constraints during the private preview phase. We do not currently have a way to raise this value for a particular registry. If necessary users can request a second registry to be teleport enabled ```
+    ``` The 10 repository limit is a temporary measure during the private preview phase. We do not currently have a way to raise this value for a particular registry. If necessary users can request a second registry to be teleport enabled ```
 
  - Will pushing one image to an existing repository (making it teleport enabled) expand all existing tags making them teleportable?
 
