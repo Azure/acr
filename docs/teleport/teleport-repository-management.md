@@ -2,7 +2,7 @@
 
 ## Existing Limitations
 - Registries must first be Teleport enabled to enable repositories
-- There is a current 10 teleport enabled repository for registries 
+- There is a current 10 teleport enabled repository limit for registries 
 
 ## Existing Flow
 
