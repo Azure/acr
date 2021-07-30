@@ -115,7 +115,37 @@ az acr repository show --repository <repository>  -o jsonc
 }
 ```
 
-We have also provided a script to find this out for all repositories in a registry in case there are a lot and determining this becomes difficult. See find-all-teleport.sh
+We have also provided a convenicence script to find this out for all repositories in a registry in case there are a lot and determining this becomes difficult. P.S this is not super fast but saves manually checking one by one.
+
+> Note: Assure [find-teleport-enabled-repositories.sh](./find-teleport-enabled-repositories.sh) is set to execute: `sudo chmod +x find-teleport-enabled-repositories.sh`
+
+You can run this as follows:
+
+```bash
+./find-teleport-enabled-repositories.sh registry-name
+```
+
+Sample output:
+```bash
+/find-teleport-enabled-repositories.sh teleporttest
+gcc -> Enabled
+glassfish -> Enabled
+jupyter/all-spark-notebook -> Enabled
+python -> Disabled
+rethinkdb -> Enabled
+
+Summary:
+Enabled Repositories:
+
+gcc
+glassfish
+jupyter/all-spark-notebook
+rethinkdb
+
+```
+
+
+
 
 ### Manually disable teleport on a repository
 
