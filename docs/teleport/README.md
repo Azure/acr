@@ -36,6 +36,7 @@ Additional services and scenarios will come online as we incorporate more feedba
 
 Preview 2 has the following constraints. Your feedback will help us prioritize this list.
 
+- 10 Repository limit. More info: [teleport-repository-management](./teleport-repository-management.md)
 - Limited to running images with [AKS][aks-getting-started]
 - Support for [premium registries][acr-tiers]
 - Registries must exist in the following regions:
