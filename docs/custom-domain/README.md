@@ -10,7 +10,7 @@ Every ACR is accessed using its login server. If you have a registry called `myr
 
 The following steps describe how you can achieve this.
 
-**The following sections describe preparation steps for the private preview. THESE STEPS ARE NOT SUFFICIENT TO ENABLE A CUSTOM DOMAIN FOR YOUR REGISTRY WITHOUT ACCEPTANCD INTO THE PRIVATE PREVIEW.**
+**The following sections describe preparation steps for the private preview. THESE STEPS ARE NOT SUFFICIENT TO ENABLE A CUSTOM DOMAIN FOR YOUR REGISTRY WITHOUT ACCEPTANCE INTO THE PRIVATE PREVIEW.**
 
 ## Prerequisites
 - [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest): version 2.4.0 or higher
@@ -105,8 +105,12 @@ For each domain, its TLS private key and public certificate pair must be added t
        - `az acr show -n myregistry --query identity.userAssignedIdentities`
 
 For greater isolation, we recommend that you put each certificate in its own key vault and set its access policy independently. The registry should always have access to the key vault secrets.
-> [!NOTE]
-> The registry configures each custom domain certificate without version. This configuration allows you to update the certificate in the key vault, causing the registry to pick up the latest certificate version.
+
+### Certificate updates and rotation
+
+The registry configures each custom domain certificate without referencing a specific version in Azure Key Vault. With this configuration, the registry regularly checks the key vault and automatically uses the latest certificate version there for its operations.
+
+To rotate or update a custom domain certificate, upload the new certificate version to the secret's location in the key vault. The registry automatically uses the latest certificate version within a short time. 
 
 ### Enhanced security with Virtual Networks
 Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. ACR custom domains are currently _not supported_ where key vault access is restricted, but this is work in progress and will be available with system managed identities only.
