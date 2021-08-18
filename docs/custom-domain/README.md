@@ -108,9 +108,15 @@ For greater isolation, we recommend that you put each certificate in its own key
 
 ### Certificate updates and rotation
 
-The registry configures each custom domain certificate without referencing a specific version in Azure Key Vault. With this configuration, the registry regularly checks the key vault and automatically uses the latest certificate version there for its operations.
+You have two options for updating the certificates used for custom domains:
 
-To rotate or update a custom domain certificate, upload the new certificate version to the secret's location in the key vault. The registry automatically uses the latest certificate version within a short time. 
+* **Automatic updates** - If you reference a custom domain certificate with a [non-versioned](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning) secret ID, the registry regularly checks the key vault and automatically uses the latest certificate version there for its operations.
+
+  To rotate or update a custom domain certificate, upload the new certificate version to the secret's location in the key vault. The registry automatically uses the latest certificate version within a short time. 
+
+* **Manual updates** - If you reference a domain certificate with a [versioned](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning) secret ID, the registry does not configure automatic certificate rotation.
+
+  After you upload a new certificate version to the key vault, the certificate must be manually rotated in the registry. Contact [Azure Support](https://azure.microsoft.com/support/create-ticket/).
 
 ### Enhanced security with Virtual Networks
 Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. ACR custom domains are currently _not supported_ where key vault access is restricted, but this is work in progress and will be available with system managed identities only.
