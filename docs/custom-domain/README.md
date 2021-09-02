@@ -10,7 +10,7 @@ Every ACR is accessed using its login server. If you have a registry called `myr
 
 The following steps describe how you can achieve this.
 
-**The following sections describe preparation steps for the private preview. They are not sufficient to enable a custom domain for your registry without acceptance into the private preview.**
+**The following sections describe preparation steps for the private preview. THESE STEPS ARE NOT SUFFICIENT TO ENABLE A CUSTOM DOMAIN FOR YOUR REGISTRY WITHOUT ACCEPTANCE INTO THE PRIVATE PREVIEW.**
 
 ## Prerequisites
 - [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest): version 2.4.0 or higher
@@ -21,17 +21,32 @@ The following steps describe how you can achieve this.
   - Custom data domain to access the registry content. Again, example for `contoso.com`: `eastus-registry-data.contoso.com`
     - Note that the custom data domain is region specific. For geo-replicated registries, each region should have its own custom data endpoint.
 
-  For each domain, you must prepare a single PEM formatted file containing the TLS private key and public certificate:
+  For each domain, you must prepare a single PEM formatted file containing the TLS private key and the public certificate:
   
   ```
   -----BEGIN PRIVATE KEY-----  
-  .....  
+  XXXXXX  
   -----END PRIVATE KEY-----  
   -----BEGIN CERTIFICATE-----  
-  .....  
+  XXXXXX  
   -----END CERTIFICATE-----
   ```
   
+If you use a certificate bundle, prepare a single PEM formatted file containing the TLS private key and each public certificate:
+
+```
+---BEGIN PRIVATE KEY-----
+XXXXXX
+-----END PRIVATE KEY-------
+-----BEGIN CERTIFICATE-----
+XXXXX-01
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+XXXXXX-02
+-----END CERTIFICATE----
+[etc.]
+```
+
   For example, using [openssl](https://github.com/openssl/openssl):
   - Create a self-signed public cert and private key
     ```shell
@@ -40,12 +55,12 @@ The following steps describe how you can achieve this.
       -out container-registry.contoso.com.cert.pem -days 365 \
       -subj '/CN=container-registry.contoso.com/O=Contoso./C=US'
     ```
-  - Create a single file containing both the public certificate and private key
+  - Create a single file containing both the public certificate (or certificates, in the case of a certificate bundle) and private key
     ```shell
     cat container-registry.contoso.com.key.pem \
-      >> container-registry-contoso-com-pem
+      >> container-registry-contoso-com.pem
     cat container-registry.contoso.com.cert.pem \
-      >> container-registry-contoso-com-pem
+      >> container-registry-contoso-com.pem
     ```
   - For each data domain, follow the same steps above to prepare the PEM formatted files containing the public certificate and private key.
   
@@ -90,6 +105,18 @@ For each domain, its TLS private key and public certificate pair must be added t
        - `az acr show -n myregistry --query identity.userAssignedIdentities`
 
 For greater isolation, we recommend that you put each certificate in its own key vault and set its access policy independently. The registry should always have access to the key vault secrets.
+
+### Certificate updates and rotation
+
+You have two options for updating the certificates used for custom domains:
+
+* **Automatic updates** - If you reference a custom domain certificate with a [non-versioned](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning) secret ID, the registry regularly checks the key vault and automatically uses the latest certificate version there for its operations.
+
+  To rotate or update a custom domain certificate, upload the new certificate version to the secret's location in the key vault. The registry automatically uses the latest certificate version within a short time. 
+
+* **Manual updates** - If you reference a domain certificate with a [versioned](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning) secret ID, the registry does not configure automatic certificate rotation.
+
+  After you upload a new certificate version to the key vault, the certificate must be manually rotated in the registry. Contact [Azure Support](https://azure.microsoft.com/support/create-ticket/).
 
 ### Enhanced security with Virtual Networks
 Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. ACR custom domains are currently _not supported_ where key vault access is restricted, but this is work in progress and will be available with system managed identities only.
