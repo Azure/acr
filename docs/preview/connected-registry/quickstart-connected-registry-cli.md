@@ -65,7 +65,7 @@ This and subsequent quickstart guides use two repositories:
 The easiest way to populate those repositories is to use the `az acr import` command as follows:
 
 ```azurecli
-az acr import -n mycontainerregistry001 --source mcr.microsoft.com/acr/connected-registry:0.2.0
+az acr import -n mycontainerregistry001 --source mcr.microsoft.com/acr/connected-registry:0.3.0
 az acr import -n mycontainerregistry001 --source mcr.microsoft.com/azureiotedge-agent:1.2
 az acr import -n mycontainerregistry001 --source mcr.microsoft.com/azureiotedge-hub:1.2
 az acr import -n mycontainerregistry001 --source mcr.microsoft.com/azureiotedge-api-proxy:latest
