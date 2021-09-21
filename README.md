@@ -31,7 +31,8 @@ A set of short links for presentations & social media.
 
 | Title | Link |
 | - | - |
-| [Geo-replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
+| [Cross Region Replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
+| [In-zone Redundancy](https://aka.ms/acr/az) | https://aka.ms/acr/az |
 | [Helm Support](https://aka.ms/acr/helm) | https://aka.ms/acr/helm |
 | [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
