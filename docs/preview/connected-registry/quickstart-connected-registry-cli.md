@@ -47,6 +47,15 @@ az acr create --resource-group myResourceGroup \
 
 This example creates a *Premium* registry. Connected registries are supported only in the *Premium* tier of Azure container registry. For details on available service tiers, see [Container registry service tiers][container-registry-skus].
 
+## Enable the dedicated data endpoint for the cloud registry
+
+For the connected registries to communicate with the cloud registry, the dedicated data endpoint for the Azure Container Registry in the cloud should be enabled by using the [az acr update][az-acr-update] command as follows:
+
+```azurecli
+az acr update -n mycontainerregistry001 \
+  --data-endpoint-enabled
+```
+
 ## Import images into the container registry
 
 This and subsequent quickstart guides use two repositories:
@@ -56,7 +65,10 @@ This and subsequent quickstart guides use two repositories:
 The easiest way to populate those repositories is to use the `az acr import` command as follows:
 
 ```azurecli
-az acr import -n mycontainerregistry001 --source mcr.microsoft.com/acr/connected-registry:0.1.0
+az acr import -n mycontainerregistry001 --source mcr.microsoft.com/acr/connected-registry:0.3.0
+az acr import -n mycontainerregistry001 --source mcr.microsoft.com/azureiotedge-agent:1.2
+az acr import -n mycontainerregistry001 --source mcr.microsoft.com/azureiotedge-hub:1.2
+az acr import -n mycontainerregistry001 --source mcr.microsoft.com/azureiotedge-api-proxy:latest
 az acr import -n mycontainerregistry001 --source mcr.microsoft.com/hello-world:latest
 ```
 
@@ -67,7 +79,7 @@ Create a connected registry using the [az acr connected-registry create][az-acr-
 ```azurecli
 az acr connected-registry create --registry mycontainerregistry001 \
   --name myconnectedregistry \
-  --repository "hello-world" "acr/connected-registry"
+  --repository "hello-world" "acr/connected-registry" "azureiotedge-agent" "azureiotedge-hub" "azureiotedge-api-proxy"
 ```
 
 The above command will create a connected registry resource in Azure and link it to the *mycontainerregistry001* cloud ACR. The *hello-world* and *acr/connected-registry* repositories will be synchronized between the cloud ACR and the registry on premises. Because no `--mode` option is specified for the connected registry, it will allow _pull_ and _push_ functionality by default. Because there is no synchronization schedule defined for this connected registry, both repositories will be synchronized between the cloud registry and the connected registry without interruptions.
@@ -81,8 +93,9 @@ You can use the connected registry [az acr connected-registry create][az-acr-con
 
 ```azurecli
 az acr connected-registry create --registry mycontainerregistry001 \
+  --parent myconnectedregistry \
   --name myconnectedmirror \
-  --repository "hello-world" "acr/connected-registry" \
+  --repository "hello-world" "acr/connected-registry" "azureiotedge-agent" "azureiotedge-hub" "azureiotedge-api-proxy" \
   --mode mirror
 ```
 
@@ -105,15 +118,6 @@ NAME                 MODE      STATUS    PARENT    LOGIN SERVER    LAST SYNC
 -------------------  --------  --------  --------  --------------  -----------
 myconnectedregistry  registry
 myconnectedmirror    mirror
-```
-
-## Enable the data endpoint for the cloud registry
-
-For the connected registries to communicate with the cloud registry, the data endpoint for the Azure Container Registry in the cloud should be enabled by using the [az acr update][az-acr-update] command as follows:
-
-```azurecli
-az acr update -n mycontainerregistry001 \
-  --data-endpoint-enabled
 ```
 
 ## Next steps

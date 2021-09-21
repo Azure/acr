@@ -18,7 +18,7 @@ Instancing a custom environment within seconds is one of the many wonders of run
 - [Sign Up for the Project Teleport Preview](#sign-up-for-the-project-teleport-preview)
 - [Supported Services](#supported-services)
 - [Preview Constraints](#preview-constraints)
-- [Getting Started with Teleportation](./getting-started.md)
+- [Getting Started with Teleportation & AKS](./aks-getting-started.md)
 - [Getting Support](#getting-support)
 
 ## Sign Up for the Project Teleport Preview
@@ -36,6 +36,7 @@ Additional services and scenarios will come online as we incorporate more feedba
 
 Preview 2 has the following constraints. Your feedback will help us prioritize this list.
 
+- 10 Repository limit. More info: [teleport-repository-management](./teleport-repository-management.md)
 - Limited to running images with [AKS][aks-getting-started]
 - Support for [premium registries][acr-tiers]
 - Registries must exist in the following regions:

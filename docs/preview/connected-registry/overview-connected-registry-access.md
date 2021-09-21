@@ -30,7 +30,7 @@ Your options for configuring client token actions depend on whether the connecte
 
 ### Manage client tokens
 
-Update client tokens, passwords, or scope maps as needed by using [az acr token](/cli/az/acr#az_acr_token) and [az acr scope-map](/cli/az/acr#az_acr_scope-map) commands. Client token updates are propagated automatically to the connected registries that accept the token.
+Update client tokens, passwords, or scope maps as needed by using [az acr token](https://docs.microsoft.com/en-us/cli/azure/acr/token?view=azure-cli-latest) and [az acr scope-map](https://docs.microsoft.com/en-us/cli/azure/acr/scope-map?view=azure-cli-latest) commands. Client token updates are propagated automatically to the connected registries that accept the token.
 
 ## Sync token
 
@@ -43,7 +43,7 @@ Each connected registry uses a *sync token* to authenticate with its parent - wh
 
 ### Manage sync token
 
-Update sync tokens, passwords, or scope maps as needed by using [az acr token](/cli/az/acr#az_acr_token) and [az acr scope-map](/cli/az/acr#az_acr_scope-map) commands. Sync token updates are propagated automatically to the connected registry. Follow the standard practices of rotating passwords when updating the sync token.
+Update sync tokens, passwords, or scope maps as needed by using [az acr token](https://docs.microsoft.com/en-us/cli/azure/acr/token?view=azure-cli-latest) and [az acr scope-map](https://docs.microsoft.com/en-us/cli/azure/acr/scope-map?view=azure-cli-latest) commands. Sync token updates are propagated automatically to the connected registry. Follow the standard practices of rotating passwords when updating the sync token.
 
 > [!WARNING]
 > Take care not to delete a sync token. Doing so will permanently prevent communication with the corresponding connected registry. You can disable a connected registry by setting the status of the sync token to `disabled`. 
