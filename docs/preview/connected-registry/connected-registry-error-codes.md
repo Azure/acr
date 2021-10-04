@@ -13,7 +13,13 @@ This article helps you troubleshoot error codes you might encounter in the `Stat
 
 ## Connection State
 
-The connection state of a connected registry indicates the current overall health status of the on-premises instance. The connection state is `Online` when the instance is healthy, `Offline` when the instance is not connected to internet, and `Unhealthy` when there is a critical error on the instance while it is online. When the connected registry resource has a connection state of `Unhealthy`, you may reference the `StatusDetails` property to view the corresponding error.
+The connection state of a connected registry indicates the current overall health status of the deployed connected registry instance. The possible connection states are defined as follows:
+
+| Connection State         | Description     |
+|--------------|-----------|
+| Online | The connected registry instance is currently connected with the cloud and in a healthy state.     |
+| Offline      | The connected registry instance is currently disconnected from the cloud.  |
+| Unhealthy      | The connected registry instance is currently connected with the cloud, but it is reporting critical errors. Reference the `StatusDetails` property to view the corresponding errors. |
 
 Use the [az acr connected-registry show][az-acr-connected-registry-show] command to view the current connection state of your connected registry.
 
