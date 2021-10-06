@@ -98,7 +98,7 @@ This status `description` indicates that the connected registry was unable to wr
 
 *Potential solution:* Ensure that the host storage path used to run the connected registry container gives sufficient access to the container user. In the sample above, this path is `/var/acr/data/registry`. Update the permissions of the host system directory so that the user profile for your container has read, write, and execute access. By default, docker containers run as root. If the container is run as a non-root user, please ensure that user has the above permissions.
 
-### No Storage Available On Disk
+### No Storage Available On Device
 
 Sample status detail:
 
@@ -107,7 +107,7 @@ Sample status detail:
     {
       "code": "DiskError",
       "correlationId": "73a46395-b89b-49c7-5621-d54e8b1574b5",
-      "description": "There is not enough space on the disk.",
+      "description": "No space left on device.",
       "timestamp": "2021-09-16T01:17:45.394512+00:00",
       "type": "Disk"
     }
