@@ -98,7 +98,7 @@ This status `description` indicates that the connected registry was unable to wr
 
 *Potential solution:* Ensure that the host storage path used to run the connected registry container gives sufficient access to the container user. In the sample above, this path is `/var/acr/data/registry`. Update the permissions of the host system directory so that the user profile for your container has read, write, and execute access. By default, docker containers run as root. If the container is run as a non-root user, please ensure that user has the above permissions.
 
-### No Storage Available On Device
+### No Disk Space Available on the Device
 
 Sample status detail:
 
