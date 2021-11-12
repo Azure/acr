@@ -34,6 +34,7 @@ A set of short links for presentations & social media.
 | [Cross Region Replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
 | [In-zone Redundancy](https://aka.ms/acr/az) | https://aka.ms/acr/az |
 | [Helm Support](https://aka.ms/acr/helm) | https://aka.ms/acr/helm |
+| [Supply Chain Artifact Support](https://aka.ms/acr/acr/supply-chain-artifacts) | https://aka.ms/acr/acr/supply-chain-artifacts |
 | [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
 | [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
 | [Webhook Notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
