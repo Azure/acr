@@ -38,6 +38,8 @@ The helm chart installs Kubernetes resources used to run a connected registry on
 
 ## Fetch the Connected Registry Helm Chart
 
+From a cluster node, run the following commands to install the connected registry helm chart.
+
 1. Set environment variable to enable OCI artifact support in the Helm 3 client.
 
 `export HELM_EXPERIMENTAL_OCI=1`
