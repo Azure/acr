@@ -10,7 +10,7 @@ ms.custom:
 
 # Quickstart:  Deploy a connected registry to Kubernetes cluster
 
-In this quickstart, you use [Azure Container Registry][container-registry-intro] and [Helm 3](https://helm.sh/docs/intro/quickstart/) commands to deploy a connected registry Helm chart to a Kubernetes cluster. You can review the [ACR connected registry introduction](intro-connected-registry.md) for details about the connected registry feature of Azure Container Registry. For more details on Helm charts, see [Helm documentation](https://helm.sh/docs/topics/charts/).
+In this quickstart, you use [Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-intro) and [Helm 3](https://helm.sh/docs/intro/quickstart/) commands to deploy a connected registry Helm chart to a Kubernetes cluster. You can review the [ACR connected registry introduction](https://docs.microsoft.com/en-us/azure/container-registry/intro-connected-registry) for details about the connected registry feature of Azure Container Registry. For more details on Helm charts, see [Helm documentation](https://helm.sh/docs/topics/charts/).
 
 ## Supported Kubernetes distributions
 
@@ -19,7 +19,7 @@ In this quickstart, you use [Azure Container Registry][container-registry-intro]
 - [Install or upgrade Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) to version >= 2.30.0
   - If you're using a local install, sign in with Azure CLI by using the [az login](https://docs.microsoft.com/en-us/cli/azure/reference-index#az_login) command. To finish the authentication process, follow the steps displayed in your terminal. See [Sign in with Azure CLI](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) for additional sign-in options.
 - The Azure CLI commands in this article are formatted for the Bash shell. If you're using a different shell like PowerShell or Command Prompt, you may need to adjust line continuation characters or variable assignment lines accordingly. This article uses variables to minimize the amount of command editing required.
-- A connected registry resource in Azure as described in the [Create connected registry using the CLI][quickstart-connected-registry-cli] quickstart guide. Both, `ReadWrite` and `ReadOnly` modes will work for this scenario.
+- A connected registry resource in Azure as described in the [Create connected registry using the CLI](https://docs.microsoft.com/en-us/azure/container-registry/quickstart-connected-registry-cli) quickstart guide. Both, `ReadWrite` and `ReadOnly` modes will work for this scenario.
 - An up-and-running Kubernetes cluster. If you don't have one, you can create a cluster using one of these options:
     - [Kubernetes in Docker](https://kind.sigs.k8s.io/)
     - [K3s: Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/quick-start/) cluster.
@@ -166,6 +166,8 @@ Paste the following section into the file.
 
 ### Pull from the Connected Registry
 
+For more information, reference [Pull images from a connected registry](https://docs.microsoft.com/en-us/azure/container-registry/pull-images-from-connected-registry).
+
 1. Get credentials corresponding to a client token linked to the connected registry. For more information, see [Manage client tokens](https://docs.microsoft.com/en-us/azure/container-registry/overview-connected-registry-access#manage-client-tokens). The following example generates `password1` for token _pulluser_ and registry _contosoregistry_.
 
 ```
@@ -246,6 +248,8 @@ EOF
 
 ### Pull from the Connected Registry
 
+For more information, reference [Pull images from a connected registry](https://docs.microsoft.com/en-us/azure/container-registry/pull-images-from-connected-registry).
+
 1. Get credentials corresponding to a client token linked to the connected registry. For more information, see [Manage client tokens](https://docs.microsoft.com/en-us/azure/container-registry/overview-connected-registry-access#manage-client-tokens). The following example generates `password1` for token _pulluser_ and registry _contosoregistry_.
 
 ```
@@ -302,9 +306,3 @@ EOF
 3. Deactivate your connected registry resource before deploying it again.
 
 `az acr connected-registry deactivate -r contosoregistry -n myconnectedregistry`
-
-<!-- LINKS - internal -->
-[az-acr-token-credential-generate]: https://docs.microsoft.com/cli/azure/acr/token/credential?view=azure-cli-latest#az_acr_token_credential_generate
-[container-registry-intro]: container-registry-intro.md
-[quickstart-pull-images-from-connected-registry]: quickstart-pull-images-from-connected-registry.md
-[quickstart-connected-registry-cli]: quickstart-connected-registry-cli.md
