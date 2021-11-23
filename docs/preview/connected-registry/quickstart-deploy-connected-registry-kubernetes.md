@@ -31,7 +31,7 @@ In this quickstart, you use [Azure Container Registry](https://docs.microsoft.co
 
 ## Node Setup Requirements
 
-The helm chart installs Kubernetes resources used to run a connected registry on your Kubernetes cluster. The connected registry runs as a singleton pod on one node of the cluster. In order to pull artifacts from the running connected registry, the user is responsible for configuring each node of the cluster that will pull from this connected registry. To pull from the connected registry over HTTPS, the user is responsible for configuring SSL certs on each node that will pull from the connected registry. To pull from the connected registry of HTTP, the user must update their container runtime settings to recognize the connected registry as "insecure". See more information below.
+The helm chart installs Kubernetes resources used to run a connected registry on your Kubernetes cluster. The connected registry runs as a singleton pod on one node of the cluster. The user is responsible for configuring each node of the cluster that will pull from this connected registry. To pull from the connected registry over HTTPS, the user is responsible for configuring SSL certs on each node. To pull from the connected registry of HTTP, the user must update their container runtime settings to recognize the connected registry as "insecure". See more information below.
 
 > [!WARNING]
 > Pulling from and pushing to the connected registry over HTTP is not secure. It is recommended to setup TLS certificates.
