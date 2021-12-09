@@ -113,6 +113,8 @@ You have two options for updating the certificates used for custom domains:
 * **Automatic updates** - If you reference a custom domain certificate with a [non-versioned](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning) secret ID, the registry regularly checks the key vault and automatically uses the latest certificate version there for its operations.
 
   To rotate or update a custom domain certificate, upload the new certificate version to the secret's location in the key vault. The registry automatically uses the latest certificate version within a short time. 
+  
+  > NOTE: after the certificate is updated, the registry may serve a mix of the old and new certificate versions for upto 15 minutes until all caches have been refreshed.
 
 * **Manual updates** - If you reference a domain certificate with a [versioned](https://docs.microsoft.com/azure/key-vault/general/about-keys-secrets-certificates#objects-identifiers-and-versioning) secret ID, the registry does not configure automatic certificate rotation.
 
