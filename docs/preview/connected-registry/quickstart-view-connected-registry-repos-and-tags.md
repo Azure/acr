@@ -29,7 +29,6 @@ Make sure that you have created the connected registry resource in Azure as desc
 
 In this tutorial, we configure a _client token_ to list available repositories and tags. Reference [Understand access to a connected registry](overview-connected-registry-access.md) for more information on how client tokens are used for authentication with a connected registry.
 
-
 ## Create a client token
 
 Use the following CLI command to create a token with read access to your synced repositories. We need both `content/read` and `metadata/read` permissions to list the repositories and tags in the connected registry. The below command creates a token with read access to the "hello-world" and "testing" repositories. 
@@ -109,8 +108,8 @@ You will see an output similar to:
 }
 ```
 
-> [!IMPORTANT]
-> Only those repositories that the client token has access to will be listed if they are available on the connected registry. To give the client token read access to additional repositories, use the [az acr token update][az-acr-token-update] command.
+  > [!IMPORTANT]
+  > Only those repositories that the client token has access to will be listed if they are available on the connected registry. To give the client token read access to additional repositories, use the [az acr token update][az-acr-token-update] command.
 
 ## View the tags for a repository in a deployed connected registry
 
@@ -128,7 +127,7 @@ sudo apt -y install jq
 ENCODED_CREDENTIALS=$(echo -n 'myconnectedregistry-client-token:<insert client token password>' | base64)
 ```
 
-3. The following command can be referenced to acquire a token to view tags fpr a repository. 
+3. The following command can be referenced to acquire a token to view tags for a repository. 
 
 ```
  curl --location  \
@@ -144,7 +143,7 @@ ACCESS_TOKEN=$(curl --location  \
       --header 'Authorization: Basic '$ENCODED_CREDENTIALS | jq -r '.access_token')
 ```
 
-4. Using the above token, run the following command to list the tags in the hello-world repositories on the connected registry.
+4. Using the above token, run the following command to list the tags in the hello-world repository on the connected registry.
 
 ```
 curl --location \
