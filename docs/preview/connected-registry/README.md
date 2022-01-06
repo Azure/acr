@@ -59,6 +59,7 @@ In limited preview, the connected registry targets IoT scenarios. Below are link
 - [Quickstart: Deploy a connected registry to an IoT Edge device](./quickstart-deploy-connected-registry-iot-edge-cli.md)
 - [Quickstart: Deploy a connected registry to an nested IoT Edge device](./quickstart-deploy-connected-registry-nested-iot-edge-cli.md)
 - [Quickstart: Pull images from a connected registry](./quickstart-pull-images-from-connected-registry.md)
+- [Quickstart: View connected registry repositories and tags](./quickstart-view-connected-registry-repos-and-tags.md)
 
 ## Troubleshooting
 
