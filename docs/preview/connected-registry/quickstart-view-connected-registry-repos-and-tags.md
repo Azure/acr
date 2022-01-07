@@ -57,23 +57,39 @@ az acr connected-registry update \
   --add-client-token myconnectedregistry-client-token
 ```
 
-## View the repositories in a deployed connected registry
+## Configure your machine
 
-Run the following commands from a machine with access to the deployed connected registry.
+From a machine with access to the deployed connected registry, install the following tools:
 
-1. Install [jq](https://stedolan.github.io/jq/), a command-line JSON processor. This utility is used to parse JSON, and is useful in parsing the response when listing repositories and tags of a connected registry. From the open SSH connection, enter following command to install jq:
+1. Install [curl](https://curl.se/), a command-line data transfer tool. `curl` is used to issue requests to the connected registry server. Enter the following command to install curl:
+
+```
+sudo apt -y install curl
+```
+
+2. Install [jq](https://stedolan.github.io/jq/), a command-line JSON processor. This utility is used to parse JSON, and is useful in parsing the response when listing repositories and tags of a connected registry. Enter following command to install jq:
 
 ```
 sudo apt -y install jq
 ```
 
-2. Run the following command to base64 encode your client token credentials and store this value in a variable.
+3. Install `base64`, a command-line tool that is used to base64 encode client token credentials when viewing repositories and tags of a connected registry. Enter following command to install base64:
+
+```
+sudo apt -y install coreutils
+```
+
+## View the repositories in a deployed connected registry
+
+Run the following commands from a machine with access to the deployed connected registry.
+
+1. Base64 encode your client token credentials and store this value in a variable.
 
 ```
 ENCODED_CREDENTIALS=$(echo -n 'myconnectedregistry-client-token:<insert client token password>' | base64)
 ```
 
-3. The following command can be referenced to acquire a token to list repositories. 
+2. The following command can be referenced to acquire a token to list repositories. 
 
 ```
 curl --location  \
@@ -89,7 +105,7 @@ ACCESS_TOKEN=$(curl --location  \
   --header 'Authorization: Basic '$ENCODED_CREDENTIALS | jq -r '.access_token')
 ```
 
-4. Using the above token, run the following command to list the repositories available on the connected registry.
+3. Using the above token, run the following command to list the repositories available on the connected registry.
 
 ```
 curl --location \
@@ -115,19 +131,13 @@ You will see an output similar to:
 
 Run the following commands from a machine with access to the deployed connected registry.
 
-1. Install [jq](https://stedolan.github.io/jq/), a command-line JSON processor. This utility is used to parse JSON, and is useful in parsing the response when listing repositories and tags of a connected registry. From the open SSH connection, enter following command to install jq:
-
-```
-sudo apt -y install jq
-```
-
-2. Run the following command to base64 encode your client token credentials and store this value in a variable.
+1. Base64 encode your client token credentials and store this value in a variable.
 
 ```
 ENCODED_CREDENTIALS=$(echo -n 'myconnectedregistry-client-token:<insert client token password>' | base64)
 ```
 
-3. The following command can be referenced to acquire a token to view tags for a repository. 
+2. The following command can be referenced to acquire a token to view tags for a repository. 
 
 ```
  curl --location  \
@@ -143,7 +153,7 @@ ACCESS_TOKEN=$(curl --location  \
       --header 'Authorization: Basic '$ENCODED_CREDENTIALS | jq -r '.access_token')
 ```
 
-4. Using the above token, run the following command to list the tags in the hello-world repository on the connected registry.
+3. Using the above token, run the following command to list the tags in the hello-world repository on the connected registry.
 
 ```
 curl --location \
