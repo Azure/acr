@@ -61,6 +61,10 @@ In limited preview, the connected registry targets IoT scenarios. Below are link
 - [Quickstart: Pull images from a connected registry](./quickstart-pull-images-from-connected-registry.md)
 - [Quickstart: View connected registry repositories and tags](./quickstart-view-connected-registry-repos-and-tags.md)
 
+## Release Notes
+
+Reference [Release Notes](./release-notes.md) for information on the changes included in each release of the connected registry runtime. 
+
 ## Troubleshooting
 
 We keep a list of troubleshooting steps for known issues. Those are available on the [Troubleshooting](./troubleshooting.md) page.
