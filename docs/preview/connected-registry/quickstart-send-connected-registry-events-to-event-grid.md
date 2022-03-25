@@ -10,7 +10,11 @@ ms.custom:
 
 # Quickstart: Send connected registry artifact events to Event Grid
 
-In this quickstart, you will learn how to configure Connected registry [Azure Container Registry][container-registry-intro] and [curl](https://curl.se/) commands to view available repositories and tags in a deployed connected registry. You can review the [ACR connected registry introduction](intro-connected-registry.md) for details about the connected registry feature of Azure Container Registry.
+In this quickstart, you will learn how to configure Connected registry [Azure Container Registry][container-registry-intro] to send artifact push and delete events to [Azure Event Grid][event-grid-overview] for processing and notification. You can review the [ACR connected registry introduction](intro-connected-registry.md) for details about the connected registry feature of Azure Container Registry.
+
+## Scenario overview
+
+As described in the [introduction][container-registry-intro], the connected registry synchronizes artifacts from the parent and also allows local push and delete of the artifacts. We can configure the connected registry to notify via [Azure Event Grid][event-grid-overview] whenever there is an update to the artifact. This will allow us to perform other actions based on the availability of the artifact on the connected registry.
 
 ## Prerequisites
 
@@ -25,9 +29,18 @@ In this quickstart, you will learn how to configure Connected registry [Azure Co
 
 ## Before you begin
 
-Make sure that you have created the connected registry resource in Azure as described in the [Create connected registry using the CLI](quickstart-connected-registry-cli.md) quickstart guide and have a connected registry deployed on your premises as described in [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md) or [Quickstart: Deploy a connected registry to Kubernetes cluster](quickstart-deploy-connected-registry-kubernetes.md). 
+Make sure that you have created the connected registry resource in Azure as described in the [Create connected registry using the CLI](quickstart-connected-registry-cli.md) quickstart guide and have a connected registry deployed on your premises as described in [Quickstart: Deploy a connected registry to an IoT Edge device](quickstart-deploy-connected-registry-iot-edge-cli.md) or [Quickstart: Deploy a connected registry to Kubernetes cluster](quickstart-deploy-connected-registry-kubernetes.md). The connected registry image that is deployed should be of version atleast 0.6.0 
 
 Also, make sure you understand [Azure Event Grid](https://docs.microsoft.com/en-us/azure/event-grid/) and have registered to use it. You should also have an event end point ready where you would like to send your events. You can check the quickstart to configure Azure Event Grid for Azure Container Registry events as shown in [QuickStart: Container registry events on Event Grid][quickstart-eventgrid-container-registry].
+
+Before proceeding, set the event end point and other Azure Container Registry information.
+
+```
+APP_ENDPOINT=<your-app-endpoint>
+ACR_NAME=mycontainerregistry001
+ACR_CONNECTED_REGISTRY_NAME=myconnectedregistry
+ACR_REGISTRY_ID=$(az acr show --name $ACR_NAME --query id --output tsv)
+```
 
 In this tutorial, we configure the connected registry to send artifact events like push and delete to Azure Event Grid in a two step process.
 
@@ -36,7 +49,7 @@ In this tutorial, we configure the connected registry to send artifact events li
 
 ## Notification Events Generation on a connected registry
 
-Use the following CLI command to configure the connected registry to generate events for all artifacts
+Use the following CLI command to configure the connected registry to generate notifications for push and delete events on all artifacts
 
 ```azurecli
 az acr update -n $ACR_NAME
@@ -46,23 +59,24 @@ az acr update -n $ACR_NAME
 
 If you are interested in generating events only for specific artifact patterns or specific actions, you can specify the patterns in the form shown below
 
-```
+```azurecli
 az acr update -n $ACR_NAME \
   --name $ACR_CONNECTED_REGISTRY_NAME \
-  --add-notifications [PATTERN1 PATTERN2 ...]
+  --add-notifications hello-world:* hello-world:1.0:delete \
+  hello-world@sha256:92c7f9c92844bbbb5d0a101b22f7c2a7949e40f8ea90c8b3bc396879d95e899a:push 
 ```
 
-where each pattern is defined as
+The pattern is of the format
 
   ```
-imageName ":" action
+artifact ":" action
   ```
 
-The `imageName` and `action` are further defined as
+where `artifact` and `action` are further defined as
 
   ```yaml
-imageName: name [ ":" tag ] [ "@" digest ]
-action: "push" or "delete" or "*"
+artifact: name [ ":" tag ] [ "@" digest ]
+action: "push" or "delete"
   ```
 
 The wildcard `*` should be used to cover all values on a section. 
@@ -80,13 +94,6 @@ For example,
 ## Event Grid Subscription and filtering Connected Registry Events on Event Grid
 
 In this step, you will configure eventgrid to subscribe for events from connected registry. You can use the `--advanced-filter` on event grid to filter out connected registry specific events. The connected registry events will align to the existing Azure Container Registry event types `Microsoft.ContainerRegistry.ImagePushed` and `Microsoft.ContainerRegistry.ImageDeleted`. 
-
-Before proceeding, fetch the Azure Container Registry Id and the event endpoint for your events.
-
-```
-ACR_REGISTRY_ID=$(az acr show --name $ACR_NAME --query id --output tsv)
-APP_ENDPOINT=<your-app-endpoint>
-```
 
 1. To filter events from all connected registries
 
@@ -168,8 +175,9 @@ Whenever there is a push or delete on any artifact on the connected registry, yo
   }]
   ```
 
-Please note that, if you already have event subscription on event grid for the concerned Azure Container Registry and you later configure notification pipeline on connected registry using CLI, you will immediately start to see the new events from the connected registry.
+Please note that, if you already have event subscriptions on event grid for the concerned Azure Container Registry and you later configure generation of events on connected registry using CLI, you will immediately start to see the new connected registry events on those existing event grid subscriptions.
 
 <!-- LINKS - internal -->
 [container-registry-intro]: https://docs.microsoft.com/azure/container-registry/
+[event-grid-overview]: (https://docs.microsoft.com/en-us/azure/event-grid/overview)
 [quickstart-eventgrid-container-registry]: https://docs.microsoft.com/en-us/azure/container-registry/container-registry-event-grid-quickstart?toc=/azure/event-grid/toc.json
