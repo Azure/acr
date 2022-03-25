@@ -52,7 +52,7 @@ In this tutorial, we configure the connected registry to send artifact events li
 Use the following CLI command to configure the connected registry to generate notifications for push and delete events on all artifacts
 
 ```azurecli
-az acr update -n $ACR_NAME
+az acr connected-registry update -r $ACR_NAME
   --name $ACR_CONNECTED_REGISTRY_NAME \
   --add-notifications *:*
 ```
@@ -60,7 +60,7 @@ az acr update -n $ACR_NAME
 If you are interested in generating events only for specific artifact patterns or specific actions, you can specify the patterns in the form shown below
 
 ```azurecli
-az acr update -n $ACR_NAME \
+az acr connected-registry update -r $ACR_NAME \
   --name $ACR_CONNECTED_REGISTRY_NAME \
   --add-notifications hello-world:* hello-world:1.0:delete \
   hello-world@sha256:92c7f9c92844bbbb5d0a101b22f7c2a7949e40f8ea90c8b3bc396879d95e899a:push 
