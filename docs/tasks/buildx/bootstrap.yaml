@@ -1,7 +1,7 @@
 version: v1.0.0
 steps:
   # Build buildx from source using the built-in buildkit
-  - cmd: docker build -t binaries git://github.com/docker/buildx
+  - cmd: docker build -t binaries https://github.com/docker/buildx.git
     env: [ "DOCKER_BUILDKIT=1" ]
   # Create a new Dockerfile to set up the entry point for buildx
   - cmd: |
