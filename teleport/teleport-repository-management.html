@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Manage Repositories in Teleport Enabled Registries | Azure Container Registry</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    
+    <meta name="description" content="">
+    
+    <link rel="preload" href="/acr/assets/css/0.styles.1adce09e.css" as="style"><link rel="preload" href="/acr/assets/js/app.3ca3959d.js" as="script"><link rel="preload" href="/acr/assets/js/2.4abe739f.js" as="script"><link rel="preload" href="/acr/assets/js/60.f13d2f1c.js" as="script"><link rel="prefetch" href="/acr/assets/js/10.080d8072.js"><link rel="prefetch" href="/acr/assets/js/11.a8cae62e.js"><link rel="prefetch" href="/acr/assets/js/12.e62ede07.js"><link rel="prefetch" href="/acr/assets/js/13.88956df0.js"><link rel="prefetch" href="/acr/assets/js/14.da996b77.js"><link rel="prefetch" href="/acr/assets/js/15.128615bf.js"><link rel="prefetch" href="/acr/assets/js/16.28bd344b.js"><link rel="prefetch" href="/acr/assets/js/17.3154ce14.js"><link rel="prefetch" href="/acr/assets/js/18.1a01df13.js"><link rel="prefetch" href="/acr/assets/js/19.d6cd2dad.js"><link rel="prefetch" href="/acr/assets/js/20.3cb003a6.js"><link rel="prefetch" href="/acr/assets/js/21.b60fd558.js"><link rel="prefetch" href="/acr/assets/js/22.7d86dba4.js"><link rel="prefetch" href="/acr/assets/js/23.dd656471.js"><link rel="prefetch" href="/acr/assets/js/24.e228cfdd.js"><link rel="prefetch" href="/acr/assets/js/25.197c3531.js"><link rel="prefetch" href="/acr/assets/js/26.29caa7ed.js"><link rel="prefetch" href="/acr/assets/js/27.fb8da073.js"><link rel="prefetch" href="/acr/assets/js/28.6e4543d4.js"><link rel="prefetch" href="/acr/assets/js/29.a76509db.js"><link rel="prefetch" href="/acr/assets/js/3.f910cf4c.js"><link rel="prefetch" href="/acr/assets/js/30.994ccbbb.js"><link rel="prefetch" href="/acr/assets/js/31.f2c11b52.js"><link rel="prefetch" href="/acr/assets/js/32.840e79d8.js"><link rel="prefetch" href="/acr/assets/js/33.2df67567.js"><link rel="prefetch" href="/acr/assets/js/34.e38730f2.js"><link rel="prefetch" href="/acr/assets/js/35.46229160.js"><link rel="prefetch" href="/acr/assets/js/36.9f898214.js"><link rel="prefetch" href="/acr/assets/js/37.9c3a93a2.js"><link rel="prefetch" href="/acr/assets/js/38.2cbce8d9.js"><link rel="prefetch" href="/acr/assets/js/39.f4bfa261.js"><link rel="prefetch" href="/acr/assets/js/4.1d1d93b6.js"><link rel="prefetch" href="/acr/assets/js/40.bc1f46d1.js"><link rel="prefetch" href="/acr/assets/js/41.2dbb6a30.js"><link rel="prefetch" href="/acr/assets/js/42.84fa6a12.js"><link rel="prefetch" href="/acr/assets/js/43.428cb1ec.js"><link rel="prefetch" href="/acr/assets/js/44.3b6b967d.js"><link rel="prefetch" href="/acr/assets/js/45.fd0d1d9e.js"><link rel="prefetch" href="/acr/assets/js/46.19cb06fd.js"><link rel="prefetch" href="/acr/assets/js/47.8c0d7628.js"><link rel="prefetch" href="/acr/assets/js/48.619e29e6.js"><link rel="prefetch" href="/acr/assets/js/49.3ba8bd2c.js"><link rel="prefetch" href="/acr/assets/js/5.943fad70.js"><link rel="prefetch" href="/acr/assets/js/50.0c02f626.js"><link rel="prefetch" href="/acr/assets/js/51.b822281a.js"><link rel="prefetch" href="/acr/assets/js/52.9a8a029d.js"><link rel="prefetch" href="/acr/assets/js/53.57ca9884.js"><link rel="prefetch" href="/acr/assets/js/54.86e09cf3.js"><link rel="prefetch" href="/acr/assets/js/55.21039511.js"><link rel="prefetch" href="/acr/assets/js/56.b6f67eae.js"><link rel="prefetch" href="/acr/assets/js/57.0266cf09.js"><link rel="prefetch" href="/acr/assets/js/58.249e8925.js"><link rel="prefetch" href="/acr/assets/js/59.a2f8607d.js"><link rel="prefetch" href="/acr/assets/js/6.c89b0c48.js"><link rel="prefetch" href="/acr/assets/js/7.cf63200c.js"><link rel="prefetch" href="/acr/assets/js/8.9e525704.js"><link rel="prefetch" href="/acr/assets/js/9.b9ebe781.js">
+    <link rel="stylesheet" href="/acr/assets/css/0.styles.1adce09e.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/acr/" class="home-link router-link-active"><img src="/acr/files/acr.svg" alt="Azure Container Registry" class="logo"> <span class="site-name can-hide">Azure Container Registry</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"> <a href="https://github.com/azure/acr" target="_blank" rel="noopener noreferrer" class="repo-link">
+    Star this Repo
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"> <a href="https://github.com/azure/acr" target="_blank" rel="noopener noreferrer" class="repo-link">
+    Star this Repo
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav>  <ul class="sidebar-links"><li><a href="/acr/" aria-current="page" class="sidebar-link">Overview</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/acr/#overview" class="sidebar-link">Overview</a></li><li class="sidebar-sub-header"><a href="/acr/#blog-posts" class="sidebar-link">Blog posts</a></li><li class="sidebar-sub-header"><a href="/acr/#links" class="sidebar-link">Links</a></li></ul></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Teleport</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Tasks</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Authentication</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Integration</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="manage-repositories-in-teleport-enabled-registries"><a href="#manage-repositories-in-teleport-enabled-registries" class="header-anchor">#</a> Manage Repositories in Teleport Enabled Registries</h1> <h2 id="existing-limitations"><a href="#existing-limitations" class="header-anchor">#</a> Existing Limitations</h2> <ul><li>Registries must first be Teleport enabled to enable repositories</li> <li>There is a current 10 teleport enabled repository limit for registries</li></ul> <h2 id="existing-flow"><a href="#existing-flow" class="header-anchor">#</a> Existing Flow</h2> <p>At the moment if a repository is teleport enabled, this means it can expand images that are pushed into it making them into the teleport format. Note that this does not interfere with regular registry storage and teleportable (expanded) layers are stored in a separate  storage than typical layers. Making a repository enabled does not however expand all existing images in it, rather all images pushed after the fact will be expanded.</p> <p>This can be best illustrated with examples, take a new empty registry that has already been teleport enabled, in this case we can summarize its state as:</p> <div class="language- extra-class"><pre><code>Registry A
+    Properties
+    - Teleport enabled
+    -&gt; Repositories 
+        (none)
+</code></pre></div><p>Pushing any image to Registry A will result in the creation of a teleport enabled repository, for visualization:</p> <div class="language- extra-class"><pre><code>Push ubuntu:18.0.1 to Registry A
+
+Registry A
+    Properties
+    - Teleport enabled
+    -&gt; Repositories 
+        ubuntu (Teleport Enabled)
+            |-&gt; Tag: 18.0.1 
+                Can be pulled from teleport client
+</code></pre></div><p>Now consider a non empty registry, registry B that has just had teleport enabled</p> <div class="language- extra-class"><pre><code>Registry B
+    Properties
+    - Teleport enabled
+    -&gt; Repositories 
+        python (Not Teleport Enabled)
+            |-&gt; Tag: latest
+                Cannot be pulled from teleport client
+</code></pre></div><p>Pushing a new image not already present will result in:</p> <div class="language- extra-class"><pre><code>Push ubuntu:18.0.1 to Registry B
+
+Registry B
+    Properties
+    - Teleport enabled
+    -&gt; Repositories 
+        python (Not Teleport Enabled)
+            |-&gt; Tag: latest
+                Cannot be pulled from teleport client
+
+        ubuntu (Teleport Enabled)
+            |-&gt; Tag: 18.0.1 
+                Can be pulled from teleport client
+</code></pre></div><p>If we want to enable python we can similarly re push the python image resulting in:</p> <div class="language- extra-class"><pre><code>Push python:latest to Registry B
+
+Registry B
+    Properties
+    - Teleport enabled
+    -&gt; Repositories 
+        python (Teleport Enabled)
+            |-&gt; Tag: latest
+                Can be pulled from teleport client
+
+        ubuntu (Teleport Enabled)
+            |-&gt; Tag: 18.0.1 
+                Can be pulled from teleport client
+</code></pre></div><p>A tricky thing however is that if instead of the last step we pushed a different image for repository python (where latest and 2.2 dont share a digest) we would see this state:</p> <div class="language- extra-class"><pre><code>Push python:2.2 to Registry B
+
+Registry B
+    Properties
+    - Teleport enabled
+    -&gt; Repositories 
+        python (Teleport Enabled)
+            |-&gt; Tag: latest
+                Cannot be pulled from teleport client
+                Tag: 2.2
+                Can be pulled from teleport client
+
+        ubuntu (Teleport Enabled)
+            |-&gt; Tag: 18.0.1 
+                Can be pulled from teleport client
+</code></pre></div><h2 id="manually-select-which-repositories-are-teleport-enabled"><a href="#manually-select-which-repositories-are-teleport-enabled" class="header-anchor">#</a> Manually Select which Repositories Are Teleport Enabled</h2> <p>The previous operation does not give customers much control over which registries are teleport enabled as a result we do have an existing flow to chose which repositories are enabled and which arent, note however that as long as a repository is under the 10 repo limit all pushes to non teleport enabled repositories (new or otherwise) will become teleport enabled (even if the flag here was set manually to disabled)</p> <p>The previous step should have provided some insights as to how we currently enable teleport on a repository. Here is how to explicitely set and check which repositories are teleport enabled.</p> <h3 id="identify-which-repositories-are-teleport-enabled"><a href="#identify-which-repositories-are-teleport-enabled" class="header-anchor">#</a> Identify which repositories are teleport enabled</h3> <p>To currently identify if a speific repository is teleport enabled we can run the following command and looking at the teleport enabled field:</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>az acr repository show --repository <span class="token operator">&lt;</span>repository<span class="token operator">&gt;</span>  -o jsonc
+<span class="token punctuation">{</span>
+<span class="token string">&quot;changeableAttributes&quot;</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+  <span class="token string">&quot;deleteEnabled&quot;</span><span class="token builtin class-name">:</span> true,
+  <span class="token string">&quot;listEnabled&quot;</span><span class="token builtin class-name">:</span> true,
+  <span class="token string">&quot;readEnabled&quot;</span><span class="token builtin class-name">:</span> true,
+  <span class="token string">&quot;teleportEnabled&quot;</span><span class="token builtin class-name">:</span> true,
+  <span class="token string">&quot;writeEnabled&quot;</span><span class="token builtin class-name">:</span> <span class="token boolean">true</span>
+ <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br></div></div><p>We have also provided a convenicence script to find this out for all repositories in a registry in case there are a lot and determining this becomes difficult. P.S this is not super fast but saves manually checking one by one.</p> <blockquote><p>Note: Assure <a href="./find-teleport-enabled-repositories.sh">find-teleport-enabled-repositories.sh</a> is set to execute: <code>sudo chmod +x find-teleport-enabled-repositories.sh</code></p></blockquote> <p>You can run this as follows:</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>./find-teleport-enabled-repositories.sh registry-name
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>Sample output:</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>/find-teleport-enabled-repositories.sh teleporttest
+gcc -<span class="token operator">&gt;</span> Enabled
+glassfish -<span class="token operator">&gt;</span> Enabled
+jupyter/all-spark-notebook -<span class="token operator">&gt;</span> Enabled
+python -<span class="token operator">&gt;</span> Disabled
+rethinkdb -<span class="token operator">&gt;</span> Enabled
+
+Summary:
+Enabled Repositories:
+
+gcc
+glassfish
+jupyter/all-spark-notebook
+rethinkdb
+
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br></div></div><h3 id="manually-disable-teleport-on-a-repository"><a href="#manually-disable-teleport-on-a-repository" class="header-anchor">#</a> Manually disable teleport on a repository</h3> <p>For the time being we disable teleport on a repository using the <a href="./edit-teleport-attribute.sh">edit-teleport-attribute.sh</a>  included in this repo. This can be used by first setting env variables for credentials:</p> <blockquote><p>Note: Assure <a href="./edit-teleport-attribute.sh">edit-teleport-attribute.sh</a> is set to execute: <code>sudo chmod +x edit-teleport-attribute.sh</code></p></blockquote> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">ACR_USER</span><span class="token operator">=</span>teleport-token
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">ACR_PWD</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>az acr token create <span class="token punctuation">\</span>
+  --name teleport-token <span class="token punctuation">\</span>
+  --registry $ACR <span class="token punctuation">\</span>
+  --scope-map _repositories_pull <span class="token punctuation">\</span>
+  --query credentials.passwords<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>.value -o tsv<span class="token variable">)</span></span>
+
+edit-teleport-attribute.sh <span class="token operator">&lt;</span>registry-name<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>repository<span class="token operator">&gt;</span> disable --debug
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br></div></div><h3 id="manually-enable-teleport-on-a-repository"><a href="#manually-enable-teleport-on-a-repository" class="header-anchor">#</a> Manually enable teleport on a repository</h3> <p>Once the registry has less than 10 teleportable repositories enabled, the next repository for which an image is pushed that is not already teleport enabled will become teleport enabled. As a result there is no direct need of enabling teleport for it, instead you can just push an image to said repository.</p> <p>Nonetheless for completeness <a href="./edit-teleport-attribute.sh">edit-teleport-attribute.sh</a>  script can set this metadata field to enable teleport on a repository manually (you will still need to push afterwards so the image will expand in the background).</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">ACR_USER</span><span class="token operator">=</span>teleport-token
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">ACR_PWD</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>az acr token create <span class="token punctuation">\</span>
+  --name teleport-token <span class="token punctuation">\</span>
+  --registry $ACR <span class="token punctuation">\</span>
+  --scope-map _repositories_pull <span class="token punctuation">\</span>
+  --query credentials.passwords<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>.value -o tsv<span class="token variable">)</span></span>
+
+edit-teleport-attribute.sh <span class="token operator">&lt;</span>registry-name<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>repository<span class="token operator">&gt;</span> <span class="token builtin class-name">enable</span> --debug
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br></div></div><p>After, new images pushed to the enabled repository will be expanded and teleportable.</p> <h2 id="faq"><a href="#faq" class="header-anchor">#</a> FAQ</h2> <ul><li><p>Can the Teleport 10 repository limit be raised?</p> <p><code>The 10 repository limit is a temporary measure during the private preview phase. We do not currently have a way to raise this value for a particular registry. If necessary users can request a second registry to be teleport enabled</code></p></li> <li><p>Will pushing one image to an existing repository (making it teleport enabled) expand all existing tags making them teleportable?</p> <p><code>Unfortnately we do not currently support backfill so only layers contained in pushes after teleport has been enabled on the registry will be fixed</code></p></li> <li><p>Is there a timeline to improve this behaviour?</p> <p><code>We have a plan to improve this behaviour but the exact timeline is not set in stone</code></p></li> <li><p>How can I tel if an image in a teleport enabled repository is actually teleportable?</p> <p><code>This can be done using the check-expansion script also provided in this registry</code></p></li></ul></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/azure/acr/edit/master/docs/teleport/teleport-repository-management.md" target="_blank" rel="noopener noreferrer">Edit this page on GitHub</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/acr/assets/js/app.3ca3959d.js" defer></script><script src="/acr/assets/js/2.4abe739f.js" defer></script><script src="/acr/assets/js/60.f13d2f1c.js" defer></script>
+  </body>
+</html>
