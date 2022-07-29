@@ -2,6 +2,14 @@
 
 Release notes for the Azure Container Registry connected registry runtime image. The image is published at `mcr.microsoft.com/acr/connected-registry:<tag>`.
 
+## 0.8.0
+July 29, 2022
+
+* Bug fix for memory leak on connected registry instance.
+* Bug fix to include Docker api version header in proxied responses.
+
+tags: `0.8.0`, `0.8.0-linux-amd64`, `0.8.0-linux-arm32v7`, `0.8.0-linux-arm64v8`
+
 ## 0.7.0
 January 21, 2022
 
