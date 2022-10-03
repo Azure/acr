@@ -25,7 +25,7 @@ In this quickstart, you use [Azure Container Registry](https://docs.microsoft.co
     - [K3s: Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/quick-start/) cluster.
     - Self-managed Kubernetes cluster using [Cluster API](https://cluster-api.sigs.k8s.io/user/quick-start.html)
     - An [Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/kubernetes-walkthrough) cluster
-- [Helm 3](https://helm.sh/docs/intro/install/) installed. **Note: the follow tutorial is compatible for Helm releases < v3.7.0.**
+- [Helm 3](https://helm.sh/docs/intro/install/) installed. **Note: the following tutorial is compatible for Helm releases < v3.7.0.**
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) installed.
 - A `kubeconfig` file and context pointing to your cluster.
 
