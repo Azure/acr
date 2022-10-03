@@ -25,7 +25,7 @@ In this quickstart, you use [Azure Container Registry](https://docs.microsoft.co
     - [K3s: Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/quick-start/) cluster.
     - Self-managed Kubernetes cluster using [Cluster API](https://cluster-api.sigs.k8s.io/user/quick-start.html)
     - An [Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/kubernetes-walkthrough) cluster
-- [Helm 3](https://helm.sh/docs/intro/install/) installed.
+- [Helm 3](https://helm.sh/docs/intro/install/) installed. **Note: the follow tutorial is compatible for Helm releases < v3.7.0.**
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) installed.
 - A `kubeconfig` file and context pointing to your cluster.
 
@@ -46,11 +46,11 @@ From a cluster node, run the following commands to install the connected registr
 
 2. Pull the connected registry helm chart from MCR
 
-`helm chart pull mcr.microsoft.com/acr/connected-registry/chart:0.1.0`
+`helm chart pull mcr.microsoft.com/acr/connected-registry/chart:0.3.0`
 
 3. Export the helm chart
 
-`helm chart export mcr.microsoft.com/acr/connected-registry/chart:0.1.0`
+`helm chart export mcr.microsoft.com/acr/connected-registry/chart:0.3.0`
 
 4. View the helm chart
 
@@ -105,7 +105,15 @@ Kubernetes uses a set IP range when deploying services. The IP address that you 
 
 `kubectl get pod kube-controller-manager-<node> -n kube-system -o jsonpath='{.spec.containers[0].command}'`
 
-and viewing the --service-cluster-ip-range setting.
+and viewing the --service-cluster-ip-range setting. 
+
+> [!NOTE]
+> For AKS clusters, the service cluster IP range can be obtained by using the Azure CLI command
+> `az aks show -g <Resource Group Name> -n <AKS Cluster Name> --query "networkProfile.serviceCidr" -o tsv`
+
+Confirm that the selected IP is not already in use by running the command
+
+`kubectl get svc -A`
 
 If the selected service IP is invalid, you will see a `422 Unprocessable Entity` HTTP error response from Kubernetes at deployment time.
 
@@ -126,7 +134,7 @@ If the selected service IP is invalid, you will see a `422 Unprocessable Entity`
 
 1. Deploy the connected registry, provide your connected registry connection string and existing Kubernetes storage class name. The below command deploys the release "connected-registry". Provide the base64-encoded strings of the public certificate and private key in the  `tls.crt` and `tls.key` values, respectively.
 
-`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set pvc.storageClassName="<insert storage class name>" --set image="mcr.microsoft.com/acr/connected-registry:0.6.0" --set tls.crt=$TLS_CRT --set tls.key=$TLS_KEY connected-registry ./connected-registry`
+`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set pvc.storageClassName="<insert storage class name>" --set service.clusterIP="<insert cluster IP>" --set image="mcr.microsoft.com/acr/connected-registry:0.8.0" --set tls.crt=$TLS_CRT --set tls.key=$TLS_KEY connected-registry ./connected-registry`
 
 2. To view the deployed connected registry resources, run 
 
@@ -220,7 +228,7 @@ EOF
 
 1. Deploy the connected registry, provide your connected registry connection string and existing Kubernetes storage class name. The below command deploys the release "connected-registry".
 
-`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set httpEnabled=true --set pvc.storageClassName="<insert storage class name>" --set image="mcr.microsoft.com/acr/connected-registry:0.6.0" connected-registry ./connected-registry`
+`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set httpEnabled=true --set pvc.storageClassName="<insert storage class name>" --set image="mcr.microsoft.com/acr/connected-registry:0.8.0" connected-registry ./connected-registry`
 
 2. View the deployed connected registry resources
 
