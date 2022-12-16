@@ -13,6 +13,24 @@ This article helps you troubleshoot problems you might encounter when setting up
 
 ## Symptoms
 
+* Unable to activate the connected registry. The connected registry container fails to start up due to the error `"Failed to activate the connected registry as it is already activated by another instance. Only one instance is supported at any time."`
+
+## Causes
+
+* There is already another instance of this connected registry deployed. There can only be one instance of a connected registry deployed at once.
+
+## Potential solutions
+
+### Deactivate the existing connected registry instance
+
+ If you would like to deactivate the existing instance of the connected registry, run the `az acr connected-registry deactivate` command using the [Azure CLI](https://learn.microsoft.com/cli/azure/acr/connected-registry?view=azure-cli-latest#az-acr-connected-registry-deactivate). Then redeploy the connected registry.
+
+### Create a new connected registry with a different name
+
+If you would like to preserve the existing instance of this connected registry, create a new connected registry with a different name to avoid the activation conflict. Run the `az acr connected-registry create` command using the [Azure CLI](https://learn.microsoft.com/cli/azure/acr/connected-registry?view=azure-cli-latest#az-acr-connected-registry-create) and deploy again using this new connected registry.
+
+## Symptoms
+
 * Unable to push or pull images to or from the connected registry. Client error is `Error response from daemon: Get https://<connected-registry-login-server-ip-or-dns>/v2/: http: server gave HTTP response to HTTPS client`
 
 ## Causes
