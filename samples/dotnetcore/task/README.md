@@ -1,4 +1,4 @@
-## Getting Started with Container Registry - Manage Container Registry Task - in DotNetCore ##
+# Getting Started with Container Registry - Manage Container Registry Task - in DotNet ##
 
 * Schedule a new run to build a container image using the local sample project (WeatherService) and push it to the registry.
 * Wait for the run completion and download the run log.
@@ -7,7 +7,8 @@
 
 * Create a container registry
 * Create a service principal and assign it the contributor role of the registry
-* Build ManageTask.csproj (DotNetCore SDK 3.1 required)
+* Build ManageTask.csproj (DotNet SDK 6.0 required)
+
 ```sh
 dotnet build ManageTask/ManageTask.csproj
 
@@ -17,7 +18,7 @@ SPClientSecret=<ServicePrincipalPassword> \
 SubscriptionId=<RegistrySubscriptionId> \
 ResourceGroupName=<RegistryResourceGroupName> \
 RegistryName=<RegistryName> \
-dotnet ManageTask/bin/Debug/netcoreapp3.1/ManageTask.dll
+dotnet ManageTask/bin/Debug/net6.0/ManageTask.dll
 ```
 
 ## More information ##

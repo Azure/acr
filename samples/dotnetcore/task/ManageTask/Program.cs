@@ -1,13 +1,12 @@
-﻿using Microsoft.Azure.Management.ContainerRegistry;
-using Microsoft.Azure.Management.ContainerRegistry.Models;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
+﻿using Azure;
+using Azure.ResourceManager.ContainerRegistry;
+using Azure.ResourceManager.ContainerRegistry.Models;
 using Microsoft.Extensions.Configuration;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
 using SharpCompress.Writers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
@@ -49,20 +48,20 @@ namespace ManageTask
             Console.WriteLine($"BuildImageUsingLocalSource");
             Console.WriteLine($"  MIClientId: {options.MIClientId}");
             Console.WriteLine($"  SPClientId: {options.SPClientId}");
-            Console.WriteLine($"  AzureEnvironment: {options.AzureEnvironment.Name}");
+            Console.WriteLine($"  AzureAuthorityHosts: {options.AzureAuthorityHosts}");
             Console.WriteLine($"  SubscriptionId: {options.SubscriptionId}");
             Console.WriteLine($"  ResourceGroupName: {options.ResourceGroupName}");
             Console.WriteLine($"  RegistryName: {options.RegistryName}");
             Console.WriteLine($"======================================================================");
             Console.WriteLine();
 
-            var registryClient = new AzureUtility(
-                options.AzureEnvironment,
-                options.TenantId,
-                options.SubscriptionId,
-                options.MIClientId,
-                options.SPClientId,
-                options.SPClientSecret).RegistryClient;
+            var armClient = new AzureUtility(
+                azureAuthorityHosts: options.AzureAuthorityHosts,
+                subscriptionId: options.SubscriptionId,
+                tenantId: options.TenantId,
+                miClientId: options.MIClientId,
+                spClientId: options.SPClientId,
+                spClientSecret: options.SPClientSecret).ArmClient;
 
             // Pack and upload the local weather service source
             var sourceDirecotry = Path.Combine(
@@ -74,12 +73,13 @@ namespace ManageTask
             var tarball = CreateTarballFromDirectory(sourceDirecotry);
 
             Console.WriteLine($"{DateTimeOffset.Now}: Created tarball '{tarball}'");
-
             Console.WriteLine($"{DateTimeOffset.Now}: Uploading tarball");
 
-            var sourceUpload = await registryClient.Registries.GetBuildSourceUploadUrlAsync(
-                options.ResourceGroupName,
-                options.RegistryName).ConfigureAwait(false);
+            var subscription = await armClient.GetDefaultSubscriptionAsync().ConfigureAwait(false);
+            var resourceGroup = (await subscription.GetResourceGroupAsync (options.ResourceGroupName).ConfigureAwait(false)).Value;
+            var registry = (await resourceGroup.GetContainerRegistryAsync(options.RegistryName).ConfigureAwait(false)).Value;
+
+            var sourceUpload = (await registry.GetBuildSourceUploadUrlAsync().ConfigureAwait(false)).Value;
 
             using(var stream = new FileStream(tarball, FileMode.Open, FileAccess.Read))
             using (var content = new StreamContent(stream))
@@ -87,7 +87,7 @@ namespace ManageTask
             {
                 // NOTE: You can also use azure storage sdk to upload the file
                 content.Headers.Add("x-ms-blob-type", "BlockBlob");
-                var response = await httpClient.PutAsync(sourceUpload.UploadUrl, content).ConfigureAwait(false);
+                var response = await httpClient.PutAsync(sourceUpload.UploadUri, content).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
             }
 
@@ -97,21 +97,20 @@ namespace ManageTask
 
             Console.WriteLine($"{DateTimeOffset.Now}: Starting new run");
 
-            var run = await registryClient.Registries.ScheduleRunAsync(
-                options.ResourceGroupName,
-                options.RegistryName,
-                new DockerBuildRequest
-                {
-                    SourceLocation = sourceUpload.RelativePath,
-                    DockerFilePath = "Dockerfile",
-                    ImageNames = new List<string> { "weatherservice:{{.Run.ID}}" },
-                    IsPushEnabled = true,
-                    Platform = new PlatformProperties(OS.Linux),
-                    Timeout = 60 * 10, // 10 minutes
-                    AgentConfiguration = new AgentProperties(cpu: 2)
-                }).ConfigureAwait(false);
+            var dockerBuildContent = new ContainerRegistryDockerBuildContent(
+                dockerFilePath: "Dockerfile",
+                platform: new ContainerRegistryPlatformProperties(ContainerRegistryOS.Linux));
+            dockerBuildContent.SourceLocation = sourceUpload.RelativePath;
+            dockerBuildContent.ImageNames.Add("weatherservice:{{.Run.ID}}");
+            dockerBuildContent.IsPushEnabled = true;
+            dockerBuildContent.TimeoutInSeconds = 60 * 10; // 10 minutes
+            dockerBuildContent.AgentCpu = 2;
 
-            Console.WriteLine($"{DateTimeOffset.Now}: Started run: '{run.RunId}'");
+            var run = (await registry.ScheduleRunAsync(
+                waitUntil: WaitUntil.Completed,
+                content: dockerBuildContent).ConfigureAwait(false)).Value;
+
+            Console.WriteLine($"{DateTimeOffset.Now}: Started run: '{run.Id}'");
 
             Console.WriteLine($"{DateTimeOffset.Now}: Starting new run with encoded task");
 
@@ -121,44 +120,37 @@ $@"
 version: v1.1.0
 steps:
   - build: . -t {imageName}
-  - push: 
-    timeout: 1800
-     - {imageName}";
+  - push:
+    - {imageName}
+    timeout: 1800";
 
-            run = await registryClient.Registries.ScheduleRunAsync(
-                options.ResourceGroupName,
-                options.RegistryName,
-                new EncodedTaskRunRequest
-                {
-                    EncodedTaskContent = Convert.ToBase64String(Encoding.UTF8.GetBytes(taskString)),
-                    SourceLocation = sourceUpload.RelativePath,
-                    Platform = new PlatformProperties(OS.Linux),
-                    Timeout = 60 * 10, // 10 minutes
-                    AgentConfiguration = new AgentProperties(cpu: 2)
-                }).ConfigureAwait(false);
+            var encodedTaskRunContent = new ContainerRegistryEncodedTaskRunContent(
+                encodedTaskContent: Convert.ToBase64String(Encoding.UTF8.GetBytes(taskString)),
+                platform: new ContainerRegistryPlatformProperties(ContainerRegistryOS.Linux));
+            encodedTaskRunContent.SourceLocation = sourceUpload.RelativePath;
+            encodedTaskRunContent.TimeoutInSeconds = 60 * 10; // 10 minutes
+            encodedTaskRunContent.AgentCpu = 2;
 
-            Console.WriteLine($"{DateTimeOffset.Now}: Started run: '{run.RunId}'");
+            run = (await registry.ScheduleRunAsync(
+                waitUntil: WaitUntil.Completed,
+                content: encodedTaskRunContent).ConfigureAwait(false)).Value;
+
+            Console.WriteLine($"{DateTimeOffset.Now}: Started run: '{run.Data.RunId}'");
 
             // Poll the run status and wait for completion
             DateTimeOffset deadline = DateTimeOffset.Now.AddMinutes(10);
-            while (RunInProgress(run.Status)
+            while (RunInProgress(run.Data.Status)
                 && deadline >= DateTimeOffset.Now)
             {
-                Console.WriteLine($"{DateTimeOffset.Now}: In progress: '{run.Status}'. Wait 10 seconds");
+                Console.WriteLine($"{DateTimeOffset.Now}: In progress: '{run.Data.Status}'. Wait 10 seconds");
                 await Task.Delay(10000).ConfigureAwait(false);
-                run = await registryClient.Runs.GetAsync(
-                    options.ResourceGroupName, 
-                    options.RegistryName, 
-                    run.RunId).ConfigureAwait(false);
+                run = (await registry.GetContainerRegistryRunAsync(run.Data.RunId).ConfigureAwait(false)).Value;
             }
 
-            Console.WriteLine($"{DateTimeOffset.Now}: Run status: '{run.Status}'");
+            Console.WriteLine($"{DateTimeOffset.Now}: Run status: '{run.Data.RunId}'");
 
             // Download the run log
-            var logResult = await registryClient.Runs.GetLogSasUrlAsync(
-                options.ResourceGroupName,
-                options.RegistryName,
-                run.RunId).ConfigureAwait(false);
+            var logResult = (await run.GetLogSasUrlAsync().ConfigureAwait(false)).Value;
 
             using (var httpClient = new HttpClient())
             {
@@ -181,29 +173,24 @@ steps:
             public string ResourceGroupName { get; set; }
             public string RegistryName { get; set; }
 
-            public AzureEnvironment AzureEnvironment
+            public Uri AzureAuthorityHosts
             {
                 get
                 {
-                    return string.IsNullOrWhiteSpace(Environment)
-                        ? AzureEnvironment.AzureGlobalCloud
-                        : AzureEnvironment.FromName(Environment);
+                    switch (Environment?.ToLowerInvariant())
+                    {
+                        case "azurechina":
+                            return Azure.Identity.AzureAuthorityHosts.AzureChina;
+                        case "azuregovernment":
+                            return Azure.Identity.AzureAuthorityHosts.AzureGovernment;
+                        default:
+                            return Azure.Identity.AzureAuthorityHosts.AzurePublicCloud;
+                    }
                 }
             }
 
             public void Validate()
             {
-                if (string.IsNullOrWhiteSpace(TenantId))
-                {
-                    throw new ArgumentNullException(nameof(TenantId));
-                }
-
-                if (string.IsNullOrWhiteSpace(MIClientId)
-                    && (string.IsNullOrWhiteSpace(SPClientId) || string.IsNullOrWhiteSpace(SPClientSecret)))
-                {
-                    throw new ArgumentNullException($"Missing {nameof(MIClientId)} or {nameof(SPClientId)}/{nameof(SPClientSecret)}");
-                }
-
                 if (string.IsNullOrWhiteSpace(SubscriptionId))
                 {
                     throw new ArgumentNullException(nameof(SubscriptionId));
@@ -234,11 +221,11 @@ steps:
             return options;
         }
 
-        private static bool RunInProgress(string runStatus)
+        private static bool RunInProgress(ContainerRegistryRunStatus? runStatus)
         {
-            return runStatus == RunStatus.Queued 
-                || runStatus == RunStatus.Started 
-                || runStatus == RunStatus.Running;
+            return runStatus == ContainerRegistryRunStatus.Queued 
+                || runStatus == ContainerRegistryRunStatus.Started 
+                || runStatus == ContainerRegistryRunStatus.Running;
         }
 
         private static string CreateTarballFromDirectory(string direcotryPath)

@@ -1,23 +1,18 @@
-﻿using Microsoft.Azure.Management.ContainerRegistry;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+﻿using Azure.Core;
+using Azure.Identity;
+using Azure.ResourceManager;
 using System;
 
 namespace ManageTask
 {
     internal class AzureUtility
     {
-        private readonly AzureCredentials credential;
+        private readonly TokenCredential credential;
 
-        public ContainerRegistryManagementClient RegistryClient { get; private set; }
+        public ArmClient ArmClient { get; private set; }
 
-        public AzureUtility(AzureEnvironment environment, string tenantId, string subscriptionId, string miClientId, string spClientId, string spClientSecret)
+        public AzureUtility(Uri azureAuthorityHosts, string subscriptionId, string miClientId, string tenantId, string spClientId, string spClientSecret)
         {
-            if (string.IsNullOrWhiteSpace(tenantId))
-            {
-                throw new ArgumentNullException(nameof(tenantId));
-            }
-
             if (string.IsNullOrWhiteSpace(subscriptionId))
             {
                 throw new ArgumentNullException(nameof(subscriptionId));
@@ -25,30 +20,37 @@ namespace ManageTask
 
             if (!string.IsNullOrWhiteSpace(miClientId))
             {
-                credential = new AzureCredentials(
-                    new MSILoginInformation(MSIResourceType.VirtualMachine, miClientId),
-                    environment,
-                    tenantId);
+                credential = new ManagedIdentityCredential(
+                    clientId: miClientId,
+                    options: new TokenCredentialOptions
+                    {
+                        AuthorityHost = azureAuthorityHosts
+                    });
             }
             else if (!string.IsNullOrWhiteSpace(spClientId)
-                && !string.IsNullOrWhiteSpace(spClientSecret))
+                && !string.IsNullOrWhiteSpace(spClientSecret)
+                && !string.IsNullOrWhiteSpace(tenantId))
             {
-                credential = new AzureCredentials(
-                    new ServicePrincipalLoginInformation
+                credential = new ClientSecretCredential(
+                    tenantId: tenantId,
+                    clientId: spClientId,
+                    clientSecret: spClientSecret,
+                    options: new TokenCredentialOptions
                     {
-                        ClientId = spClientId,
-                        ClientSecret = spClientSecret
-                    },
-                    tenantId,
-                    environment);
+                        AuthorityHost = azureAuthorityHosts
+                    });
             }
             else
             {
-                throw new ArgumentNullException("No subscription credential");
+                //credential = new DefaultAzureCredential(includeInteractiveCredentials: true);
+                credential = new DeviceCodeCredential(
+                    options: new DeviceCodeCredentialOptions
+                    { 
+                        AuthorityHost = azureAuthorityHosts
+                    });
             }
 
-            RegistryClient = new ContainerRegistryManagementClient(credential.WithDefaultSubscription(subscriptionId));
-            RegistryClient.SubscriptionId = subscriptionId;
+            ArmClient = new ArmClient(credential, subscriptionId);
         }
     }
 }

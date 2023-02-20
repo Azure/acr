@@ -1,7 +1,7 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-ARG BaseImage=mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim
-ARG BuildImage=mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+ARG BaseImage=mcr.microsoft.com/dotnet/aspnet:6.0-cbl-mariner2.0
+ARG BuildImage=mcr.microsoft.com/dotnet/sdk:6.0-cbl-mariner2.0
 
 FROM ${BaseImage} AS base
 WORKDIR /app
