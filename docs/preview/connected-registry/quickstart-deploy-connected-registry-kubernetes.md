@@ -2,7 +2,7 @@
 title: Quickstart - Deploy a connected registry to Kubernetes cluster
 description: Use Azure Container Registry CLI and Helm 3 commands to deploy a connected registry to a Kubernetes cluster.
 ms.topic: quickstart
-ms.date: 11/22/202
+ms.date: 02/24/2023
 ms.author: jeburke
 author: jaysterp
 ms.custom:
@@ -46,11 +46,11 @@ From a cluster node, run the following commands to install the connected registr
 
 2. Pull the connected registry helm chart from MCR
 
-`helm chart pull mcr.microsoft.com/acr/connected-registry/chart:0.3.0`
+`helm chart pull mcr.microsoft.com/acr/connected-registry/chart:0.4.0`
 
 3. Export the helm chart
 
-`helm chart export mcr.microsoft.com/acr/connected-registry/chart:0.3.0`
+`helm chart export mcr.microsoft.com/acr/connected-registry/chart:0.4.0`
 
 4. View the helm chart
 
@@ -134,7 +134,7 @@ If the selected service IP is invalid, you will see a `422 Unprocessable Entity`
 
 1. Deploy the connected registry, provide your connected registry connection string and existing Kubernetes storage class name. The below command deploys the release "connected-registry". Provide the base64-encoded strings of the public certificate and private key in the  `tls.crt` and `tls.key` values, respectively.
 
-`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set pvc.storageClassName="<insert storage class name>" --set service.clusterIP="<insert cluster IP>" --set image="mcr.microsoft.com/acr/connected-registry:0.8.0" --set tls.crt=$TLS_CRT --set tls.key=$TLS_KEY connected-registry ./connected-registry`
+`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set pvc.storageClassName="<insert storage class name>" --set service.clusterIP="<insert cluster IP>" --set tls.crt=$TLS_CRT --set tls.key=$TLS_KEY connected-registry ./connected-registry`
 
 2. To view the deployed connected registry resources, run 
 
@@ -228,7 +228,7 @@ EOF
 
 1. Deploy the connected registry, provide your connected registry connection string and existing Kubernetes storage class name. The below command deploys the release "connected-registry".
 
-`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set httpEnabled=true --set pvc.storageClassName="<insert storage class name>" --set image="mcr.microsoft.com/acr/connected-registry:0.8.0" connected-registry ./connected-registry`
+`helm upgrade --namespace connected-registry --create-namespace --install --set connectionString="<insert connection string>" --set httpEnabled=true --set pvc.storageClassName="<insert storage class name>" connected-registry ./connected-registry`
 
 2. View the deployed connected registry resources
 
