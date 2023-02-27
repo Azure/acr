@@ -2,6 +2,13 @@
 
 Release notes for the Azure Container Registry connected registry runtime image. The image is published at `mcr.microsoft.com/acr/connected-registry:<tag>`.
 
+## 0.9.0
+February 23, 2023
+
+* Update runtime image to .NET 6
+
+tags: `0.9.0`, `0.9.0-linux-amd64`, `0.9.0-linux-arm32v7`, `0.9.0-linux-arm64v8`
+
 ## 0.8.0
 July 29, 2022
 
