@@ -53,7 +53,8 @@ XXXXXX-02
     openssl req -nodes -x509 -newkey rsa:4096 \
       -keyout container-registry.contoso.com.key.pem \
       -out container-registry.contoso.com.cert.pem -days 365 \
-      -subj '/CN=container-registry.contoso.com/O=Contoso./C=US'
+      -subj '/CN=container-registry.contoso.com/O=Contoso./C=US' \ 
+      -addext "subjectAltName = DNS:container-registry.contoso.com"
     ```
   - Create a single file containing both the public certificate (or certificates, in the case of a certificate bundle) and private key
     ```shell
