@@ -41,13 +41,19 @@ Before Quarantine is configured on the registry, both "quarantine" and "push" we
 
 ## Configure Quarantine on a registry
 
-Once a user decides to enable Quarantine on a registry, he can use our [management Policy API](https://docs.microsoft.com/en-us/rest/api/containerregistry/registries/update#policies).
+Once a user decides to enable or disable Quarantine on a registry, they can use our [management Policy API](https://docs.microsoft.com/en-us/rest/api/containerregistry/registries/update#policies). Here is the cli example.
+
+```
+id=$(az acr show --name myregistry --query id -o tsv)
+az resource update --ids $id --set properties.policies.quarantinePolicy.status=enabled
+az resource update --ids $id --set properties.policies.quarantinePolicy.status=disabled
+```
 
 Once Quarantine is enabled on a registry, for newly pushed image, it will enter quarantine state automatically and only a user with quarantine reader permissions can see the image. Meanwhile, the same "quarantine" webhook will be raised, but no "push" notification anymore. This gives the scanner a chance to scan the image first before making it available to other users. 
 
 Once scanner finishes scanning the image, it can mark the image as good, which will make this image available to all other users. Meanwhile a "push" notification is generated so that other users are notified.
 
->Please note, once the Quarantine is enabled, any images without being marked as good will be blocked for pull. This may impact user's ongoing workflow. We would recommend that before enable Qurantine mode on the registry, the scanner should finish scanning all the existing images (this can be done by using catalog API and manifest list API). User can then look at the failed images and decide if he should enable the Quarantine mode.
+>Please note, once the Quarantine is enabled, any images without being marked as good will be blocked for pull. This may impact user's ongoing workflow. We would recommend that before enable Qurantine mode on the registry, the scanner should finish scanning all the existing images (this can be done by using catalog API and manifest list API). User can then look at the failed images and decide if they should enable the Quarantine mode.
 
 The detailed flow is described below.
  
