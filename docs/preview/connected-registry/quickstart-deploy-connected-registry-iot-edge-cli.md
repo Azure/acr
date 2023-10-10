@@ -93,13 +93,13 @@ This command will print a JSON that will include credential information similar 
         "creationTime": "2020-12-10T00:06:15.356846+00:00",
         "expiry": null,
         "name": "password1",
-        "value": "$$$0meCoMPL3xP4$$W0rd001!@#$$"
+        "value": "xxxxxxxxxxxxxxxx"
       },
       {
         "creationTime": "2020-12-10T00:06:15.356846+00:00",
         "expiry": null,
         "name": "password2",
-        "value": "#$an0TH3rCoMPL3xP4ssW0rd002!#$"
+        "value": "xxxxxxxxxxxxxxxx"
       }
     ],
     "username": "crimagepulltoken"
@@ -128,7 +128,7 @@ This will return the connection string for the connected registry including the 
 
 ```json
 {
-  "ACR_REGISTRY_CONNECTION_STRING": "ConnectedRegistryName=myconnectedregistry;SyncTokenName=myconnectedregistry-sync-token;SyncTokenPassword=s0meCoMPL3xP4$$W0rd001!@#;ParentGatewayEndpoint=mycontainerregistry001.westus2.data.azurecr.io;ParentEndpointProtocol=https",
+  "ACR_REGISTRY_CONNECTION_STRING": "ConnectedRegistryName=myconnectedregistry;SyncTokenName=myconnectedregistry-sync-token;SyncTokenPassword=xxxxxxxxxxxxxxxx;ParentGatewayEndpoint=mycontainerregistry001.westus2.data.azurecr.io;ParentEndpointProtocol=https",
   "ACR_REGISTRY_LOGIN_SERVER": "<Optional: connected registry login server. More info at https://aka.ms/acr/connected-registry>"
 }
 ```
@@ -163,7 +163,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                         "type": "docker",
                         "env": {
                             "ACR_REGISTRY_CONNECTION_STRING": {
-                                "value": "ConnectedRegistryName=myconnectedregistry;SyncTokenName=myconnectedregistry-sync-token;SyncTokenPassword=s0meCoMPL3xP4$$W0rd001!@#;ParentGatewayEndpoint=mycontainerregistry001.westus2.data.azurecr.io;ParentEndpointProtocol=https"
+                                "value": "ConnectedRegistryName=myconnectedregistry;SyncTokenName=myconnectedregistry-sync-token;SyncTokenPassword=xxxxxxxxxxxxxxxx;ParentGatewayEndpoint=mycontainerregistry001.westus2.data.azurecr.io;ParentEndpointProtocol=https"
                             }
                         },
                         "status": "running",
@@ -198,7 +198,7 @@ To deploy the connected registry and api proxy module using the Azure CLI, save 
                         "registryCredentials": {
                             "tsmregistry": {
                                 "address": "mycontainerregistry001.azurecr.io",
-                                "password": "$$$0meCoMPL3xP4$$W0rd001!@#$$",
+                                "password": "xxxxxxxxxxxxxxxx",
                                 "username": "crimagepulltoken"
                             }
                         }
