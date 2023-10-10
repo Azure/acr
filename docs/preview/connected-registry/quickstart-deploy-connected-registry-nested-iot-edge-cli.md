@@ -36,7 +36,7 @@ This will return the connection string for the connected registry including the 
 
 ```json
 {
-  "ACR_REGISTRY_CONNECTION_STRING": "ConnectedRegistryName=myconnectedmirror;SyncTokenName=myconnectedmirror-sync-token;SyncTokenPassword=s0meCoMPL3xP4$$W0rd001!@#;ParentGatewayEndpoint=<parent gateway endpoint>;ParentEndpointProtocol=<http or https>",
+  "ACR_REGISTRY_CONNECTION_STRING": "ConnectedRegistryName=myconnectedmirror;SyncTokenName=myconnectedmirror-sync-token;SyncTokenPassword=xxxxxxxxxxxxxxxx;ParentGatewayEndpoint=<parent gateway endpoint>;ParentEndpointProtocol=<http or https>",
   "ACR_REGISTRY_LOGIN_SERVER": "<Optional: connected registry login server. More info at https://aka.ms/acr/connected-registry>"
 }
 ```
@@ -72,7 +72,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                         "type": "docker",
                         "env": {
                             "ACR_REGISTRY_CONNECTION_STRING": {
-                                "value": "ConnectedRegistryName=myconnectedmirror;SyncTokenName=myconnectedmirror-sync-token;SyncTokenPassword=s0meCoMPL3xP4$$W0rd001!@#;ParentGatewayEndpoint=$IOTEDGE_PARENTHOSTNAME;ParentEndpointProtocol=https"
+                                "value": "ConnectedRegistryName=myconnectedmirror;SyncTokenName=myconnectedmirror-sync-token;SyncTokenPassword=xxxxxxxxxxxxxxxx;ParentGatewayEndpoint=$IOTEDGE_PARENTHOSTNAME;ParentEndpointProtocol=https"
                             }
                         },
                         "status": "running",
@@ -111,7 +111,7 @@ To deploy the connected registry module using the Azure CLI, save the following 
                         "registryCredentials": {
                             "tsmregistry": {
                                 "address": "$upstream",
-                                "password": "$$$0meCoMPL3xP4$$W0rd001!@#$$",
+                                "password": "xxxxxxxxxxxxxxxx",
                                 "username": "myconnectedmirror-sync-token"
                             }
                         }
@@ -213,7 +213,7 @@ Based on the tutorial, it overall includes the following steps:
     container_auth: // The token used to pull the image from cloud registry
         serveraddress: "mycontainerregistry001.azurecr.io"
         username: "crimagepulltokentop"
-        password: "HwBU+ZhB+X9AOmeAq6ZG2G/y2QD=8sfT"
+        password: "xxxxxxxxxxxxxxxx"
     child:
         - device_id: lower-layerx
         deployment: "./templates/tutorial/deploymentLowerLayer.json" ## Optional. If provided, the given deployment file will be applied to the newly created device
@@ -221,7 +221,7 @@ Based on the tutorial, it overall includes the following steps:
         container_auth: //The token used to pull the image from parent connected registry
             serveraddress: "$upstream:8000"
             username: "crimagepulltokenlower"
-            password: "$$$0meCoMPL3xP4$$W0rd001!@#$$"
+            password: "xxxxxxxxxxxxxxxx"
     ```
 
 
