@@ -1,3 +1,6 @@
+> [!WARNING]
+> This page is no longer being maintained and will be archived by Tuesday, November 11, 2023. Please visit [aka.ms/acr/artifact-streaming](https://aka.ms/acr/artifact-streaming).
+
 # Integrate Azure Container Registry and Project Teleport with Azure Kubernetes Service (preview)
 
 [Project Teleport][project-teleport] allows container hosts to access pre-expanded layers within an [Azure Container Registry (ACR)][acr] that is in the same region as the container host. Using pre-expanded layers removes the time for compute and memory to decompress layers that are already available within the Azure network. Removing this decompression also reduces the time to create the instance of the running container.

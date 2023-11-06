@@ -1,3 +1,6 @@
+> [!WARNING]
+> This page is no longer being maintained and will be archived by Tuesday, November 11, 2023. Please visit [aka.ms/acr/artifact-streaming](https://aka.ms/acr/artifact-streaming).
+
 # Project Teleport Overview (Private Preview)
 
 Instancing a custom environment within seconds is one of the many wonders of running containers. Having to wait for the image and its layers to download & decompress the first time is the current price of admission.

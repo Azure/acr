@@ -1,3 +1,6 @@
+> [!WARNING]
+> This page is no longer being maintained and will be archived by Tuesday, November 11, 2023. Please visit [aka.ms/acr/artifact-streaming](https://aka.ms/acr/artifact-streaming).
+
 # Comparing Azure Container Registry Project Teleport with standard docker pull, using Azure Kubernetes Service
 
 To compare the performance benefits of Project Teleport two deployments will be made allowing the same image to be deployed to an AKS node with Project Teleport, and another without Project Teleport, allowing node recycling to reset the nodes, clearing any cached images.
