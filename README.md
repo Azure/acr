@@ -40,7 +40,7 @@ A set of short links for presentations & social media.
 | [Webhook notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
 | [Auto-purge](https://aka.ms/acr/auto-purge) | https://aka.ms/acr/auto-purge |
 | [OCI artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
-| [Artifact streaming](aka.ms/acr/artifact-streaming) | [https://aka.ms/acr/artifact-streaming](aka.ms/acr/artifact-streaming)
+| [Artifact streaming](https://aka.ms/acr/artifact-streaming) | [https://aka.ms/acr/artifact-streaming](https://aka.ms/acr/artifact-streaming)
 
 ### Diagnostic & Troubleshooting Links
 
