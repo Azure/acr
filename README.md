@@ -19,50 +19,51 @@ A set of short links for presentations & social media.
 
 | Title | Link |
 | - | - |
-| [ACR Service](https://aka.ms/acr) | https://aka.ms/acr |
+| [ACR service](https://aka.ms/acr) | https://aka.ms/acr |
 | [Tiers](https://aka.ms/acr/tiers) | https://aka.ms/acr/tiers |
 | [Pricing](https://aka.ms/acr/pricing) | https://aka.ms/acr/pricing |
 | [Docs](https://aka.ms/acr/docs) | https://aka.ms/acr/docs |
-| [CLI Docs](https://aka.ms/acr/docs/cli) | https://aka.ms/acr/docs/cli |
-| [REST Docs](https://aka.ms/acr/docs/rest) | https://aka.ms/acr/docs/rest |
+| [CLI docs](https://aka.ms/acr/docs/cli) | https://aka.ms/acr/docs/cli |
+| [REST docs](https://aka.ms/acr/docs/rest) | https://aka.ms/acr/docs/rest |
 | [Roadmap](https://aka.ms/acr/roadmap) | https://aka.ms/acr/roadmap |
 
 ### General ACR Capabilities
 
 | Title | Link |
 | - | - |
-| [Cross Region Replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
-| [In-zone Redundancy](https://aka.ms/acr/az) | https://aka.ms/acr/az |
-| [Helm Support](https://aka.ms/acr/helm) | https://aka.ms/acr/helm |
-| [Supply Chain Artifact Support](https://aka.ms/acr/acr/supply-chain-artifacts) | https://aka.ms/acr/acr/supply-chain-artifacts |
-| [Importing Artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
-| [Tag Locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
-| [Webhook Notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
+| [Cross region replication](https://aka.ms/acr/geo-replication) | https://aka.ms/acr/geo-replication |
+| [In-zone redundancy](https://aka.ms/acr/az) | https://aka.ms/acr/az |
+| [Helm support](https://aka.ms/acr/helm) | https://aka.ms/acr/helm |
+| [Supply chain artifact support](https://aka.ms/acr/acr/supply-chain-artifacts) | https://aka.ms/acr/acr/supply-chain-artifacts |
+| [Importing artifacts](https://aka.ms/acr/import) | https://aka.ms/acr/import |
+| [Tag locking](https://aka.ms/acr/tag-locking) | https://aka.ms/acr/tag-locking |
+| [Webhook notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
 | [Auto-purge](https://aka.ms/acr/auto-purge) | https://aka.ms/acr/auto-purge |
-| [OCI Artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
+| [OCI artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
+| [Artifact streaming](aka.ms/acr/artifact-streaming) | [https://aka.ms/acr/artifact-streaming](aka.ms/acr/artifact-streaming)
 
 ### Diagnostic & Troubleshooting Links
 
 | Title | Link |
 | - | - |
 | [Audit logs](https://aka.ms/acr/audit-logs) | https://aka.ms/acr/audit-logs |
-| [Health Check CLI](https://aka.ms/acr/health-check) | https://aka.ms/acr/health-check |
+| [Health check CLI](https://aka.ms/acr/health-check) | https://aka.ms/acr/health-check |
 
 ### Security Links
 
 | Title | Link |
 | - | - |
 | [Authentication](https://aka.ms/acr/authentication) | https://aka.ms/acr/authentication |
-| [Authorization Roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
-| [Repository Permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repo-permissions |
-| [Azure Policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
-| [VNet & Firewall Rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
-| [Azure Private Link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
-| [Dedicated Data Endpoints](http://aka.ms/acr/dedicated-data-endpoints) | http://aka.ms/acr/dedicated-data-endpoints |
-| [Customer-managed Keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
-| [Content Trust / Signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
-| [Quarantine Pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
-| [Custom Domains (Preview)](https://aka.ms/acr/custom-domains) | https://aka.ms/acr/custom-domains |
+| [Authorization roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
+| [Repository permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repo-permissions |
+| [Azure policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
+| [VNet & firewall rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
+| [Azure private link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
+| [Dedicated data endpoints](http://aka.ms/acr/dedicated-data-endpoints) | http://aka.ms/acr/dedicated-data-endpoints |
+| [Customer-managed keys](https://aka.ms/acr/cmk) | https://aka.ms/acr/cmk |
+| [Content trust / signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
+| [Quarantine pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
+| [Custom domains (Preview)](https://aka.ms/acr/custom-domains) | https://aka.ms/acr/custom-domains |
 
 ### ACR Tasks
 
@@ -82,16 +83,15 @@ A set of short links for presentations & social media.
 | [FAQ](https://aka.ms/acr/faq) | https://aka.ms/acr/faq |
 | [Presentations](https://aka.ms/acr/presentations) | https://aka.ms/acr/presentations |
 | [Jobs](https://aka.ms/acr/jobs) | https://aka.ms/acr/jobs |
-| Twitter #AzureContainerRegistry | https://twitter.com/search?q=%23AzureContainerRegistry |
+| X #AzureContainerRegistry | https://twitter.com/search?q=%23AzureContainerRegistry |
 
 ## Providing feedback
 
 | Title | Link |
 |-|-|
-| [**Stack overflow** for community support](https://aka.ms/acr/stack-overflow) | https://aka.ms/acr/stack-overflow |
-| [**User Voice** for feature requests](https://aka.ms/acr/uservoice) | https://aka.ms/acr/uservoice |
-| [**Github** for logging issues](https://aka.ms/acr/issues) | https://aka.ms/acr/issues |
-| [**Slack** for collaboration](https://aka.ms/acr/slack) | https://aka.ms/acr/slack |
+| [**Stack Overflow** for community support](https://aka.ms/acr/stack-overflow) | https://aka.ms/acr/stack-overflow |
+| [**Azure Feedback** for feature requests](https://aka.ms/acr/uservoice) | https://aka.ms/acr/uservoice |
+| [**GitHub** for logging issues](https://aka.ms/acr/issues) | https://aka.ms/acr/issues |
 | [**Create a ticket** for general support](https://aka.ms/acr/support/create-ticket) | https://aka.ms/acr/support/create-ticket |
 
 ## API and SDK reference

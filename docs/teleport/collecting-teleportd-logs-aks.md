@@ -1,3 +1,6 @@
+> [!WARNING]
+> This page is no longer being maintained and will be archived by Tuesday, November 11, 2023. Please visit [aka.ms/acr/artifact-streaming](https://aka.ms/acr/artifact-streaming).
+
 # Collecting Logs for Teleport on AKS
 This guide goes over how to collect logs for the teleportd daemon running in an AKS cluster. The steps in this guide have to be carried out by customers in order to collect log information for debugging purposes. 
 
