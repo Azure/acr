@@ -96,6 +96,6 @@ Here's how a call to the `GET /v2/hello-world/manifests/latest` API of the given
 ```bash
 export registry="contosoregistry.azurecr.io"
 export acr_access_token="eyJ...xcg"
-curl -v -H "Authorization: Bearer $acr_access_token" https://$registry/v2/hello-world/manifests/latest
+curl -v -H "Authorization: Bearer $acr_access_token" -H "Accept:application/vnd.oci.image.manifest.v1+json" https://$registry/v2/hello-world/manifests/latest
 ```
 This should result in a status 200 OK.
