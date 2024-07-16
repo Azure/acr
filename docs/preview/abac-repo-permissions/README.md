@@ -29,7 +29,9 @@ ABAC conditions can be used with both [built-in ACR roles](https://learn.microso
 
 ## Transition to ABAC-enabled Repository Permissions
 
-ABAC-enabled Repository Permissions is currently in private preview. As such, you must first register your subscription for the private preview and contact the ACR team at <acr-pm@microsoft.com> for registration approval. Afterwards, you must individually opt in every registry within your registered subscription for ABAC-enabled repository permissions.
+ABAC-enabled Repository Permissions is currently in private preview. As such, you must first register your subscription for the private preview and contact the ACR team at <acr-pm@microsoft.com> for registration approval. You can choose any existing subscription you have to register for the preview. Registering a subscription for the preview has no side effects on any Azure resources contained within.
+
+Afterwards, you must individually opt in every registry within your registered subscription for ABAC-enabled repository permissions. You must only opt in test registries that you are willing to experiment with, as opting in will affect the behavior of certain existing built-in ACR roles and permissions.
 
 > **Important**: Once a registry is opted into ABAC-enabled repository permissions, certain existing built-in ACR roles and permissions will not be honored by Azure Container Registry. A new set of ABAC-enabled built-in ACR roles and permissions will supersede the existing roles.
 
@@ -50,7 +52,9 @@ The table below summarizes the steps you need to undertake to participate in the
 
 ### Subscription Preview Registration
 
-To use this preview with your registry, you must register your subscription for the preview. Registering the subscription has no side effects on any Azure resources contained within.
+To use this preview with your registry, you must register your subscription for the preview. You can choose any existing subscription you have to register for the preview. Registering a subscription for the preview has no side effects on any Azure resources contained within.
+
+After registering your subscription for the private preview and having the request approved, you must individually opt in every registry within your registered subscription for ABAC-enabled repository permissions. You must only opt in test registries that you are willing to experiment with, as opting in will affect the behavior of certain existing built-in ACR roles and permissions.
 
 #### Subscription Preview Registration through `az cli`
 
@@ -204,13 +208,22 @@ This role is useful because the new ABAC-enabled repository roles do not grant p
 
 ### Scoping Role Assignments to Specific Repositories
 
-Permissions of ABAC-enabled roles can be optionally scoped to specific repositories during role assignment. You can scope ABAC-enabled role assignments through the Azure Portal or `az cli`.
+Permissions of ABAC-enabled roles can be optionally scoped to specific repositories during role assignment. You can scope ABAC-enabled role assignments through the [Azure Preview Portal for ACR ABAC](https://ms.portal.azure.com/?feature.abacACR=true) or `az cli`.
 
 > Important: If you assign an ABAC-enabled role (such as the ACR Repository Reader role) without any ABAC conditions to restrict to specific repositories, the role assignment will grant permissions to the entire registry.
 
 #### Scoping Role Assignments to Specific Repositories through Azure Portal
 
-Scoping role assignments can be done through the Access control (IAM) blade in the Azure Container Registry portal or through `az cli`. The Azure Container Registry team recommends using the portal experience in lieu of the `az role assignment` command for scoping role assignments during the private preview for ease of use.
+Scoping role assignments can be done through the Access control (IAM) blade in the Azure Container Registry portal or through `az cli`. The Azure Container Registry team recommends using the [Azure Preview Portal for ACR ABAC](https://ms.portal.azure.com/?feature.abacACR=true) in lieu of the `az role assignment` command for scoping role assignments during the private preview for ease of use.
+
+
+##### Using the Azure Preview Portal for ACR ABAC Repository Permissions
+
+To participate in the private preview, you **must** use the Azure Preview Portal for ACR ABAC to assign ABAC-enabled roles to specific repositories in a registry. The portal allows you to assign ABAC-enabled roles to specific repositories in a registry. The portal also allows you to scope role assignments to specific repositories through ABAC conditions.
+
+> **Note**: The preview portal for ACR ABAC is available at **<https://ms.portal.azure.com/?feature.abacACR=true>**.
+
+##### Navigating the Role Assignment Interface for ABAC Repository Permissions
 
 This section describes the Portal steps to granting permissions to enable pulling and listing artifacts within specific repositories. The following example assigns an ACR Repository Reader role that is scoped to repositories with names that match either a specific prefix or has an exact name match.
 
