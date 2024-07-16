@@ -74,7 +74,7 @@ After registering your subscription for the preview, you must contact the ACR te
 
 To experience the private preview, installing a preview CLI extension to `az acr` is required.
 
-Installing the preview CLI extension has no other side effects other than allowing certain ABAC-specific CLI flags to appear in `az acr create` and `az acr update`.
+Installing the preview CLI extension has no other side effects other than allowing certain ABAC-specific CLI flags to appear in `az acr create` and `az acr update` to facilitate opting in registries to ABAC Permissions Mode.
 
 ```bash
 az extension add --source https://acrazextpreview.blob.core.windows.net/cli-extensions/acrabac-1.0.0b1-py3-none-any.whl --allow-preview true
