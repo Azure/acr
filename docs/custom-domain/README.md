@@ -2,9 +2,7 @@
 
 **Important - Using a custom domain in Azure Container Registry is a private preview feature.**
 
-**The Azure Container Registry team is not currently accepting new customers for this private preview. The feature will be made more widely available in the future.**
-
-**If your registry has already been enabled for a custom domain and you need support, please open an issue in this repository.**  
+**If your registry has already been enabled for a custom domain and you need support, please open an issue in this repository.**
 
 Every ACR is accessed using its login server. If you have a registry called `myregistry`, you access it using its default hostname, `myregistry.azurecr.io` (in Azure Public Cloud.) As a customer belonging to an organization, you may prefer to access your registry using a custom domain that is associated with your organization, for instance, `container-registry.contoso.com`.
 
@@ -131,3 +129,15 @@ Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure
    `eastus-registry-data.contoso.com` --> `myregistry.eastus.data.azurecr.io`
    - The output of the command to enable data endpoints on the registry will contain the regional data endpoint.
    
+## Contact us
+As a final step, share the following with us by creating a support ticket ([Azure Support](https://aka.ms/azuresupport)):
+
+* Custom registry domain details
+    * custom registry domain (container-registry.contoso.com)
+    * key vault secret ID of the corresponding TLS data
+    * client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
+
+* Custom data domain details
+  *  regional custom data domain (eastus-registry-data.contoso.com)
+  * key vault secret ID of the corresponding TLS data
+  * client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
