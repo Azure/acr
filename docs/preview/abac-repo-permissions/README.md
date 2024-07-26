@@ -208,20 +208,20 @@ This role is useful because the new ABAC-enabled repository roles do not grant p
 
 ### Scoping Role Assignments to Specific Repositories
 
-Permissions of ABAC-enabled roles can be optionally scoped to specific repositories during role assignment. You can scope ABAC-enabled role assignments through the [Azure Preview Portal for ACR ABAC](https://ms.portal.azure.com/?feature.abacACR=true) or `az cli`.
+Permissions of ABAC-enabled roles can be optionally scoped to specific repositories during role assignment. You can scope ABAC-enabled role assignments through the [Azure Preview Portal for ACR ABAC](https://portal.azure.com/?feature.abacACR=true) or `az cli`.
 
 > Important: If you assign an ABAC-enabled role (such as the ACR Repository Reader role) without any ABAC conditions to restrict to specific repositories, the role assignment will grant permissions to the entire registry.
 
 #### Scoping Role Assignments to Specific Repositories through Azure Portal
 
-Scoping role assignments can be done through the Access control (IAM) blade in the Azure Container Registry portal or through `az cli`. The Azure Container Registry team recommends using the [Azure Preview Portal for ACR ABAC](https://ms.portal.azure.com/?feature.abacACR=true) in lieu of the `az role assignment` command for scoping role assignments during the private preview for ease of use.
+Scoping role assignments can be done through the Access control (IAM) blade in the Azure Container Registry portal or through `az cli`. The Azure Container Registry team recommends using the [Azure Preview Portal for ACR ABAC](https://portal.azure.com/?feature.abacACR=true) in lieu of the `az role assignment` command for scoping role assignments during the private preview for ease of use.
 
 
 ##### Using the Azure Preview Portal for ACR ABAC Repository Permissions
 
 To participate in the private preview, you **must** use the Azure Preview Portal for ACR ABAC to assign ABAC-enabled roles to specific repositories in a registry. The portal allows you to assign ABAC-enabled roles to specific repositories in a registry. The portal also allows you to scope role assignments to specific repositories through ABAC conditions.
 
-> **Note**: The preview portal for ACR ABAC is available at **<https://ms.portal.azure.com/?feature.abacACR=true>**.
+> **Note**: The preview portal for ACR ABAC is available at **<https://portal.azure.com/?feature.abacACR=true>**.
 
 ##### Navigating the Role Assignment Interface for ABAC Repository Permissions
 
