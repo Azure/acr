@@ -15,7 +15,7 @@ ms.service: container-registry
 
 Azure attribute-based access control (Azure ABAC) enables you to scope permissions within your registry by scoping roles to specific repositories. This approach enhances your security by allowing permissions for particular repositories, rather than the entire registry. This approach strengthens the security posture of your container registry by limiting access, thereby reducing the risk of unauthorized access or data breaches.
 
-Azure ABAC builds on Azure role-based access control (Azure RBAC) introducing the ability to set conditions when authoring [Azure role assignments](https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-overview). ABAC conditions can narrow down role assignment permissions to specific repositories within the registry based on set conditions. For example, you might grant access solely to repositories that start with a certain prefix or exactly match a given name, providing a more secure and controlled access management system.
+Azure ABAC builds on Azure Entra role-based access control (Azure RBAC) introducing the ability to set conditions when authoring [Azure Entra role assignments](https://learn.microsoft.com/en-us/azure/role-based-access-control/conditions-overview). ABAC conditions can narrow down role assignment permissions to specific repositories within the registry based on set conditions. For example, you might grant access solely to repositories that start with a certain prefix or exactly match a given name, providing a more secure and controlled access management system.
 
 ABAC conditions can enhance security by allowing integration with both [built-in ACR roles](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles) and custom role assignments. They are also compatible with various Microsoft Entra ID identities, including users, groups, service principals, and managed identities. This capability is supported across all ACR SKUs, ensuring a wide range of options for access management within your registry.
 
@@ -126,7 +126,7 @@ You have the option to opt existing registries to ABAC-enabled repository permis
 
 3. If the `roleAssignmentMode` is set to `LegacyRegistryPermissions`, your registry is not opted into ABAC-enabled Repository Permissions Mode.
 
-## Managing repository-level permissions in Azure role assignments
+## Managing repository-level permissions in Azure Entra role assignments
 
 > [!IMPORTANT]
 > Please note that once you opt into ABAC permissions mode in your registry properties, the registry will no longer recognize certain existing built-in ACR roles and permissions for authorization requests. This change affects specific registry actions, and even if you do not have role assignments with ABAC conditions, the shift will occur. Consequently, your current role assignments and permissions might become ineffective and may require updates to align with the new ABAC permissions mode. A new set of ABAC-enabled built-in ACR roles and permissions will supersede the existing roles.
