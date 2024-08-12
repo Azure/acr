@@ -119,7 +119,7 @@ You have the option to opt existing registries to ABAC-enabled repository permis
 1. Run `az acr show` to check if an existing registry is opted into ABAC Permissions Mode.
 
     ```bash
-    az acr show -n MyRegistry --query roleAssignmentMode
+    az acr show -n MyRegistry -g MyResourceGroup --query roleAssignmentMode
     ```
 
 2. If the `roleAssignmentMode` is set to `AbacRepositoryPermissions`, your registry is opted into ABAC-enabled Repository Permissions Mode.
@@ -363,7 +363,7 @@ During the private preview of ABAC-enabled Repository Permissions, there are a f
 1. **ACR Tasks Permissions**: When a registry is opted into ABAC-enabled Repository Permissions, both new and existing ACR Tasks created within the ABAC-enabled registry will not be able to push or pull images from the registry. This is being addressed as the preview progresses. To see if your registry has been opted into ABAC-enabled Repository Permissions, run the following az cli command.
 
     ```bash
-    az acr show -n MyRegistry --query roleAssignmentMode
+    az acr show -n MyRegistry -g MyResourceGroup --query roleAssignmentMode
     ```
 
 If the roleAssignmentMode is set to `AbacRepositoryPermissions`, your registry is opted into ABAC-enabled Repository Permissions and thus ACR Tasks may have permission issues to the registry itself.
