@@ -2,7 +2,7 @@
 title: Access-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)
 description: Learn step-by-step guidance on configuring role assignments with ABAC conditions for Azure Container Registry Repository Permissions during the private preview.
 ms.topic: article
-ms.date: 08/09/2024
+ms.date: 08/12/2024
 ms.author: johsh
 author: johnsonshi
 ms.service: container-registry
