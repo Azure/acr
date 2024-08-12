@@ -10,7 +10,7 @@ ms.service: container-registry
 
 # What's New: Manage Repository Permissions for Azure Container Registry through Attribute-Based Access Control (ABAC)
 
-[!NOTE] The Repository Permissions feature for Azure Container Registry is currently in private preview. For details on enrolling in the Private Preview and to ensure a smooth experience, please follow the provided instructions.
+> [!NOTE] The Repository Permissions feature for Azure Container Registry is currently in private preview. For details on enrolling in the Private Preview and to ensure a smooth experience, please follow the provided instructions.
 
 If you're looking to stay updated with the latest enhancements in Azure Container Registry (ACR), particularly in managing repository permissions, this article is for you. We are excited to announce the private preview of managing repository permissions in ACR in Azure role assignments, a feature that transforms how you manage access to your repositories.
 
