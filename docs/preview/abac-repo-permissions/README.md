@@ -145,7 +145,7 @@ Here is a summary of the behavior of built-in ACR roles for ABAC-enabled registr
 
 * Only new ABAC-enabled built-in ACR roles will have registry data plane access, such as pushing and pulling images to/from repositories. For ABAC-enabled registries, the new roles should be used whether you are assigning permissions to specific repositories or all repositories.
 
-* If you assign an ABAC-enabled role such as the ***Azure Container Registry Repository Reader*** role without any ABAC conditions to restrict to specific repositories, the role assignment will grant permissions to all repositories.
+* If you assign an ABAC-enabled role such as the ***Container Registry Repository Reader*** role without any ABAC conditions to restrict to specific repositories, the role assignment will grant permissions to all repositories.
 
 | Role | Notes | [Access Resource Manager](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli#access-resource-manager) | [Create/delete registry](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli#create-and-delete-registry) | [Push artifacts](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli#push-image) | [Pull artifacts](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli#pull-image) | List all repositories in the registry | List artifacts, manifests, and tags within repositories | [Delete images, artifacts, and tags within repositories](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli#delete-image-data) | [Change policies](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli#change-policies) | [Sign images](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-roles?tabs=azure-cli#sign-images) | Scope assigned permissions to specific repositories during role assignment |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -156,10 +156,10 @@ Here is a summary of the behavior of built-in ACR roles for ABAC-enabled registr
 | AcrPull | Existing Role. No permissions granted for ABAC-enabled registries. | | | | | | | | | | |
 | AcrDelete | Existing Role. No permissions granted for ABAC-enabled registries. | | | | | | | | | | |
 | AcrImageSigner | Existing Role. The existing AcrImageSigner role will continue to have permissions to sign images across all repositories for ABAC-enabled registries.  | | | | | | | | | X | |
-| Azure Container Registry Repository Reader | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | | X | | X | | | | X |
-| Azure Container Registry Repository Writer | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | X | X | | X | | | | X |
-| Azure Container Registry Repository Contributor | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | X | X | | X | X | | | X |
-| Azure Container Registry Catalog Lister | New ABAC-enabled Role. Note that this role grants permissions to list all repositories that exist in the registry, even if the role assignee does not have push or pull permissions to certain repositories. | | | | | X | | | | | The Catalog Lister role to list repositories cannot be scoped to specific repositories in a registry. Note that this role grants permissions to list all repositories that exist in the registry, even if the role assignee does not have push or pull permissions to certain repositories. |
+| Container Registry Repository Reader | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | | X | | X | | | | X |
+| Container Registry Repository Writer | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | X | X | | X | | | | X |
+| Container Registry Repository Contributor | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | X | X | | X | X | | | X |
+| Container Registry Repository Catalog Lister | New ABAC-enabled Role. Note that this role grants permissions to list all repositories that exist in the registry, even if the role assignee does not have push or pull permissions to certain repositories. | | | | | X | | | | | The Catalog Lister role to list repositories cannot be scoped to specific repositories in a registry. Note that this role grants permissions to list all repositories that exist in the registry, even if the role assignee does not have push or pull permissions to certain repositories. |
 
 ### Behavior of Existing Built-in ACR Roles for Non-ABAC-enabled registries
 
@@ -173,23 +173,23 @@ Here is a summary of the behavior of ***existing built-in ACR roles*** for ***no
 
 ### Description of new ABAC-enabled built-in roles
 
-**ABAC-enabled Azure Container Registry Repository Reader Role**: The new ***Azure Container Registry Repository Reader*** role grants permissions to pull and list artifacts stored in a registry's repositories. It also grants permission to list manifests and tags stored within repositories. Note that this role does not grant permission to query the list of repositories because the role can be optionally scoped to specific repositories with ABAC conditions.
+**ABAC-enabled Container Registry Repository Reader Role**: The new ***Container Registry Repository Reader*** role grants permissions to pull and list artifacts stored in a registry's repositories. It also grants permission to list manifests and tags stored within repositories. Note that this role does not grant permission to query the list of repositories because the role can be optionally scoped to specific repositories with ABAC conditions.
 
-**ABAC-enabled Azure Container Registry Repository Writer Role**: The new ***Azure Container Registry Repository Writer*** role grants permissions to push artifacts to a registry’s repositories in addition to pulling and listing artifacts. It also grants permission to list manifests and tags stored within repositories. Note that this role does not grant permission to query the list of repositories because the role can be optionally scoped to specific repositories with ABAC conditions.
+**ABAC-enabled Container Registry Repository Writer Role**: The new ***Container Registry Repository Writer*** role grants permissions to push artifacts to a registry’s repositories in addition to pulling and listing artifacts. It also grants permission to list manifests and tags stored within repositories. Note that this role does not grant permission to query the list of repositories because the role can be optionally scoped to specific repositories with ABAC conditions.
 
-**ABAC-enabled Azure Container Registry Repository Contributor Role**: The new ***Azure Container Registry Repository Contributor*** role grants permissions to delete artifacts and tags stored in a registry's repositories in addition to pushing, pulling, and listing artifacts. It also grants permission to list manifests and tags stored within repositories. Note that this role does not grant permission to query the list of repositories because the role can be optionally scoped to specific repositories with ABAC conditions.
+**ABAC-enabled Container Registry Repository Contributor Role**: The new ***Container Registry Repository Contributor*** role grants permissions to delete artifacts and tags stored in a registry's repositories in addition to pushing, pulling, and listing artifacts. It also grants permission to list manifests and tags stored within repositories. Note that this role does not grant permission to query the list of repositories because the role can be optionally scoped to specific repositories with ABAC conditions.
 
-**Azure Container Registry Catalog Lister Role** The new ***Azure Container Registry Catalog Lister*** role grants permissions to view, query, and list all repositories in the registry. Take note that this role does not grant the ability to push, pull, or list any artifacts contained within repositories. This role is useful because the new ABAC-enabled repository roles do not grant permission to query and list repositories in the registry.
+**Container Registry Repository Catalog Lister Role** The new ***Container Registry Repository Catalog Lister*** role grants permissions to view, query, and list all repositories in the registry. Take note that this role does not grant the ability to push, pull, or list any artifacts contained within repositories. This role is useful because the new ABAC-enabled repository roles do not grant permission to query and list repositories in the registry.
 
 > [!NOTE]
-> If you assign ***Azure Container Registry Repository Reader***, ***Azure Container Registry Repository Writer***, or ***Azure Container Registry Repository Contributor*** roles without any ABAC conditions to restrict the role assignment grant to specific repositories, the role assignment will grant permissions to all repositories that exist in the registry.
-> The **Azure Container Registry Catalog Lister** role to list repositories cannot be scoped to specific repositories in a registry. Note that this role grants permissions to list all repositories that exist in the registry, even if the role assignee does not have permissions to certain repositories.
+> If you assign ***Container Registry Repository Reader***, ***Container Registry Repository Writer***, or ***Container Registry Repository Contributor*** roles without any ABAC conditions to restrict the role assignment grant to specific repositories, the role assignment will grant permissions to all repositories that exist in the registry.
+> The **Container Registry Repository Catalog Lister** role to list repositories cannot be scoped to specific repositories in a registry. Note that this role grants permissions to list all repositories that exist in the registry, even if the role assignee does not have permissions to certain repositories.
 
 Please see [Scoping role assignments to specific repositories in an ABAC-enabled registry](#scoping-role-assignments-to-specific-repositories-in-an-abac-enabled-registry) for more information on how to scope role permissions using ABAC conditions.
 
 ## Granting repository-level permissions to all repositories in an ABAC-enabled registry
 
-To grant permissions to all repositories in a registry, you can assign the ABAC-enabled roles like the ***Azure Container Registry Repository Reader***, ***Azure Container Registry Repository Writer***, or ***Azure Container Registry Repository Contributor*** roles without any ABAC conditions. This will grant permissions to all repositories in the registry.
+To grant permissions to all repositories in a registry, you can assign the ABAC-enabled roles like the ***Container Registry Repository Reader***, ***Container Registry Repository Writer***, or ***Container Registry Repository Contributor*** roles without any ABAC conditions. This will grant permissions to all repositories in the registry.
 
 1. Sign in to the Azure preview portal at [https://portal.azure.com/***?feature.abacACR=true***](https://portal.azure.com/?feature.abacACR=true) for the ACR ABAC Private Preview.
 
@@ -205,9 +205,9 @@ To grant permissions to all repositories in a registry, you can assign the ABAC-
 
 ![Proceed with adding a role assignment through the dropdown.](./media/2-add-role-assignment-dropdown.png)
 
-6. Select the **Azure Container Registry Repository Reader role**, from the available ABAC-enabled role options.
+6. Select the **Container Registry Repository Reader role**, from the available ABAC-enabled role options.
 
-![Select the Azure Container Registry Repository Reader role, which is an ABAC-enabled role.](./media/3-select-acr-repository-reader-role.png)
+![Select the Container Registry Repository Reader role, which is an ABAC-enabled role.](./media/3-select-acr-repository-reader-role.png)
 
 7. Assign access to the role by selecting the members and identities you want to assign the role to.
 
@@ -220,13 +220,13 @@ To grant permissions to all repositories in a registry, you can assign the ABAC-
 Permissions of ABAC-enabled roles can be optionally scoped to specific repositories during role assignment. You can scope ABAC-enabled role assignments through the Azure Portal or Azure CLI. During the Private Preview, it is recommended to use the Azure Portal experience for scoping role assignments.
 
 > [!WARNING]
-> Assigning an ABAC-enabled role like the Azure Container Registry Repository Reader role without specific ABAC conditions results in granting permissions to all repositories in the registry. If your intent is to scope permissions to particular repositories, it's recommended to specify conditions that restrict access to particular repositories.
+> Assigning an ABAC-enabled role like the Container Registry Repository Reader role without specific ABAC conditions results in granting permissions to all repositories in the registry. If your intent is to scope permissions to particular repositories, it's recommended to specify conditions that restrict access to particular repositories.
 
 ### Scoping role assignments to specific repositories - Azure Portal
 
 Scoping role assignments in Azure Container Registry can be done through the Access control (IAM) blade in the Azure Portal or using the Azure CLI (`az cli`). However, during the private preview, the Azure Container Registry team recommends using the portal experience for scoping role assignments, as it is easier to use compared to the az role assignment command.
 
-To enable pulling and listing artifacts within certain repositories, you can assign the ***Azure Container Registry Repository Reader*** role with scoped permissions. The following steps detail how to scope role assignments to specific repositories through the Azure Portal. The following example assigns an Azure Container Registry Repository Reader role that is scoped to repositories that start with a specific prefix or has an exact name match.
+To enable pulling and listing artifacts within certain repositories, you can assign the ***Container Registry Repository Reader*** role with scoped permissions. The following steps detail how to scope role assignments to specific repositories through the Azure Portal. The following example assigns an Container Registry Repository Reader role that is scoped to repositories that start with a specific prefix or has an exact name match.
 
 1. Sign in to the Azure preview portal at [https://portal.azure.com/***?feature.abacACR=true***](https://portal.azure.com/?feature.abacACR=true) for the ACR ABAC Private Preview.
 
@@ -242,9 +242,9 @@ To enable pulling and listing artifacts within certain repositories, you can ass
 
 ![Proceed with adding a role assignment through the dropdown.](./media/2-add-role-assignment-dropdown.png)
 
-6. Select the **Azure Container Registry Repository Reader role**, from the available ABAC-enabled role options.
+6. Select the **Container Registry Repository Reader role**, from the available ABAC-enabled role options.
 
-![Select the Azure Container Registry Repository Reader role, which is an ABAC-enabled role.](./media/3-select-acr-repository-reader-role.png)
+![Select the Container Registry Repository Reader role, which is an ABAC-enabled role.](./media/3-select-acr-repository-reader-role.png)
 
 7. Assign access to the role by selecting the members and identities you want to assign the role to.
 
