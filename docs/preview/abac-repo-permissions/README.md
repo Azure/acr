@@ -1,5 +1,5 @@
 ---
-title: Access-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)
+title: Attribute-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)
 description: Learn step-by-step guidance on configuring role assignments with ABAC conditions for Azure Container Registry Repository Permissions during the private preview.
 ms.topic: article
 ms.date: 08/12/2024
@@ -8,10 +8,10 @@ author: johnsonshi
 ms.service: container-registry
 ---
 
-# Access-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)
+# Attribute-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)
 
 > [!IMPORTANT]
-> The Azure Container Registry (ACR) Access-Based Access Control (ABAC) Repository Permissions feature is currently in private preview. As a private preview feature, we encourage users to explore its capabilities in a non-production environment, and avoid production workloads.
+> The Azure Container Registry (ACR) Attribute-Based Access Control (ABAC) Repository Permissions feature is currently in private preview. As a private preview feature, we encourage users to explore its capabilities in a non-production environment, and avoid production workloads.
 
 Azure attribute-based access control (Azure ABAC) enables you to scope permissions within your registry by scoping roles to specific repositories. This approach enhances your security by allowing permissions for particular repositories, rather than the entire registry. This approach strengthens the security posture of your container registry by limiting access, thereby reducing the risk of unauthorized access or data breaches.
 
@@ -42,7 +42,7 @@ The table below summarizes the steps you need to undertake to participate in the
 | Step Number | Step Description |
 |-------------|------------------|
 | 1           | Register your subscription for the preview. This registration does not affect any Azure resources within the subscription. |
-| 2           | Contact the ACR Team at <acr-pm@microsoft.com> for approval of subscription preview registration.  |
+| 2           | Contact the ACR Team at <acr-abac-preview@microsoft.com> for approval of subscription preview registration. |
 | 3           | Install the preview CLI extension to enable ABAC-specific flags in the `az acr` CLI commands. |
 | 4           | Individually opt in registries to ABAC Permissions Mode using the `az acr` CLI. You can individually opt in both new and existing registries within a registered subscription. |
 | 5           | Be aware that for registries opted into ABAC Permissions Mode, certain existing role assignments will cease to function. This includes both built-in ACR roles and custom ACR roles related to image push, pull, and delete permissions, as well as repository list permissions. Other registries not opted into ABAC Permissions Mode will remain unaffected. |
@@ -50,7 +50,7 @@ The table below summarizes the steps you need to undertake to participate in the
 
 ### Subscription preview registration
 
-To enable the Azure Container Registry (ACR) Access-Based Access Control (ABAC) Repository Permissions feature in private preview for your registry, follow these steps:
+To enable the Azure Container Registry (ACR) Attribute-Based Access Control (ABAC) Repository Permissions feature in private preview for your registry, follow these steps:
 
 1. **Submit Subscription Preview Registration Request:** Begin by submitting a request to register your subscription for the preview. Use the Azure CLI command below to submit a preview registration request:
 
@@ -60,7 +60,7 @@ To enable the Azure Container Registry (ACR) Access-Based Access Control (ABAC) 
     --name AllowAttributeBasedAccessControl
     ```
 
-2. **Contact the ACR Team:** After registering, you need to get registration approval from the ACR team <acr-pm@microsoft.com>. Reach out to them with the details of your subscription preview registration request.
+2. **Contact the ACR Team:** After registering, you need to get registration approval from the ACR team <acr-abac-preview@microsoft.com>. Reach out to them with the details of your subscription preview registration request.
 
 3. **Propagate Preview Registration:** Once the feature 'AllowAttributeBasedAccessControl' is registered and approved, invoking `az provider register -n Microsoft.ContainerRegistry` is required to get the change propagated to the subscription.
 
@@ -155,7 +155,7 @@ Here is a summary of the behavior of built-in ACR roles for ABAC-enabled registr
 | AcrPush | Existing Role. No permissions granted for ABAC-enabled registries. | | | | | | | | | | |
 | AcrPull | Existing Role. No permissions granted for ABAC-enabled registries. | | | | | | | | | | |
 | AcrDelete | Existing Role. No permissions granted for ABAC-enabled registries. | | | | | | | | | | |
-| AcrImageSigner | Existing Role. The existing AcrImageSigner role will continue to have permissions to sign images across all repositories for ABAC-enabled registries.  | | | | | | | | | X | |
+| AcrImageSigner | Existing Role. The existing AcrImageSigner role will continue to have permissions to sign images across all repositories for ABAC-enabled registries. | | | | | | | | | X | |
 | Container Registry Repository Reader | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | | X | | X | | | | X |
 | Container Registry Repository Writer | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | X | X | | X | | | | X |
 | Container Registry Repository Contributor | New ABAC-enabled Role. Will have data plane permissions for ABAC-enabled registries. | | | X | X | | X | X | | | X |
@@ -372,4 +372,4 @@ If the `roleAssignmentMode` is set to `LegacyRegistryPermissions`, your registry
 
 ## Conclusion
 
-Azure Container Registry (ACR) Access-Based Access Control (ABAC) Repository Permissions is a powerful feature that enhances the security and access control of your container registry. By scoping permissions to specific repositories within your registry, you can ensure that users have access only to the resources they need, reducing the risk of unauthorized access and data breaches.
+Azure Container Registry (ACR) Attribute-Based Access Control (ABAC) Repository Permissions is a powerful feature that enhances the security and access control of your container registry. By scoping permissions to specific repositories within your registry, you can ensure that users have access only to the resources they need, reducing the risk of unauthorized access and data breaches.

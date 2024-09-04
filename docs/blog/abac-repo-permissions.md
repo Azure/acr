@@ -33,4 +33,4 @@ This feature is a significant step towards more secure and precise access manage
 
 ## Related content
 
-For private preview onboarding and documentation, please visit [Access-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)](../preview/abac-repo-permissions/README.md).
+For private preview onboarding and documentation, please visit [Attribute-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)](../preview/abac-repo-permissions/README.md).
