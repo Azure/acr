@@ -159,7 +159,7 @@ In this example, we'll try to obtain an ACR refresh token from existing AAD toke
   2. The AAD tenant identifier associated to the credentials, which here we'll take to be `409520d4-8100-4d1d-ad47-72432ddcc120`.
   3. Valid AAD access token credential with access to the aforementioned container registry.
 
-The AAD access token can be obtained from the Azure CLI. After running `az login` check file `$HOME/.azure/accessTokens.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\accessTokens.json` in Windows) for the token values.
+The AAD access token can be obtained from the Azure CLI. After running `az login` check file `$HOME/.azure/msal_token_cache.json` (`%HOMEDRIVE%%HOMEPATH%\.azure\msal_token_cache.json` in Windows) for the token values. Alternatively, run `az account get-access-token --subscription "<your_subscription_name>"` to find the AAD access token.
 
 We'll now call `POST /oauth2/exchange` to exchange the AAD tokens for an ACR refresh token. Here's how such a call looks when done via `curl`:
 ```bash
