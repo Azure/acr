@@ -10,6 +10,8 @@ ms.service: container-registry
 
 # Attribute-Based Access Control for Azure Container Registry Repository Permissions (Private Preview)
 
+![Azure Container Registry - Entra ID Repository Permissions](./media/0-acr-auth-abac-entra-id-repository-permissions.png)
+
 > [!IMPORTANT]
 > The Azure Container Registry (ACR) Attribute-Based Access Control (ABAC) Repository Permissions feature is currently in private preview. As a private preview feature, we encourage users to explore its capabilities in a non-production environment, and avoid production workloads.
 
