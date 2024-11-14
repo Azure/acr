@@ -358,6 +358,38 @@ By following these steps, users will have read access to all repositories with t
 
 ![Create the following ABAC rule with a negation rule to exclude the repository application/secret when granting read permissions.](./media/14-abac-condition-to-exclude-specific-repository-application-secret.png)
 
+#### Scenario: Different ABAC conditions for different actions
+
+This section applies for the scenario where you need to:
+
+1. Grant read and pull permissions to all child repositories under the `application/frontend/` namespace, such as `application/frontend/platform` and `application/frontend/code`.
+2. Grant push and delete permissions to repositories under the `application/frontend/` namespace except `application/frontend/readonly`.
+
+To meet the requirements, you can set different conditions for different actions in a single role assignment.
+
+1. Use the **+ Add condition** to add the first condition:
+
+![Proceed to add a condition.](./media/6-add-conditions-overview.png)
+
+2. Use the **+Add action** to select readonly actions that apply to the first condition and use the **+Add expression** to build an expression for the actions:
+
+![Select readonly actions to grant and build an expression in the conditional role assignment.](./media/15-set-first-condition.png)
+
+3. Use the **+ Add condition** to add the second condition for push action. The push action needs to be added separately because it attribute source is different from other actions.
+
+![Select push action to grant and build an expression in the conditional role assignment.](./media/16-set-second-condition.png)
+
+3. Use the **+ Add condition** to add the third condition for other actions.
+
+![Select other actions to grant and build an expression in the conditional role assignment.](./media/17-set-third-condition.png)
+
+4. Review the conditions to ensure they align with the desired access limitations. You can set editor type to **Code** to inspect the conditions code:
+
+![Review conditions in the conditional role assignment.](./media/18-review-conditions.png)
+
+5. Use **Save** to confirm the role assignment to enforce the scoped permissions.
+
+
 ## Private Preview Limitations of ABAC-Enabled Repository Permissions
 
 During the private preview of ABAC-enabled Repository Permissions, there are a few limitations that you should be aware of:
