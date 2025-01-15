@@ -3,7 +3,7 @@ Continuous Patching Workflow in Azure Container Registry
 
 ## Introduction
 
-Azure Container Registry’s Continuous Patching feature automates the detection and remediation of operating system(OS) level vulnerabilities in container images. By scheduling regular scans with [Trivy](https://trivy.dev/) and applying security fixes using [Copa](https://project-copacetic.github.io/copacetic/website/), you can maintain secure, up-to-date images in your registry—without requiring access to source code or build pipelines. Simply customize the schedule and target images to keep your Azure Container Registry(ACR) environment safe and compliant
+Azure Container Registry's Continuous Patching feature automates the detection and remediation of operating system(OS) level vulnerabilities in container images. By scheduling regular scans with [Trivy](https://trivy.dev/) and applying security fixes using [Copa](https://project-copacetic.github.io/copacetic/website/), you can maintain secure, up-to-date images in your registry—without requiring access to source code or build pipelines. Simply customize the schedule and target images to keep your Azure Container Registry(ACR) environment safe and compliant
 
 > [!NOTE] 
 > Continuous Patching is in Private Preview as of October 2024.
@@ -19,8 +19,8 @@ Here are a few scenarios to use Continuous Patching:
 ## Preview Limitations
 
 Continuous Patching is currently in private preview. The following limitations apply:
-- Windows-based container images aren’t supported.
-- Only "OS-level" vulnerabilities that originate from system packages will be patched. This includes system packages in the container image managed by an OS package manager such as “apt” and “yum”. Vulnerabilities that originate from application packages, such as packages used by programming languages like Go, Python, and NodeJS are unable to be patched.  
+- Windows-based container images aren't supported.
+- Only "OS-level" vulnerabilities that originate from system packages will be patched. This includes system packages in the container image managed by an OS package manager such as "apt” and "yum”. Vulnerabilities that originate from application packages, such as packages used by programming languages like Go, Python, and NodeJS are unable to be patched.  
 - End of Service Life (EOSL) images are not supported by Continuous Patching. EOSL images refer to images where the underlying operating system is no longer offering updates, security patches, and technical support. Examples include images based on older operating system versions such as Debian 8 and Fedora 28. EOSL images will be skipped from the patch despite having vulnerabilities - the recommended approach is to upgrade your the underlying operating system of your image to a supported version.
 
 
@@ -93,7 +93,7 @@ EOF
 ```
 The schema ingests specific repositories and tags in an array format. Each variable is defined below:
 
-- ```version``` allows the ACR team to track what schema version you’re on. Do not change this variable unless instructed to.
+- ```version``` allows the ACR team to track what schema version you're on. Do not change this variable unless instructed to.
 - ```tag-convention``` this is an optional field. Allowed values are "incremental" or "floating" - refer to [Key Concepts](#key-concepts) for more information.
 
 - ```repositories``` is an array that consists of all objects that detail repository and tag information
@@ -153,6 +153,8 @@ The ```--schedule``` parameter follows a fixed-day multiplier starting from day 
 
 - If you add the flag ```--run-immediately```, you trigger an immediate patch run. The subsequent scheduled run will still be aligned to the nearest day multiple from the 1st of the month, based on your ```--schedule``` value.
 
+- The schedule counter **resets** every month. Regardless of the designated schedule, your workflow will run on the 1st of every month, then follow the specified schedule value for the remainder of the month. If my patching runs on the 28th of January, and my schedule is 7d, my next patch will run on Feburary 1st, then 8th, and continue following the 7 days. 
+
 Command Schema:
 ```sh
 az acr supply-chain workflow create -r <registryname> -g <resourcegroupname> -t continuouspatchv1 -–config <JSONfilename> --schedule <number of days> --run-immediately
@@ -179,7 +181,7 @@ Once the workflow succeeds, go to the Azure Portal to view your running tasks. C
 
 ![PortalRepos](./media/portal_repos1.png)
 
-Next, click on “Tasks” under “Services”. You should see 3 new tasks, named the following:
+Next, click on "Tasks” under "Services”. You should see 3 new tasks, named the following:
 
 ![PortalTasks](./media/portal_tasks1.png)
 
@@ -188,7 +190,7 @@ Next, click on “Tasks” under “Services”. You should see 3 new tasks, nam
 - cssc-patch-image – this task patches the image.
 These tasks work in conjunction to execute your continuous patching workflow.
 
-You can also click on “Runs” within the “Tasks” view to see specific task runs. Here you can view status information on whether the task succeeded or failed, along with viewing a debug log. 
+You can also click on "Runs” within the "Tasks” view to see specific task runs. Here you can view status information on whether the task succeeded or failed, along with viewing a debug log. 
 
 ![PortalRun](./media/portal_runs1.png)
 
@@ -253,7 +255,7 @@ Help command to see all required/optional flags
 az acr supply-chain workflow delete --help
 ```
 
-Once a workflow is successfully deleted, the repository “csscpolicies/patchpolicy” will be automatically deleted. The 3 tasks that run your workflow will also be automatically deleted, along with any currently queued runs and previous logs. 
+Once a workflow is successfully deleted, the repository "csscpolicies/patchpolicy” will be automatically deleted. The 3 tasks that run your workflow will also be automatically deleted, along with any currently queued runs and previous logs. 
 
 ## Listing Running Tasks
 
@@ -298,25 +300,25 @@ Certain scenarios may require you to cancel tasks which are currently running or
 az acr supply-chain workflow cancel-run -r <registryname> -g <resourcegroup> --type <continuouspatchv1>
 ```
 
-This command will cancel all Continuous Patching tasks within the registry with a status of “Running”, “Queued” and “Started”. The command will output a success or failure. Failure results will follow the failure pattern of the other workflow commands if the input is incorrect.
+This command will cancel all Continuous Patching tasks within the registry with a status of "Running”, "Queued” and "Started”. The command will output a success or failure. Failure results will follow the failure pattern of the other workflow commands if the input is incorrect.
 Running the cancel command will only affect tasks in the current schedule. 
 
-For example, if a user has their schedule for 1d, and runs the cancel command, tasks in those 3 states will be canceled for that day, but will be requeued for the next day. If the schedule was a week, then that week’s tasks would be canceled, but the following week would have the tasks requeued. The main scenario for this command is when a user misconfigures their continuous patching workflow and doesn’t want to wait for all tasks to finish running.
+For example, if a user has their schedule for 1d, and runs the cancel command, tasks in those 3 states will be canceled for that day, but will be requeued for the next day. If the schedule was a week, then that week's tasks would be canceled, but the following week would have the tasks requeued. The main scenario for this command is when a user misconfigures their continuous patching workflow and doesn't want to wait for all tasks to finish running.
 
 ## Troubleshooting Tips
 
-Use the task list command to output all failed tasks. Specifying the “cssc-patch” command is best for failure. The documentation on the task-list [command](https://learn.microsoft.com/en-us/cli/azure/acr/task?view=azure-cli-latest#az-acr-task-list-runs) is here. 
+Use the task list command to output all failed tasks. Specifying the "cssc-patch” command is best for failure. The documentation on the task-list [command](https://learn.microsoft.com/en-us/cli/azure/acr/task?view=azure-cli-latest#az-acr-task-list-runs) is here. 
 
 Task-list command for top 10 failed patch tasks
 ```sh
 az acr task list-runs -r registryname -n cssc-patch-image --run-status Failed --top 10
 ```
 
-This command will output all failed tasks. To investigate a specific failure, grab the runID that’s outputted from this command and run
+This command will output all failed tasks. To investigate a specific failure, grab the runID that's outputted from this command and run
 ```sh
 az acr task logs -r registryname --run-id <run-id>
 ```
-If the logs aren’t sufficient, or an issue is persistent, or for any feedback, please email the ACR team at acr-patching-preview@microsoft.com 
+If the logs aren't sufficient, or an issue is persistent, or for any feedback, please email the ACR team at acr-patching-preview@microsoft.com 
 
 ## Appendix
 
@@ -340,7 +342,7 @@ image: import:dotnetapp-manual
         workflow type: continuouspatchv1
 ```
 
-If scan is successful but patch isn’t (with a previous patched image available)
+If scan is successful but patch isn't (with a previous patched image available)
 ```sh
 image: import:dotnetapp-manual
         scan status: Succeeded
@@ -353,7 +355,7 @@ image: import:dotnetapp-manual
         workflow type: continuouspatchv1
 ```
 
-If scan is successful but patch isn’t (with NO previous patched image available)
+If scan is successful but patch isn't (with NO previous patched image available)
 ```sh
 image: import:dotnetapp-manual
         scan status: Succeeded
