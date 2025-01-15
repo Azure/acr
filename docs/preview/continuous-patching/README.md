@@ -21,14 +21,14 @@ Here are a few scenarios to use Continuous Patching:
 Continuous Patching is currently in private preview. The following limitations apply:
 - Windows-based container images aren’t supported.
 - Only "OS-level" vulnerabilities that originate from system packages will be patched. This includes system packages in the container image managed by an OS package manager such as “apt” and “yum”. Vulnerabilities that originate from application packages, such as packages used by programming languages like Go, Python, and NodeJS are unable to be patched.  
-- End of Service Life (EOSL) images are not supported by Continuous Patching. EOSL images refer to images where the software provider is no longer offering updates, security patches, and technical support. Examples include Debian 8 and Fedora 28. EOSL images will be skipped from the patch despite having vulnerabilities - the recommended approach is to upgrade your image to a supported version.
+- End of Service Life (EOSL) images are not supported by Continuous Patching. EOSL images refer to images where the underlying operating system is no longer offering updates, security patches, and technical support. Examples include images based on older operating system versions such as Debian 8 and Fedora 28. EOSL images will be skipped from the patch despite having vulnerabilities - the recommended approach is to upgrade your the underlying operating system of your image to a supported version.
 
 
 ## Prerequisites        
 
 - You can use the Azure Cloud Shell or a local installation of the Azure CLI with a minimum version of 2.15.0 or later. 
 - You have an existing Resource Group with an Azure Container Registry.
-- You have an Azure Container Registry with Tasks enabled (Tasks is not supported in the free tier of ACR) 
+- You have an Azure Container Registry with Tasks enabled. (Tasks is not supported in the free tier of ACR) 
 
 ## Key Concepts
 Because Continuous Patching in ACR creates a new image per patch, ACR relies on a tag convention to version and identify patched images. The two main approaches are incremental and floating.
@@ -36,20 +36,19 @@ Because Continuous Patching in ACR creates a new image per patch, ACR relies on 
 ### Incremental Tagging
 How It Works
 
-Each new patch increments a numerical suffix (e.g., -1, -2, etc.) on the original tag. For instance, if the base image is python:3.11, the first patch creates python:3.11-1, and a second patch on that same base tag creates python:3.11-2.
+Each new patch increments a numerical suffix (e.g., ```-1```, ```-2```, etc.) on the original tag. For instance, if the base image is python:3.11, the first patch creates ```python:3.11-1```, and a second patch on that same base tag creates ```python:3.11-2```.
 
 Special Suffix Rules
 
-- -1 to -999: These are considered patch tags.
-- -x where x > 999: These are not interpreted as patch tags; instead, that entire suffix is treated as part of the original tag. (Example: ubuntu:jammy-20240530 is considered an original tag, not a patched one.)
-This means if you push a new tag ending in -1 to -999 by accident, Continuous Patching will treat it like a patched image. We recommend you to avoid pushing tags that you want patched with the suffix -1 to -999.
+- ```-1``` to ```-999```: These are considered patch tags.
+- ```-x``` where ```x > 999```: These are not interpreted as patch tags; instead, that entire suffix is treated as part of the original tag. (Example: ```ubuntu:jammy-20240530``` is considered an original tag, not a patched one.)
+This means if you push a new tag ending in ```-1``` to ```-999``` by accident, Continuous Patching will treat it like a patched image. We recommend you to avoid pushing tags that you want patched with the suffix ```-1``` to ```-999```. If ```-999``` versions of a patched image is hit, Continuous Patching will return an error.
 
 ### Floating Tagging
 
 How it works
 
-A single mutable tag, -patched, will always reference the latest patched version of your image. For instance, if your base image tag is python:3.11, one patch creates python:3.11-patched. Subsequent patches will keep overwriting that same -patched tag with new digests.
-
+A single mutable tag, ```-patched```, will always reference the latest patched version of your image. For instance, if your base image tag is ```python:3.11```, the first patch creates ```python:3.11-patched```. With each subsequent patche, the ```-patched``` tag will automatically update to point to the most recent patched version.
   
 ![PatchingTimelineExample](./media/patching_timeline_example1.png)
 
@@ -62,11 +61,9 @@ Floating: Ideal if you prefer a single pointer to the latest patch for your CI/C
 
 ## Installing the Continuous Patching Workflow
 
-Download the [private CLI extension](https://acrcssc.z5.web.core.windows.net/acrcssc-1.1.1rc6-py3-none-any.whl) for Continuous patching 
-
-Run the following command:
+Run the following command to install the CLI extension:
 ```sh
-az extension add --source <path to the CLI extension>
+az extension add --source https://acrcssc.z5.web.core.windows.net/acrcssc-1.1.1rc7-py3-none-any.whl
 ```
 
 ## Enable the Continuous Patching Workflow
@@ -79,12 +76,10 @@ az login
 ```sh
 az acr login -n <myRegistry>
 ```
-3. Use your preferred text editor to create a file named continuouspatching.json. Linux example below
+3. Run the following command to create a file named ```continuouspatching.json```, which contains the Continuous Patching JSON.
+
 ```sh
-vim continuouspatching.json //any file creation command and file name will do
-```
-Copy in the JSON Schema:
-```sh
+cat <<EOF > continuouspatching.json
 {
     "version": "v1",
     "tag-convention" : "<incremental|floating>",
@@ -94,18 +89,19 @@ Copy in the JSON Schema:
         "enabled": <true|false>
     }] 
 }
+EOF
 ```
 The schema ingests specific repositories and tags in an array format. Each variable is defined below:
 
-- "version" allows the ACR team to track what schema version you’re on. Do not change this variable unless instructed to.
-- "tag-convention" this is an optional field. Allowed values are "incremental" or "floating" - refer to **Key Concepts** for more information.
+- ```version``` allows the ACR team to track what schema version you’re on. Do not change this variable unless instructed to.
+- ```tag-convention``` this is an optional field. Allowed values are "incremental" or "floating" - refer to [Key Concepts](#key-concepts) for more information.
 
-- "repositories" is an array that consists of all objects that detail repository and tag information
-    - "repository" refers to repository name
-    - "tags" is an array of tags separated by commas. The wildcard "*" can be used to signify all tags within that repository
-    - "enabled" is a Boolean value of true or false determining if the specified repo is on or off
+- ```repositories``` is an array that consists of all objects that detail repository and tag information
+    - ```repository``` refers to repository name
+    - ```tags``` is an array of tags separated by commas. The wildcard ```*``` can be used to signify all tags within that repository
+    - ```enabled``` is a Boolean value of true or false determining if the specified repo is on or off
 
-The following details an example configuration for a customer who wants to patch all tags (use the * symbol) within the repository “python”, and to patch specifically the “jammy-20240111” and “jammy-20240125” tags in the repository “ubuntu”. 
+The following details an example configuration for a customer who wants to patch all tags (use the * symbol) within the repository ```python```, and to patch specifically the ```jammy-20240111``` and ```jammy-20240125``` tags in the repository ```ubuntu```. 
 
 JSON example:
 ```json
@@ -124,7 +120,7 @@ JSON example:
     }]
 }
 ```
-4. After creating your configuration file, it is recommended to execute a dry run to verify the intended artifacts are selected by the JSON criteria. The dry run requires a parameter called schedule, which specifies how often your continuous patching cycle will run. The schedule flag is measured in days, with a minimum value of 1 day, and a maximum value of 30 days. For example, if you want an image to be patched everyday, you would specify schedule as "1d", or 1 day. If you want a weekly patch (once a week), you would fill schedule as "7d", or 7 days. 
+4. After creating your configuration file, it is recommended to execute a dry run to verify the intended artifacts are selected by the JSON criteria. The dry run requires a parameter called ```schedule```, which specifies how often your continuous patching cycle will run. The schedule flag is measured in days, with a minimum value of 1 day, and a maximum value of 30 days. For example, if you want an image to be patched everyday, you would specify schedule as ```1d```, or 1 day. If you want a weekly patch (once a week), you would fill schedule as ```7d```, or 7 days. 
 
 Command Schema:
 ```sh
@@ -135,7 +131,7 @@ Example Command:
 az acr supply-chain workflow create -r myRegistry -g myResourceGroup -t continuouspatchv1 -–config ./continuouspatching.json --schedule 1d –-dry-run   
 ```
 
-The --dry-run flag will output all specified artifacts by the JSON file configuration. Customers can verify that the right artifacts are selected. With the sample ubuntu configuration above, the following results should be displayed as output. 
+The ```--dry-run``` flag will output all specified artifacts by the JSON file configuration. Customers can verify that the right artifacts are selected. With the sample ubuntu configuration above, the following results should be displayed as output. 
 ```sh
 Ubuntu: jammy-20240111
 Ubuntu: jammy-20240125
@@ -145,17 +141,17 @@ Help command to see all required/optional flags.
 az acr supply-chain workflow create --help
 ```
  
-5. Once satisfied with the dry-run results, run the ‘create’ command again without the --dry-run flag to officially create your continuous patching workflow.  
+5. Once satisfied with the dry-run results, run the ```create``` command again without the ```--dry-run``` flag to officially create your continuous patching workflow.  
 
 **Important**
 
-The --schedule parameter follows a fixed-day multiplier starting from day 1 of the month. This means:
+The ```--schedule``` parameter follows a fixed-day multiplier starting from day 1 of the month. This means:
 
-- If you specify --schedule 7d and run the command on the 3rd, the next scheduled run will be on the 7th—because 7 is the first multiple of 7 (days) after the 3rd, counting from day 1 of the month.
+- If you specify ```--schedule 7d``` and run the command on the 3rd, the next scheduled run will be on the 7th—because 7 is the first multiple of 7 (days) after the 3rd, counting from day 1 of the month.
 
-- If --schedule is 3d and today is the 7th, then the next scheduled run lands on the 9th—since 9 is the next multiple of 3 that follows 7.
+- If ```--schedule``` is 3d and today is the 7th, then the next scheduled run lands on the 9th—since 9 is the next multiple of 3 that follows 7.
 
-- If you add the flag --run-immediately, you trigger an immediate patch run. The subsequent scheduled run will still be aligned to the nearest day multiple from the 1st of the month, based on your --schedule value.
+- If you add the flag ```--run-immediately```, you trigger an immediate patch run. The subsequent scheduled run will still be aligned to the nearest day multiple from the 1st of the month, based on your ```--schedule``` value.
 
 Command Schema:
 ```sh
@@ -167,7 +163,7 @@ Example Command:
 az acr supply-chain workflow create -r myRegistry -g myResourceGroup -t continuouspatchv1 -–config ./continuouspatching.json --schedule 1d --run-immediately
 ```
 
-Upon a successful command (whether or not you include --run-immediately), you will see:
+Upon a successful command (whether or not you include ```--run-immediately```), you will see:
 
 - A success message confirming that your workflow tasks have been queued.
 
@@ -179,7 +175,7 @@ az acr supply-chain workflow create --help
 ```
 ## Use Azure Portal to view workflow tasks
 
-Once the workflow succeeds, go to the Azure Portal to view your running tasks. Click into Services -> Repositories, and you should see a new repository named “csscpolicies/patchpolicy”. This repository hosts the JSON configuration artifact that will be continuously referenced for continuous patching.  
+Once the workflow succeeds, go to the Azure Portal to view your running tasks. Click into Services -> Repositories, and you should see a new repository named ```csscpolicies/patchpolicy```. This repository hosts the JSON configuration artifact that will be continuously referenced for continuous patching.  
 
 ![PortalRepos](./media/portal_repos1.png)
 
@@ -188,7 +184,7 @@ Next, click on “Tasks” under “Services”. You should see 3 new tasks, nam
 ![PortalTasks](./media/portal_tasks1.png)
 
 - cssc-trigger-workflow – this task scans the configuration file and calls the scan task on each respective image.    
-- cssc-scan-image – this task scans the image and calls the patching task **only if vulnerabilities were found**.
+- cssc-scan-image – this task scans the image for operating system vulnerabilities. This task will only trigger the patching task only if (1) operating system vulnerabilities were found, and (2) the image is not considered End of Service Life (EOSL). For more information on EOSL, please consult [Preview Limitations](#preview-limitations).
 - cssc-patch-image – this task patches the image.
 These tasks work in conjunction to execute your continuous patching workflow.
 
@@ -257,7 +253,7 @@ Help command to see all required/optional flags
 az acr supply-chain workflow delete --help
 ```
 
-Once a workflow is successfully deleted, the repository “csscpolicies/patchpolicy” will be automatically deleted. The 3 tasks that run your workflow will also be automatically deleted, along with any currently queued runs. 
+Once a workflow is successfully deleted, the repository “csscpolicies/patchpolicy” will be automatically deleted. The 3 tasks that run your workflow will also be automatically deleted, along with any currently queued runs and previous logs. 
 
 ## Listing Running Tasks
 
@@ -327,7 +323,7 @@ If the logs aren’t sufficient, or an issue is persistent, or for any feedback,
 **Possible CLI Outputs for 'List' Command**
 
 ```sh
-az acr supply-chain workflow list -r <registryname> -g <resourcegroup> [–-run-status <failed || successful || running>]
+az acr supply-chain workflow list -r <registryname> -g <resourcegroup> [–-run-status <Failed || Queued || Running || Skipped || Succeeded || Unknown>]
 ```
 
 If scan and patch are successful
