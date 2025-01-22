@@ -261,7 +261,7 @@ Once a workflow is successfully deleted, the repository "csscpolicies/patchpolic
 
 To list the most recently executed Continuous Patching tasks, the following List command is available:
 ```sh
-az acr supply-chain workflow list -r <registryname> -g <resourcegroup> [–-run-status <failed || successful || running>]
+az acr supply-chain workflow list -r <registryname> -g <resourcegroup> [–-run-status <failed || successful || running>] -t continuouspatchv1
 ```
 
 A successful result will return the following information:
