@@ -1,0 +1,29 @@
+name: Roadmap feature Request
+description: Suggest a roadmap feature for this project.
+labels: [feature-request, roadmap]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to suggest a roadmap feature for the project!
+  - type: textarea
+    id: problem
+    validations:
+      required: true
+    attributes:
+      label: "Motivation"
+      description: "A clear and concise description of the motivation behind this feature request. Why is this feature important? What problem does it solve or what opportunity does it create?"
+  - type: textarea
+    id: solution
+    validations:
+      required: true
+    attributes:
+      label: "Description"
+      description: "A clear and concise description of the feature request. What is the feature about? Include any relevant details, success criteria or specifications."
+  - type: textarea
+    id: context
+    validations:
+      required: false
+    attributes:
+      label: "Additional context"
+      description: "Add any additional context about the roadmap feature."
