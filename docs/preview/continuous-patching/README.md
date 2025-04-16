@@ -22,6 +22,7 @@ Continuous Patching is currently in private preview. The following limitations a
 - Windows-based container images aren't supported.
 - Only "OS-level" vulnerabilities that originate from system packages will be patched. This includes system packages in the container image managed by an OS package manager such as "apt” and "yum”. Vulnerabilities that originate from application packages, such as packages used by programming languages like Go, Python, and NodeJS are unable to be patched.  
 - End of Service Life (EOSL) images are not supported by Continuous Patching. EOSL images refer to images where the underlying operating system is no longer offering updates, security patches, and technical support. Examples include images based on older operating system versions such as Debian 8 and Fedora 28. EOSL images will be skipped from the patch despite having vulnerabilities - the recommended approach is to upgrade your the underlying operating system of your image to a supported version.
+- Subscriptions using "Free" Azure Credits are not supported since ACR Tasks are not supported for these subscriptions.
 
 
 ## Prerequisites        
@@ -63,7 +64,7 @@ Floating: Ideal if you prefer a single pointer to the latest patch for your CI/C
 
 Run the following command to install the CLI extension:
 ```sh
-az extension add --source https://acrcssc.z5.web.core.windows.net/acrcssc-1.1.1rc7-py3-none-any.whl
+az extension add --source https://acrcssc.z5.web.core.windows.net/acrcssc-1.1.1rc11-py3-none-any.whl
 ```
 
 ## Enable the Continuous Patching Workflow
