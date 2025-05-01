@@ -64,7 +64,7 @@ A set of short links for presentations & social media.
 | [Content trust / signing](https://aka.ms/acr/content-trust) | https://aka.ms/acr/content-trust |
 | [Quarantine pattern](https://aka.ms/acr/quarantine) | https://aka.ms/acr/quarantine |
 | [Custom domains (Preview)](https://aka.ms/acr/custom-domains) | https://aka.ms/acr/custom-domains |
-
+| [Continuous patching (Preview)](https://aka.ms/acr/patching) | https://aka.ms/acr/patching |
 ### ACR Tasks
 
 | Title | Link |
