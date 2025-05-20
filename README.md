@@ -40,7 +40,7 @@ A set of short links for presentations & social media.
 | [Webhook notifications](https://aka.ms/acr/webhooks) | https://aka.ms/acr/webhooks |
 | [Auto-purge](https://aka.ms/acr/auto-purge) | https://aka.ms/acr/auto-purge |
 | [OCI artifacts](https://aka.ms/acr/artifacts) | https://aka.ms/acr/artifacts |
-| [Artifact streaming](https://aka.ms/acr/artifact-streaming) | [https://aka.ms/acr/artifact-streaming](https://aka.ms/acr/artifact-streaming)
+| [Artifact streaming](https://aka.ms/acr/artifact-streaming) | [https://aka.ms/acr/artifact-streaming](https://aka.ms/acr/artifact-streaming) |
 
 ### Diagnostic & Troubleshooting Links
 
@@ -54,8 +54,10 @@ A set of short links for presentations & social media.
 | Title | Link |
 | - | - |
 | [Authentication](https://aka.ms/acr/authentication) | https://aka.ms/acr/authentication |
-| [Authorization roles](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
-| [Repository permissions](https://aka.ms/acr/repo-permissions) | https://aka.ms/acr/repo-permissions |
+| [OAuth Authentication](https://aka.ms/acr/auth/oauth) | https://aka.ms/acr/auth/oauth |
+| [Authorization](https://aka.ms/acr/authorization) | https://aka.ms/acr/authorization |
+| [Authorization roles and role assignments](https://aka.ms/acr/authentication/roles) | https://aka.ms/acr/authentication/roles |
+| [Microsoft Entra-based repository permissions](https://aka.ms/acr/auth/abac) | https://aka.ms/acr/auth/abac |
 | [Azure policies](https://aka.ms/acr/azurepolicy) | https://aka.ms/acr/azurepolicy |
 | [VNet & firewall rules](https://aka.ms/acr/vnet) | https://aka.ms/acr/vnet |
 | [Azure private link](https://aka.ms/acr/privatelink) | https://aka.ms/acr/privatelink |
