@@ -1,0 +1,29 @@
+name: Roadmap Feature Request
+description: This template is primarily used by the product group to manage roadmap features in the areas of cloud-native security, registries such as Azure Container Registry (ACR) and Microsoft Artifact Registry (MAR/MCR), open-source integration, and more.
+labels: [feature-request, roadmap]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A roadmap feature could include areas such as cloud-native security, registries like Azure Container Registry (ACR) and Microsoft Artifact Registry (MAR/MCR), open-source integration, and more.
+  - type: textarea
+    id: problem
+    validations:
+      required: true
+    attributes:
+      label: "Motivation"
+      description: "A clear and concise description of the motivation behind this feature request. Why is this feature important? What problem does it solve or what opportunity does it create?"
+  - type: textarea
+    id: solution
+    validations:
+      required: true
+    attributes:
+      label: "Description"
+      description: "A clear and concise description of the feature request. What is the feature about? Include any relevant details, success criteria or specifications."
+  - type: textarea
+    id: context
+    validations:
+      required: false
+    attributes:
+      label: "Additional context"
+      description: "Add any additional context about the roadmap feature."
