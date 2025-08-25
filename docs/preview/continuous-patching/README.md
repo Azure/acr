@@ -64,7 +64,7 @@ Floating: Ideal if you prefer a single pointer to the latest patch for your CI/C
 
 Run the following command to install the CLI extension:
 ```sh
-az extension add --source https://acrcssc.z5.web.core.windows.net/acrcssc-1.1.1rc11-py3-none-any.whl
+az extension add --source aka.ms/acr/patching/wheel
 ```
 
 ## Enable the Continuous Patching Workflow
