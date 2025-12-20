@@ -120,8 +120,8 @@ You have two options for updating the certificates used for custom domains:
   After you upload a new certificate version to the key vault, the certificate must be manually rotated in the registry. Contact [Azure Support](https://azure.microsoft.com/support/create-ticket/).
 
 ### Enhanced security with Virtual Networks
-Azure Key Vault allows you to [restrict access](https://docs.microsoft.com/azure/key-vault/key-vault-overview-vnet-service-endpoints) to specific virtual networks only. ACR custom domains are currently _not supported_ where key vault access is restricted, but this is work in progress and will be available with system managed identities only.
-   
+If you restrict the access of Azure Key Vault to a specific virtual network, you need to [grant access to trusted Azure services](https://learn.microsoft.com/en-us/azure/key-vault/general/overview-vnet-service-endpoints#grant-access-to-trusted-azure-services) which allow Azure Container Registry service to download the certificate.
+
 ## Prepare your DNS zone
 1. The custom registry domain must have a CNAME record with the target registry login server:\
    `container-registry.contoso.com` --> `myregistry.azurecr.io`
