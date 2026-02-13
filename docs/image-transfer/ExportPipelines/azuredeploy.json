@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "location": {
@@ -56,6 +56,17 @@
         "description": "The list of all options configured for the pipeline."
       },
       "defaultValue": []
+    },
+    "storageAccessMode": {
+      "type": "string",
+      "defaultValue": "SasToken",
+      "allowedValues": [
+        "SasToken",
+        "ManagedIdentity"
+      ],
+      "metadata": {
+        "description": "The storage access mode for the export pipeline. Use 'SasToken' to authenticate via a SAS token stored in Key Vault, or 'ManagedIdentity' to authenticate directly using an Entra managed identity."
+      }
     }
   },
   "variables": {
@@ -78,21 +89,23 @@
       "type": "Microsoft.ContainerRegistry/registries/exportPipelines/",
       "name": "[concat(parameters('registryName'), '/', parameters('exportPipelineName'))]",
       "location": "[parameters('location')]",
-      "apiVersion": "2019-12-01-preview",
+      "apiVersion": "2025-06-01-preview",
       "identity": "[if(not(empty(parameters('userAssignedIdentity'))), variables('userIdentity'), variables('systemIdentity'))]",
       "properties": {
         "target": {
           "type": "[variables('targetType')]",
           "uri": "[parameters('targetUri')]",
-          "keyVaultUri": "[concat(reference(resourceId('Microsoft.KeyVault/vaults', parameters('KeyVaultName')), '2019-09-01').vaultUri, 'secrets/', parameters('sasTokenSecretName'))]"
+          "keyVaultUri": "[concat(reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), '2023-07-01').vaultUri, 'secrets/', parameters('sasTokenSecretName'))]",
+          "storageAccessMode": "[parameters('storageAccessMode')]"
         },
         "options": "[parameters('options')]"
       }
     },
     {
+      "condition": "[equals(parameters('storageAccessMode'), 'SasToken')]",
       "type": "Microsoft.KeyVault/vaults/accessPolicies",
       "name": "[concat(parameters('keyVaultName'), '/add')]",
-      "apiVersion": "2019-09-01",
+      "apiVersion": "2023-07-01",
       "dependsOn": [
         "[resourceId('Microsoft.ContainerRegistry/registries/exportPipelines', parameters('registryName'), parameters('exportPipelineName'))]"
       ],
@@ -100,7 +113,7 @@
         "accessPolicies": [
           {
             "tenantId": "[subscription().tenantId]",
-            "objectId": "[if(not(empty(parameters('userAssignedIdentity'))), reference(parameters('userAssignedIdentity'), '2018-11-30').principalId, reference(resourceId('Microsoft.ContainerRegistry/registries/exportPipelines', parameters('registryName'), parameters('exportPipelineName')), '2019-12-01-preview', 'Full').identity.principalId)]",
+            "objectId": "[if(not(empty(parameters('userAssignedIdentity'))), reference(parameters('userAssignedIdentity'), '2023-01-31').principalId, reference(resourceId('Microsoft.ContainerRegistry/registries/exportPipelines', parameters('registryName'), parameters('exportPipelineName')), '2025-06-01-preview', 'Full').identity.principalId)]",
             "permissions": {
               "secrets": "[variables('keyVaultSecretsPermissions')]"
             }
