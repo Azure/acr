@@ -32,7 +32,7 @@ Regional endpoints solve this by providing dedicated login server URLs for each 
 >
 > **These settings are independent.** Setting `--region-endpoint-enabled false` on a geo-replica:
 > - Excludes that geo-replica from **global endpoint** routing only.
-> - Does **not** disable the geo-replica's **regional endpoint** URL. If `--regional-endpoints` is enabled at the registry level, clients can still directly access that geo-replica via `myregistry.<region>.geo.azurecr.io`.
+> - Does **not** disable the geo-replica's **regional endpoint** URL. If `--regional-endpoints` is enabled at the registry level, clients can still directly access that geo-replica via the regional endpoint URL.
 > - Does **not** stop data syncing to that geo-replica.
 >
 > **In short:**
