@@ -36,8 +36,8 @@ Regional endpoints solve this by providing dedicated login server URLs for each 
 > - Does **not** stop data syncing to that geo-replica.
 >
 > **In short:**
-> - Use `--regional-endpoints` to **enable dedicated regional URLs** for direct access to specific geo-replicas.
-> - Use `--region-endpoint-enabled` to **control global endpoint routing** to a specific geo-replica.
+> - Enable `--regional-endpoints` at the registry level to **enable dedicated regional URLs** (for all geo-replicas) for direct access to specific geo-replicas.
+> - Configure `--region-endpoint-enabled` (on a specific geo-replica) to **control global endpoint routing** to a specific geo-replica.
 
 Regional endpoints provide dedicated login server URLs for each geo-replica:
 
