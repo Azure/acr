@@ -46,6 +46,17 @@ namespace RegistryArtifactTransfer
                     return null;
                 }
 
+                //
+                // Prevent SSRF (CWE-918): the Link header is supplied by the remote registry, and
+                // callers attach registry credentials to every paged request. Only follow an absolute
+                // next-page link when it targets the same registry that served this response; otherwise
+                // a malicious or compromised registry could redirect the authenticated request to an
+                // attacker-chosen host and exfiltrate the credentials.
+                if (!IsSameRegistry(response.RequestMessage?.RequestUri, nextPageUri))
+                {
+                    return null;
+                }
+
                 return nextPageUri;
             }
 
@@ -57,6 +68,14 @@ namespace RegistryArtifactTransfer
             }
 
             return null;
+        }
+
+        private static bool IsSameRegistry(Uri requestUri, Uri nextPageUri)
+        {
+            return requestUri != null &&
+                string.Equals(requestUri.Scheme, nextPageUri.Scheme, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(requestUri.Host, nextPageUri.Host, StringComparison.OrdinalIgnoreCase) &&
+                requestUri.Port == nextPageUri.Port;
         }
 
         public static void AddBasicAuth(this HttpRequestMessage request, string userName, string password)
