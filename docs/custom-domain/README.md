@@ -129,15 +129,42 @@ If you restrict the access of Azure Key Vault to a specific virtual network, you
    `eastus-registry-data.contoso.com` --> `myregistry.eastus.data.azurecr.io`
    - The output of the command to enable data endpoints on the registry will contain the regional data endpoint.
    
-## Contact us
-As a final step, share the following with us by creating a support ticket ([Azure Support](https://aka.ms/azuresupport)):
+## Request private preview access
+
+After completing the preparation steps above, create an Azure support request from the registry that you want to enroll:
+
+1. In the [Azure portal](https://portal.azure.com), open the target container registry and select **Support + troubleshooting**.
+2. Enter `custom domain` in the **How can we help you?** box, and then select **Go**.
+
+   ![Enter custom domain in the support search box](./media/support-search-custom-domain.png)
+
+3. Select **Container Registry**, and then select **Next**.
+
+   ![Select Container Registry as the service](./media/support-select-container-registry.png)
+
+4. Select the subscription and container registry resource that you want to enroll, and then select **Next**.
+5. Select **None of the above**.
+
+   ![Select None of the above to view all problem types](./media/support-select-none-of-the-above.png)
+
+6. Set **Problem type** to **Registry Configuration** and **Problem subtype** to **Configure registry settings**, and then select **Next**.
+
+   ![Select Registry Configuration and Configure registry settings](./media/support-select-registry-configuration.png)
+
+7. Wait for the automated troubleshooting analysis to finish. This can take 3-5 minutes, and the resulting analysis can be ignored.
+8. After the analysis finishes, select **Create a support request** at the top of the page.
+
+   ![Select Create a support request](./media/support-create-request.png)
+
+9. In the **Summary** field, enter `custom domain private preview participation`, and then continue through the support request flow.
+
+Include the following information in the request:
 
 * Custom registry domain details
-    * custom registry domain (container-registry.contoso.com)
-    * key vault secret ID of the corresponding TLS data
-    * client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
-
+  * Custom registry domain (`container-registry.contoso.com`)
+  * Key vault secret ID of the corresponding TLS data
+  * Client ID of the user-assigned registry identity that has access to this secret (not required for a system-assigned identity)
 * Custom data domain details
-  *  regional custom data domain (eastus-registry-data.contoso.com)
-  * key vault secret ID of the corresponding TLS data
-  * client ID of the user assigned registry identity that has access to this secret (not required in case of system assigned)
+  * Regional custom data domain (`eastus-registry-data.contoso.com`)
+  * Key vault secret ID of the corresponding TLS data
+  * Client ID of the user-assigned registry identity that has access to this secret (not required for a system-assigned identity)
