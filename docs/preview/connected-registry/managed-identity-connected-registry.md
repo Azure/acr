@@ -45,10 +45,13 @@ Each connected registry has a **sync authentication mode**, set by the `authType
 
 ## How it works
 
-1. You create a **user-assigned managed identity** in Azure.
-2. You grant that identity a **connected registry sync role** on the parent registry, narrowed with an **ABAC condition** to the repositories you want synchronized.
-3. You create a **federated identity credential** that trusts your Arc-enabled Kubernetes cluster's OIDC issuer and the Kubernetes service account used by the connected registry pod.
-4. The connected registry pod uses that federated credential to obtain Microsoft Entra ID tokens automatically, with no secret stored at the edge.
+Managed identity mode relies on three Azure resources that you create before deploying the extension:
+
+1. A **user-assigned managed identity** in Azure, which becomes the connected registry's sync identity.
+2. A **connected registry sync role** assigned to that identity on the parent registry, narrowed with an **ABAC condition** to the repositories you want synchronized.
+3. A **federated identity credential** on the identity, trusting your Arc-enabled Kubernetes cluster's OIDC issuer and the Kubernetes service account used by the connected registry pod.
+
+With those in place, the connected registry pod obtains Microsoft Entra ID tokens automatically at runtime, and no secret is stored at the edge.
 
 ## Checklist for private preview - connected registry managed identity
 
