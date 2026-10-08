@@ -27,6 +27,8 @@ Each connected registry has a **sync authentication mode**, set by the `authType
 > [!IMPORTANT]
 > Managed identity authentication requires the parent registry to be opted into **ABAC-enabled repository permissions mode**. Registries using legacy registry permissions are not supported. Before continuing, review [ABAC-enabled repository permissions](https://learn.microsoft.com/azure/container-registry/container-registry-rbac-abac-repository-permissions) and understand how opting a registry into ABAC changes the behavior of existing role assignments.
 
+This article assumes you have read [Deploy the connected registry Arc extension](https://learn.microsoft.com/azure/container-registry/quickstart-connected-registry-arc-cli) and describes only what differs under managed identity authentication. Where the two disagree — for example auto-upgrade, the connection string format, and `cert-manager.install` — follow this article.
+
 ## What changes and what does not
 
 | | Sync token mode (existing) | Managed identity mode (new) |
@@ -55,30 +57,14 @@ With those in place, the connected registry synchronizes from its parent registr
 
 ## Checklist for private preview - connected registry managed identity
 
-Before you start, keep two rules in mind, because they shape everything else in this article:
+Two rules shape everything else in this article:
 
 * The managed identity's RBAC and ABAC permissions are the **only** definition of sync scope.
 * Changing those permissions has **no effect on the edge** until you run `az acr connected-registry resync`.
 
-The table below summarizes the steps you need to undertake to participate in the private preview. These steps are explained in detail later in this document.
-
-| Step Number | Step Description |
-|-------------|------------------|
-| 1 | Register your subscription for the preview. This registration does not affect any Azure resources within the subscription. |
-| 2 | Contact the ACR team at <acr-pm@microsoft.com> for approval of your subscription preview registration. |
-| 3 | Prepare a **Premium** parent registry opted into **ABAC-enabled repository permissions** with the dedicated data endpoint enabled. |
-| 4 | Create a user-assigned managed identity and assign it a connected registry sync role, scoped with ABAC conditions to the repositories you want to synchronize. |
-| 5 | Connect your Kubernetes cluster to Azure Arc with the OIDC issuer and workload identity enabled, and align the Kubernetes API server service account issuer with the Arc OIDC issuer. |
-| 6 | Create a federated identity credential binding the managed identity to the connected registry pod's service account. |
-| 7 | Create the connected registry using the `2026-09-01-preview` REST API. The Azure CLI does not yet support the managed identity parameters. |
-| 8 | Deploy the **Certificate Management for Azure Arc** extension, so that a single Microsoft-managed cert-manager controller issues and renews the connected registry's TLS certificates. |
-| 9 | Deploy the preview build of the connected registry Arc extension, using a managed identity connection string that contains no password and setting `cert-manager.install=false`. |
-
 ## Prerequisites
 
-* You can use the [Azure Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/overview) or a local installation of the Azure CLI to run the command examples in this article. If you'd like to use it locally, run `az --version` to find your version. If you need to install or upgrade, see [Install Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli).
-* The Azure CLI commands in this article are formatted for the Bash shell. If you're using a different shell like PowerShell or Command Prompt, you may need to adjust line continuation characters or variable assignment lines accordingly. This article uses variables to minimize the amount of command editing required.
-* **Azure CLI 2.64.0 or later**, with the `connectedk8s` extension at **1.10.0 or later** and the `k8s-extension` extension installed. Earlier versions do not accept the `--enable-oidc-issuer` and `--enable-workload-identity` flags used in [Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity).
+* **Azure CLI 2.91.0 or later**, with the `connectedk8s` extension at **1.10.0 or later** and the `k8s-extension` extension installed.
 
     ```bash
     az version
@@ -86,30 +72,13 @@ The table below summarizes the steps you need to undertake to participate in the
     az extension add --upgrade --name k8s-extension
     ```
 
-* A **Premium** parent registry opted into ABAC-enabled repository permissions, with the dedicated data endpoint enabled.
+* A **Premium** parent registry opted into ABAC-enabled repository permissions, with the dedicated data endpoint enabled. Premium and the dedicated data endpoint are existing [connected registry](https://learn.microsoft.com/azure/container-registry/intro-connected-registry#pricing-and-availability) requirements; ABAC is the only new one.
 * Permission to create managed identities, federated identity credentials, and **role assignments** on the registry (`Microsoft.Authorization/roleAssignments/write` — for example, the Owner or User Access Administrator role).
 * A Kubernetes cluster running a [supported distribution](#supported-kubernetes-distributions), connected to Azure Arc, with the ability to restart the Kubernetes API server.
-* A decision about certificate management. This article uses [Certificate Management for Azure Arc](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview) as the recommended TLS path, and only **one** cert-manager installation can exist on a cluster. If you already run open source cert-manager or trust-manager for other workloads, do not install a second one — read [Step 9](#step-9-install-certificate-management-for-azure-arc) before you begin. Certificate management is independent of the managed identity token exchange; it is the certificate direction ACR recommends for new Arc extension deployments.
-* [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) installed, with a `kubeconfig` file and context pointing to your cluster.
-* [ORAS](https://oras.land/docs/installation) and [jq](https://jqlang.github.io/jq/) installed, to validate the deployment.
-* Familiarity with the generally available deployment flow. This article assumes you have read [Deploy the connected registry Arc extension](https://learn.microsoft.com/azure/container-registry/quickstart-connected-registry-arc-cli) and describes only what differs under managed identity authentication. Where the two disagree — for example auto-upgrade, the connection string format, and `cert-manager.install` — follow this article.
+* [Certificate Management for Azure Arc](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview) for TLS certificates, installed in [Step 9](#step-9-install-certificate-management-for-azure-arc). It is the certificate path ACR recommends for new connected registry deployments.
+* [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) installed, with a context pointing to your cluster.
 
-### Supported configurations
-
-| Requirement | Supported value |
-|---|---|
-| Parent registry SKU | **Premium** |
-| Parent registry permissions mode | **ABAC-enabled repository permissions** (`AbacRepositoryPermissions`) |
-| Registry dedicated data endpoint | **Enabled** |
-| Connected registry topology | **Top-level only** — the parent must be the cloud registry |
-| Nested connected registries | **Not supported** — a connected registry in managed identity mode cannot have children |
-| Managed identity type | **User-assigned only**, exactly **one** identity |
-| Edge platform | **Azure Arc-enabled Kubernetes** with the OIDC issuer and workload identity enabled |
-| Connected registry Arc extension | **1.5.0 or later** |
-| Connected registry mode | `ReadOnly` or `ReadWrite` |
-| TLS certificate management | **[Certificate Management for Azure Arc](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview)** (recommended) — deploy the connected registry extension with `cert-manager.install=false` |
-| API version | `2026-09-01-preview` |
-| Azure cloud | Azure public cloud |
+Command examples are formatted for the Bash shell and use variables to minimize editing. In PowerShell or Command Prompt, adjust the line continuation characters and variable assignments accordingly.
 
 ### Supported Kubernetes distributions
 
@@ -157,7 +126,7 @@ To enable managed identity authentication for connected registry in private prev
 
 ## Set up the environment
 
-The examples use Bash. Set these variables first.
+Set these variables first.
 
 ```bash
 SUBSCRIPTION_ID="<subscription-id>"
@@ -305,8 +274,6 @@ CLIENT_PASSWORD="$(az acr token create \
   --repository hello content/read metadata/read \
   --repository app content/read metadata/read \
   --query credentials.passwords[0].value --output tsv)"
-
-CLIENT_TOKEN_ID="$(az acr token show --name "$CLIENT_TOKEN_NAME" --registry "$ACR" --query id --output tsv)"
 ```
 
 > [!NOTE]
@@ -320,56 +287,32 @@ CLIENT_TOKEN_ID="$(az acr token show --name "$CLIENT_TOKEN_NAME" --registry "$AC
 
 ## Step 5: Create the connected registry
 
-The Azure CLI does not yet expose the managed identity parameters, so create the connected registry with the ARM REST API using API version `2026-09-01-preview`. The request reuses the `CR_MODE` value you set in [Set up the environment](#set-up-the-environment), which must match the sync role assigned in Step 3.
+Create the connected registry with `az acr connected-registry create`. The `--auth-type ManagedIdentity` and `--identity` parameters require Azure CLI 2.91.0 or later. The command reuses the `CR_MODE` value you set in [Set up the environment](#set-up-the-environment), which must match the sync role assigned in Step 3.
 
 ```bash
-cat > cr-body.json <<EOF
-{
-  "identity": {
-    "type": "UserAssigned",
-    "userAssignedIdentities": {
-      "$UAMI_RESOURCE_ID": {}
-    }
-  },
-  "properties": {
-    "mode": "$CR_MODE",
-    "parent": {
-      "syncProperties": {
-        "authType": "ManagedIdentity",
-        "messageTtl": "P2D"
-      }
-    },
-    "clientTokenIds": [
-      "$CLIENT_TOKEN_ID"
-    ],
-    "logging": {
-      "logLevel": "Information"
-    }
-  }
-}
-EOF
-
-az rest --method put \
-  --uri "https://management.azure.com${ACR_RESOURCE_ID}/connectedRegistries/${CR}?api-version=2026-09-01-preview" \
-  --body @cr-body.json
+az acr connected-registry create \
+  --registry "$ACR" --name "$CR" \
+  --mode "$CR_MODE" \
+  --auth-type ManagedIdentity \
+  --identity "$UAMI_RESOURCE_ID" \
+  --client-tokens "$CLIENT_TOKEN_NAME" \
+  --log-level Information \
+  --sync-message-ttl P2D
 ```
 
-Confirm that the response contains:
+In managed identity mode the CLI rejects `--sync-token`, `--repository`, and `--parent`. Sync scope comes from the identity's permissions, and a managed identity connected registry must be top level. If the parent registry's dedicated data endpoint is not already enabled, the command prompts to enable it.
 
-* `properties.parent.syncProperties.authType` set to `ManagedIdentity`
-* your managed identity resource ID with resolved `clientId` and `principalId`
-* **no** `properties.parent.syncProperties.tokenId`
-
-Capture the gateway endpoint returned by the service:
+Confirm the result:
 
 ```bash
-PARENT_GATEWAY_ENDPOINT="$(az rest --method get \
-  --uri "https://management.azure.com${ACR_RESOURCE_ID}/connectedRegistries/${CR}?api-version=2026-09-01-preview" \
-  --query properties.parent.syncProperties.gatewayEndpoint --output tsv)"
+az acr connected-registry show --registry "$ACR" --name "$CR" \
+  --query "{authType:parent.syncProperties.authType, tokenId:parent.syncProperties.tokenId, identity:identity}"
 ```
+
+Expect `authType` to be `ManagedIdentity`, `tokenId` to be absent, and your managed identity resource ID to appear with a resolved `clientId` and `principalId`.
 
 > [!NOTE]
-> Optional properties such as `parent.syncProperties.schedule`, `parent.syncProperties.syncWindow`, `garbageCollection`, and `notificationsList` behave the same as in sync token mode.
+> Optional properties such as `--sync-schedule`, `--sync-window`, `--gc-enabled`, and `--notifications` behave the same as in sync token mode.
 
 ## Step 6: Connect the cluster to Azure Arc with OIDC and workload identity
 
@@ -415,7 +358,7 @@ Confirm that `OIDC_ISSUER` is a public HTTPS URL before continuing.
 
 Configure your API server to advertise this issuer. The exact procedure depends on your Kubernetes distribution — follow [configure workload identity settings on the Kubernetes cluster](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#configure-workload-identity-settings-on-the-kubernetes-cluster), which covers each supported distribution.
 
-Then verify the issuer advertised by the API server:
+Then verify the issuer advertised by the API server, using [jq](https://jqlang.github.io/jq/) to read the response:
 
 ```bash
 ADVERTISED_ISSUER="$(kubectl get --raw='/.well-known/openid-configuration' | jq -r '.issuer')"
@@ -453,13 +396,10 @@ az identity federated-credential create \
 
 ## Step 9: Install Certificate Management for Azure Arc
 
-The connected registry serves its endpoint over HTTPS, so it needs a TLS certificate. Historically the connected registry Arc extension installed its *own* bundled copy of open source cert-manager. Use the **[Certificate Management for Azure Arc](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview)** extension instead, and tell the connected registry extension not to install its own. It provides a single Microsoft-maintained certificate controller shared by every Arc extension on the cluster.
-
-> [!NOTE]
-> The ACR team intends to move all connected registry Arc extension customers to Certificate Management for Azure Arc. Starting on it now means you will not have to migrate your connected registry's certificate authority later.
+The connected registry serves its endpoint over HTTPS, so it needs a TLS certificate. Use the **[Certificate Management for Azure Arc](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview)** extension, and tell the connected registry extension not to install its own bundled cert-manager. The ACR team plans to move all connected registry customers to it, so adopting it now avoids a later migration.
 
 > [!IMPORTANT]
-> Only one cert-manager installation may exist on a cluster — Certificate Management for Azure Arc, the connected registry extension's bundled copy, and any open source cert-manager all register the same CRDs and webhooks. If you already run open source cert-manager or trust-manager, follow [Migrate from open source cert-manager and trust-manager](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-deploy#migrate-from-open-source-cert-manager-and-trust-manager) before continuing, and inventory the certificates those workloads depend on first.
+> Only one cert-manager installation may exist on a cluster — Certificate Management for Azure Arc, the connected registry extension's bundled copy, and any open source cert-manager all register the same CRDs and webhooks. If you already run open source cert-manager or trust-manager, follow [Migrate from open source cert-manager and trust-manager](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-deploy#migrate-from-open-source-cert-manager-and-trust-manager) before continuing.
 
 Confirm that your cluster's region is in the [list of supported regions](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview#regional-support), then install the extension:
 
@@ -480,15 +420,23 @@ kubectl wait --for=condition=Available --timeout=180s --all deployment -n cert-m
 
 You do not need to create an `Issuer` or `Certificate` resource yourself — the connected registry extension creates its own in the next step, and this controller issues and renews them.
 
-For configuration options and troubleshooting, see the [Certificate Management for Azure Arc documentation](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-deploy).
-
 ## Step 10: Deploy the connected registry Arc extension
 
-Build the managed identity connection string. It contains **no password**.
+Generate the protected settings file holding the connection string. Compared with the GA flow, the command omits `--generate-password`, which is rejected in managed identity mode because there is no sync token:
 
 ```bash
-CONNECTION_STRING="ConnectedRegistryName=${CR};ManagedIdentityClientId=${UAMI_CLIENT_ID};ParentGatewayEndpoint=${PARENT_GATEWAY_ENDPOINT};ParentEndpointProtocol=https"
+cat << EOF > protected-settings-extension.json
+{
+  "connectionString": "$(az acr connected-registry get-settings \
+  --name "$CR" \
+  --registry "$ACR" \
+  --parent-protocol https \
+  --query ACR_REGISTRY_CONNECTION_STRING --output tsv)"
+}
+EOF
 ```
+
+The connection string carries `ConnectedRegistryName`, `ManagedIdentityClientId`, `ParentGatewayEndpoint`, and `ParentEndpointProtocol` — and **no password**. The command also returns `ACR_MANAGED_IDENTITY_RESOURCE_ID`, which records the attached identity for your reference; the extension does not consume it.
 
 > [!IMPORTANT]
 > Do not include `SyncTokenName` or `SyncTokenPassword` in a managed identity connection string. The two connection string formats are mutually exclusive, and supplying both is rejected when the connected registry starts.
@@ -512,15 +460,15 @@ az k8s-extension create \
   --release-namespace "$NAMESPACE" \
   --auto-upgrade-minor-version true \
   --config service.clusterIP="$CR_CLUSTER_IP" \
-  --config connectionString="$CONNECTION_STRING" \
-  --config cert-manager.install=false
+  --config cert-manager.install=false \
+  --config-protected-file protected-settings-extension.json
 ```
 
 > [!IMPORTANT]
 > `--release-namespace "$NAMESPACE"` is required. The Helm chart creates the workload identity service account in the release namespace, and the federated identity credential subject you created in [Step 8](#step-8-create-the-federated-identity-credential) is bound to `$NAMESPACE`. If the extension installs into a different namespace, token exchange fails with `AADSTS70021` even though the credential looks correct.
 
 > [!NOTE]
-> Managed identity support ships in connected registry Arc extension **1.5.0** and is carried forward in all later versions, so auto-upgrade is safe to leave on and is the recommended setting. Do not combine `--auto-upgrade-minor-version true` with `--version`; the Azure CLI rejects that combination with a mutually exclusive argument error. Pin `--version 1.5.0` only if you must hold a specific build, and in that case set `--auto-upgrade-minor-version false`.
+> Managed identity support ships in connected registry Arc extension **1.5.0**, so leave auto-upgrade on. To pin a specific version instead, use `--version <version number>` with `--auto-upgrade-minor-version false`. Deploying an earlier extension version does not enable managed identity authentication, and the connected registry falls back to expecting a sync token in its connection string.
 
 > [!IMPORTANT]
 > `cert-manager.install=false` is required when you use Certificate Management for Azure Arc. It is **not** the extension's default. If you omit it, the extension installs its own bundled cert-manager, which collides with the one installed in [Step 9](#step-9-install-certificate-management-for-azure-arc) and the deployment fails. This is the same configuration documented for a preinstalled cert-manager in [Secure deployment options for the connected registry extension](https://learn.microsoft.com/azure/container-registry/tutorial-connected-registry-arc).
@@ -535,34 +483,13 @@ The extension has two separate cert-manager settings, and the distinction matter
 > [!NOTE]
 > Leave `cert-manager.enabled` at its default of `true`. Setting it to `false` means the extension no longer requests a certificate at all, and you must then supply your own certificate through `tls.secret`, or through `tls.crt` and `tls.key`. Setting `cert-manager.install=true` while `cert-manager.enabled=false` is rejected by the chart.
 
-### Certificate subject names and the client endpoint
-
-The server certificate that cert-manager issues always covers the in-cluster service DNS name, `<service-name>.<namespace>.svc.cluster.local`. Two settings add further subject alternative names, and both must be set at deployment time, before the certificate is issued:
-
-| Setting | Effect |
-|---|---|
-| `service.clusterIP` | Pins the service to a specific cluster IP and adds that IP to the certificate's `ipAddresses` SAN. Set in the command above, because most clients reach the connected registry by IP. |
-| `registryLoginServer` | Adds a custom DNS name to the certificate's `dnsNames` SAN. Add it when clients connect through a hostname you control. |
-
-Clients that connect to an address not covered by one of these names must either skip verification — which you should do only for the validation below — or be reconfigured to use a covered name. Changing these settings later requires the certificate to be reissued.
-
-### Trust distribution
-
-By default the extension enables **trust distribution**, which pushes the connected registry's CA certificate to the container runtime trust store on the cluster's client nodes so that pods can pull over HTTPS without manual trust configuration. Managed identity authentication does not change this behavior, and neither does Certificate Management for Azure Arc.
-
-Certificate handling and the identity token exchange are independent, so the alternatives documented in [Secure deployment options for the connected registry extension](https://learn.microsoft.com/azure/container-registry/tutorial-connected-registry-arc) — bring your own certificate, Kubernetes secret, and your own trust distribution — all remain available under managed identity authentication.
-
-> [!IMPORTANT]
-> Managed identity authentication requires connected registry Arc extension **1.5.0 or later**, which is published on the default `stable` release train. Deploying an earlier extension version does not enable managed identity authentication, and the connected registry falls back to expecting a sync token in its connection string.
-
 ## Validate the deployment
 
 ### Verify the Azure resource
 
 ```bash
-az rest --method get \
-  --uri "https://management.azure.com${ACR_RESOURCE_ID}/connectedRegistries/${CR}?api-version=2026-09-01-preview" \
-  --query "{authType:properties.parent.syncProperties.authType, tokenId:properties.parent.syncProperties.tokenId, identity:identity, status:properties.status, connectionState:properties.connectionState}"
+az acr connected-registry show --registry "$ACR" --name "$CR" \
+  --query "{authType:parent.syncProperties.authType, tokenId:parent.syncProperties.tokenId, identity:identity, status:status, connectionState:connectionState}"
 ```
 
 Expect `authType` to be `ManagedIdentity`, `tokenId` to be absent, and — once the edge deployment is healthy — `connectionState` to be `Online`.
@@ -570,10 +497,13 @@ Expect `authType` to be `ManagedIdentity`, `tokenId` to be absent, and — once 
 ### Verify workload identity injection
 
 ```bash
-kubectl get serviceaccount "$SERVICE_ACCOUNT" --namespace "$NAMESPACE" --output yaml
+kubectl get serviceaccount "$SERVICE_ACCOUNT" --namespace "$NAMESPACE" \
+  --output jsonpath='{.metadata.annotations.azure\.workload\.identity/client-id}'
+
+echo "$UAMI_CLIENT_ID"
 ```
 
-The service account must carry the annotation `azure.workload.identity/client-id` set to your managed identity's client ID.
+The two values must match.
 
 Then inspect the pod:
 
@@ -607,54 +537,62 @@ CR_SERVICE_PORT="$(kubectl --namespace "$NAMESPACE" get service "$CR_SERVICE" --
 CR_ENDPOINT="${CR_SERVICE_IP}:${CR_SERVICE_PORT}"
 ```
 
-Log in with the client token created in Step 4 and compare the local manifest digest with the parent registry:
-
-> [!WARNING]
-> `--insecure` skips TLS verification. It is used here only to keep the smoke test independent of node trust configuration, so that an identity or synchronization problem is not masked by a certificate trust problem. Do not use `--insecure` for normal pulls. Because you set `service.clusterIP`, the certificate does cover this IP address — for verified access, drop `--insecure` once the node trusts the connected registry's CA, which trust distribution configures automatically for the cluster's container runtime.
+Create a pull secret from the client token created in [Step 4](#step-4-create-a-client-token-for-local-access), then deploy a pod that pulls a synchronized image from the connected registry:
 
 ```bash
-printf '%s' "$CLIENT_PASSWORD" | oras login "$CR_ENDPOINT" \
-  --username "$CLIENT_TOKEN_NAME" --password-stdin --insecure
-
-CLOUD_DIGEST="$(az acr repository show --name "$ACR" --image "hello:cloud" --query digest --output tsv)"
-LOCAL_DIGEST="$(oras manifest fetch "$CR_ENDPOINT/hello:cloud" --insecure --descriptor | jq -r '.digest')"
-printf 'Cloud digest: %s\nLocal digest: %s\n' "$CLOUD_DIGEST" "$LOCAL_DIGEST"
-test "$CLOUD_DIGEST" = "$LOCAL_DIGEST" && echo "PASS: client pull succeeded" || echo "FAIL: digest mismatch"
+kubectl create secret docker-registry regcred \
+  --docker-server="$CR_ENDPOINT" \
+  --docker-username="$CLIENT_TOKEN_NAME" \
+  --docker-password="$CLIENT_PASSWORD"
 ```
 
-A `401` response indicates a client token, password, repository scope, or `clientTokenIds` problem. A `404` response usually means that authentication succeeded but the artifact has not synchronized yet, or is excluded by the managed identity's ABAC condition. Pulling `app:cloud` is expected to return `404`, because the ABAC condition deliberately excludes it.
+```bash
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-deployment
+  labels:
+    app: hello-world
+spec:
+  selector:
+    matchLabels:
+      app: hello-world
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: hello-world
+          image: ${CR_ENDPOINT}/hello:cloud
+EOF
 
-When you finish validating, clear the client credential from your shell:
+kubectl rollout status deployment/hello-world-deployment --timeout=120s
+```
+
+A successful rollout proves the whole chain: the managed identity authenticated to the parent registry, the ABAC condition allowed `hello`, the image synchronized to the edge, and the client token authorized the pull. No TLS flags are needed — the certificate covers the `service.clusterIP` you set in [Step 10](#step-10-deploy-the-connected-registry-arc-extension), and trust distribution already placed the connected registry's CA in the node's container runtime trust store.
+
+If the pod reports `ImagePullBackOff`, inspect the pull error:
 
 ```bash
+kubectl describe pod -l app=hello-world | grep -A5 Events
+```
+
+A `401` indicates a client token, password, repository scope, or `clientTokenIds` problem. A `404` usually means authentication succeeded but the artifact has not synchronized yet, or is excluded by the managed identity's ABAC condition.
+
+To confirm the ABAC condition is actually narrowing the sync scope, repeat the deployment with `${CR_ENDPOINT}/app:cloud`. It is expected to fail with a `404`, because the condition deliberately excludes the `app` repository.
+
+When you finish validating, remove the test resources and clear the client credential from your shell:
+
+```bash
+kubectl delete deployment hello-world-deployment
+kubectl delete secret regcred
 unset CLIENT_PASSWORD
 ```
-
-## Understanding sync scope in managed identity mode
-
-In sync token mode, the scope map defines which repositories synchronize. **In managed identity mode, the identity's RBAC and ABAC permissions are the only source of truth for sync scope.** There is no separate repository list and no `--repository` parameter.
-
-During a full synchronization, the connected registry lists the parent registry's catalog, probes which repositories the managed identity is permitted to read, and synchronizes only those.
-
-This design has several important consequences:
-
-* **Permission changes do not take effect automatically.** After modifying a role assignment or an ABAC condition, you must trigger a resync so the connected registry re-discovers its scope:
-
-    ```bash
-    az acr connected-registry resync --registry "$ACR" --name "$CR"
-    ```
-
-* **Inherited role assignments widen the sync scope silently.** A role assignment at subscription or resource group scope also applies to the registry. Always assign at registry scope with an ABAC condition, and audit for inherited assignments:
-
-    ```bash
-    az role assignment list --assignee "$UAMI_PRINCIPAL_ID" --all --include-inherited --output table
-    ```
-
-* **Narrowing permissions takes effect on the edge only after a resync.** Removing a repository from the ABAC condition stops future synchronization immediately, but artifacts already present on the edge remain available until a full resync runs. During a resync, the connected registry rebuilds the permitted catalog from the identity's *current* permissions and removes local repositories that are no longer in it. Run `az acr connected-registry resync` after narrowing permissions, and do not treat the narrowing alone as having revoked access to already-synchronized content.
-
-* **There is no API that reports the effective sync scope.** To understand which repositories will synchronize, inspect the managed identity's role assignments and conditions.
-
-* **RBAC propagation can take up to 10 minutes.** Expect a delay between granting access and seeing repositories appear on the edge.
 
 ## Troubleshooting
 
@@ -669,14 +607,14 @@ kubectl logs --namespace "$NAMESPACE" "$POD" --previous   # for a crashed contai
 
 | Symptom | Likely cause | Resolution |
 |---|---|---|
-| Pod in `CrashLoopBackOff`; log reports that managed identity configuration is incomplete and that `AZURE_TENANT_ID` and `AZURE_FEDERATED_TOKEN_FILE` are required | Workload identity was never injected. The OIDC issuer or workload identity is not enabled on the Arc cluster, or the distribution is unsupported | [Recovery A](#recovery-a-workload-identity-not-enabled) |
+| Pod in `CrashLoopBackOff`; log reports that managed identity configuration is incomplete and that `AZURE_TENANT_ID` and `AZURE_FEDERATED_TOKEN_FILE` are required | Workload identity was never injected. The OIDC issuer or workload identity is not enabled on the Arc cluster, or the distribution is unsupported | [Common fixes](#common-fixes) |
 | Log reports that the federated token file does not exist | The webhook added the environment variables but the projected volume is missing, or the pod predates webhook installation | Delete the pod so it is recreated through the admission webhook |
-| Log shows `AADSTS70021: No matching federated identity record found for presented assertion` | The federated identity credential's issuer or subject does not match the cluster | [Recovery B](#recovery-b-federated-identity-credential-mismatch) |
+| Log shows `AADSTS70021: No matching federated identity record found for presented assertion` | The federated identity credential's issuer or subject does not match the cluster | [Common fixes](#common-fixes) |
 | The API server reports its issuer as `https://kubernetes.default.svc.cluster.local` | The API server service account issuer was never aligned to the Arc OIDC issuer | Repeat [Step 7](#step-7-align-the-kubernetes-api-server-service-account-issuer), then restart the pod |
 | Activation fails with HTTP 403; the startup log reports `status: Forbidden` and that the connected registry instance failed to activate. The pod terminates and restarts | The sync role assignment is missing, or has not finished propagating | Verify the assignment, wait up to 10 minutes, then delete the pod |
 | Pod is healthy but no repositories synchronize | The ABAC condition excludes every repository, or the role grants gateway actions only | Review and correct the condition, then run `az acr connected-registry resync` |
 | Some repositories synchronize and others do not | The ABAC condition does not match those repository names | Update the condition, then resync |
-| Synchronization worked and then stopped | The role assignment was removed or narrowed, or the Arc OIDC issuer changed | If the narrowing was accidental, restore permissions and resync. If it was intentional, resync so the edge catalog is rebuilt from the current permissions. If the cluster was rebuilt, see [Recovery C](#recovery-c-oidc-issuer-rotation) |
+| Synchronization worked and then stopped | The role assignment was removed or narrowed, or the Arc OIDC issuer changed | If the narrowing was accidental, restore permissions and resync. If it was intentional, resync so the edge catalog is rebuilt from the current permissions. If the cluster was rebuilt, see [Common fixes](#common-fixes) |
 | Synchronization resumed after a permissions fix, but some artifacts pushed during the outage are still missing | Individual push, delete, and tag events that failed with `403` are classified as non-retryable and are dropped. Restarting the pod does not replay them | Run `az acr connected-registry resync --registry "$ACR" --name "$CR"` to reconcile the full catalog |
 | Connected registry creation fails with an error stating that managed identity sync is only supported on ABAC-enabled registries | The parent registry uses legacy registry permissions | Opt the registry into ABAC-enabled repository permissions |
 | Connected registry creation fails because the feature is not registered | The `ConnectedRegistryManagedIdentity` feature is not registered on the subscription | Complete [Subscription preview registration](#subscription-preview-registration) |
@@ -684,72 +622,32 @@ kubectl logs --namespace "$NAMESPACE" "$POD" --previous   # for a crashed contai
 | Extension installation fails on cert-manager CRDs or webhooks, reporting that a resource already exists or is owned by another release | Two cert-manager installations collide, because the extension installed its bundled copy alongside Certificate Management for Azure Arc | Delete the extension, then redeploy it with `--config cert-manager.install=false`. See [Step 10](#step-10-deploy-the-connected-registry-arc-extension) |
 | The connected registry pod stays `Pending` or `0/1 Ready`, and its TLS secret stays empty | The extension created `Certificate` resources, but no cert-manager is present to issue them, because `cert-manager.install=false` was set without installing Certificate Management for Azure Arc | Install Certificate Management for Azure Arc. See [Step 9](#step-9-install-certificate-management-for-azure-arc). Then inspect the request with `kubectl describe certificate -n $NAMESPACE` |
 
-### Recovery A: Workload identity not enabled
+### Common fixes
 
-If you deployed the extension before enabling the OIDC issuer and workload identity, the pod never received credentials. **In most cases you do not need to delete the extension.** Credential injection happens at pod admission time, so recreating the pod after fixing the cluster is sufficient.
-
-1. Enable the OIDC issuer and workload identity on the Arc cluster. See [Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity).
-2. Align the API server service account issuer and verify that the issuers match. See [Step 7](#step-7-align-the-kubernetes-api-server-service-account-issuer).
-3. Confirm that the workload identity webhook exists:
-
-    ```bash
-    kubectl get mutatingwebhookconfiguration | grep -i workload-identity
-    ```
-
-4. Create the federated identity credential. See [Step 8](#step-8-create-the-federated-identity-credential).
-5. Recreate the pod so the webhook can inject credentials:
+* **Workload identity was never injected.** Credential injection happens at pod admission, so you rarely need to delete the extension. Fix the cluster ([Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity) and [Step 7](#step-7-align-the-kubernetes-api-server-service-account-issuer)), create the federated identity credential ([Step 8](#step-8-create-the-federated-identity-credential)), then recreate the pod and re-run the [workload identity verification](#verify-workload-identity-injection):
 
     ```bash
     kubectl rollout restart deployment "$EXTENSION_NAME" --namespace "$NAMESPACE"
     ```
 
-6. Re-run the [workload identity verification](#verify-workload-identity-injection).
+* **Federated identity credential mismatch.** Compare the credential against the cluster's actual values:
 
-Delete and recreate the extension **only if** the extension name, namespace, connection string, or managed identity client ID is wrong, or the extension is stuck in a failed provisioning state:
+    ```bash
+    az identity federated-credential list --resource-group "$RG" --identity-name "$UAMI" \
+      --query "[].{name:name, issuer:issuer, subject:subject, audiences:audiences}" --output table
+
+    az connectedk8s show --resource-group "$RG" --name "$ARC_CLUSTER" \
+      --query oidcIssuerProfile.issuerUrl --output tsv
+    ```
+
+    The `subject` must be exactly `system:serviceaccount:<namespace>:<extension-name>-wi-sa`, the `issuer` must equal the Arc OIDC issuer, and `audiences` must contain `api://AzureADTokenExchange`. Update or recreate the credential, then restart the pod. If the cluster was rebuilt and the Arc OIDC issuer URL changed, recreate the credential with the new issuer.
+
+* **Collect more detail.** Update the connected registry resource with `"logging": { "logLevel": "Debug" }`. Access tokens are never written to logs; still redact connection strings, tokens, and passwords when sharing them.
+
+Delete and recreate the extension only if the extension name, namespace, connection string, or managed identity client ID is wrong, or the extension is stuck in a failed provisioning state. Then repeat [Step 10](#step-10-deploy-the-connected-registry-arc-extension).
 
 > [!WARNING]
-> Deleting the extension uninstalls the connected registry and interrupts local registry service for every client on the cluster. It also removes the chart-managed resources, including the persistent volume claim holding synchronized artifacts and the issued TLS certificates. Confirm that nothing needs to be retained before you run this, and prefer restarting the deployment or updating the extension whenever the release is recoverable.
-
-```bash
-az k8s-extension delete --name "$EXTENSION_NAME" --cluster-name "$ARC_CLUSTER" \
-  --resource-group "$RG" --cluster-type connectedClusters --yes
-```
-
-Then correct the configuration and repeat [Step 10](#step-10-deploy-the-connected-registry-arc-extension).
-
-### Recovery B: Federated identity credential mismatch
-
-Compare the credential against the cluster's actual values:
-
-```bash
-az identity federated-credential list --resource-group "$RG" --identity-name "$UAMI" \
-  --query "[].{name:name, issuer:issuer, subject:subject, audiences:audiences}" --output table
-
-kubectl get serviceaccount --namespace "$NAMESPACE"
-
-az connectedk8s show --resource-group "$RG" --name "$ARC_CLUSTER" \
-  --query oidcIssuerProfile.issuerUrl --output tsv
-```
-
-The `subject` must be exactly `system:serviceaccount:<namespace>:<extension-name>-wi-sa`, the `issuer` must equal the Arc OIDC issuer, and `audiences` must contain `api://AzureADTokenExchange`. Update or recreate the credential, then restart the pod.
-
-### Recovery C: OIDC issuer rotation
-
-If the Arc cluster's OIDC issuer URL changes — for example, after a cluster rebuild or migration — the existing federated identity credential becomes invalid and token acquisition fails.
-
-1. Read the new issuer URL from the Arc resource.
-2. Delete and recreate the federated identity credential with the new issuer.
-3. Restart the connected registry pod.
-
-### Collect more diagnostic detail
-
-To collect more detail, update the connected registry resource with debug logging:
-
-```json
-"logging": { "logLevel": "Debug" }
-```
-
-Access tokens are never written to logs. When sharing logs for support, still redact connection strings, tokens, and passwords.
+> Deleting the extension uninstalls the connected registry and interrupts local registry service for every client on the cluster. It also removes chart-managed resources, including the persistent volume claim holding synchronized artifacts and the issued TLS certificates. Prefer restarting the deployment or updating the extension in place whenever the release is recoverable.
 
 ## Migrate an existing connected registry to managed identity
 
@@ -777,46 +675,42 @@ An existing connected registry in sync token mode can be migrated to managed ide
     ```bash
     az acr connected-registry deactivate --registry "$ACR" --name "$CR" --yes
 
-    az rest --method get \
-      --uri "https://management.azure.com${ACR_RESOURCE_ID}/connectedRegistries/${CR}?api-version=2026-09-01-preview" \
-      --query "{status:properties.status, connectionState:properties.connectionState}"
+    az acr connected-registry show --registry "$ACR" --name "$CR" \
+      --query "{status:status, connectionState:connectionState}"
     ```
 
-    Do not continue until the connected registry reports that it is offline. Patching the authentication mode while it is still online is rejected.
+    Do not continue until the connected registry reports that it is offline. Changing the authentication mode while it is still online is rejected.
 
 4. Update the connected registry to managed identity authentication:
 
     ```bash
-    cat > cr-migrate.json <<EOF
-    {
-      "identity": {
-        "type": "UserAssigned",
-        "userAssignedIdentities": { "$UAMI_RESOURCE_ID": {} }
-      },
-      "properties": {
-        "parent": { "syncProperties": { "authType": "ManagedIdentity" } }
-      }
-    }
-    EOF
-
-    az rest --method patch \
-      --uri "https://management.azure.com${ACR_RESOURCE_ID}/connectedRegistries/${CR}?api-version=2026-09-01-preview" \
-      --body @cr-migrate.json
+    az acr connected-registry update \
+      --registry "$ACR" --name "$CR" \
+      --auth-type ManagedIdentity \
+      --identity "$UAMI_RESOURCE_ID"
     ```
 
-5. Rebuild the connection string in managed identity format, as shown in [Step 10](#step-10-deploy-the-connected-registry-arc-extension), and update the existing Arc extension in place so the edge deployment uses the new credentials:
+5. Retrieve the connection string in managed identity format and update the existing Arc extension in place so the edge deployment uses the new credentials:
 
     ```bash
-    CONNECTION_STRING="ConnectedRegistryName=${CR};ManagedIdentityClientId=${UAMI_CLIENT_ID};ParentGatewayEndpoint=${PARENT_GATEWAY_ENDPOINT};ParentEndpointProtocol=https"
+    cat << EOF > protected-settings-extension.json
+    {
+      "connectionString": "$(az acr connected-registry get-settings \
+      --name "$CR" \
+      --registry "$ACR" \
+      --parent-protocol https \
+      --query ACR_REGISTRY_CONNECTION_STRING --output tsv)"
+    }
+    EOF
 
     az k8s-extension update \
       --name "$EXTENSION_NAME" \
       --cluster-name "$ARC_CLUSTER" --resource-group "$RG" \
       --cluster-type connectedClusters \
-      --config connectionString="$CONNECTION_STRING"
+      --config-protected-file protected-settings-extension.json
     ```
 
-    Add `--config cert-manager.install=false` only if you migrated to Certificate Management for Azure Arc in step 2. If the extension cannot be updated in place — for example because its release namespace is wrong for the federated identity credential subject — delete and recreate it instead, observing the warning in [Recovery A](#recovery-a-workload-identity-not-enabled).
+    Add `--config cert-manager.install=false` only if you migrated to Certificate Management for Azure Arc in step 2. If the extension cannot be updated in place — for example because its release namespace is wrong for the federated identity credential subject — delete and recreate it instead, observing the warning in [Common fixes](#common-fixes).
 
 6. Validate the deployment. See [Validate the deployment](#validate-the-deployment).
 
@@ -834,24 +728,25 @@ During the private preview of managed identity authentication for connected regi
 3. **Exactly one user-assigned managed identity.** System-assigned managed identities are not supported.
 4. **The identity binding is immutable** after the connected registry is created.
 5. **Migration is one-way**, from sync token mode to managed identity mode only.
-6. **Sync scope is derived from RBAC and ABAC permissions.** There is no explicit repository filter field, and no API reports the effective sync scope.
-7. **Permission changes require a manual resync.** Role assignment and ABAC condition changes are not detected automatically.
+6. **Sync scope is derived from RBAC and ABAC permissions.** There is no explicit repository filter field, and no API reports the effective sync scope. Role assignments inherited from subscription or resource group scope silently widen it, so audit them:
 
-### Tooling limitations
+    ```bash
+    az role assignment list --assignee "$UAMI_PRINCIPAL_ID" --all --include-inherited --output table
+    ```
 
-1. **Azure CLI does not yet support the managed identity properties** for `az acr connected-registry create`, `update`, or `get-settings`. Use the REST API as shown in this article. Other commands, including `deactivate`, `resync`, `show`, and `list`, work normally.
+7. **Permission changes require a manual resync.** Role assignment and ABAC condition changes are not detected automatically. Narrowing permissions stops future synchronization immediately, but artifacts already on the edge remain available until a resync rebuilds the permitted catalog from the identity's current permissions:
+
+    ```bash
+    az acr connected-registry resync --registry "$ACR" --name "$CR"
+    ```
+
+### Tooling and operational notes
+
+1. **The Azure portal can display a connected registry in managed identity mode, but cannot create one** or perform the migration. Use the Azure CLI.
 2. **`az acr connected-registry permissions` applies only to connected registries in sync token mode**, because its output is derived from a scope map.
-3. **The Azure portal can display a connected registry in managed identity mode, but cannot create one** or perform the migration. Use the REST API.
-4. **Older API versions omit managed identity properties.** Reading a connected registry in managed identity mode with an older API version omits `identity`, `authType`, and `tokenId`, because those versions cannot represent managed identity authentication. Use `2026-09-01-preview` to see the full resource.
-5. **Connected registry Arc extension 1.5.0 or later is required.** Earlier extension versions do not include managed identity support.
-
-### Operational notes
-
-1. **Azure RBAC propagation can take up to 10 minutes.**
-2. **Activation failures return `403` and are non-retryable.** The pod terminates and Kubernetes restarts it. This is expected behavior while permissions propagate.
-3. If the managed identity loses gateway permissions after activation, synchronization stalls silently, and recovery begins only after `messageTtl` elapses.
-4. Full synchronization lists the parent registry's entire catalog and then probes repository permissions in batches, so synchronization initiation cost grows roughly as the catalog listing plus one token request per batch of repositories. A parent registry with far more repositories than the connected registry is permitted to read still pays the full catalog cost on every resync.
-5. **Certificate Management for Azure Arc is the recommended certificate authority for new deployments.** The ACR team plans to move all connected registry Arc extension customers to it, so adopting it now avoids a later migration of your cluster's certificate authority. Its [regional availability](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview#regional-support) and [validated distributions](https://learn.microsoft.com/azure/azure-arc/kubernetes/cert-manager-overview#validated-arc-enabled-kubernetes-distributions) are narrower than Azure Arc as a whole, so confirm your cluster qualifies before you plan a deployment.
+3. **`--cleanup` has no effect.** Deleting the connected registry leaves the managed identity and its role assignments in place.
+4. If the managed identity loses gateway permissions after activation, synchronization stalls silently, and recovery begins only after `messageTtl` elapses.
+5. Full synchronization lists the parent registry's entire catalog and then probes repository permissions in batches. A parent registry with far more repositories than the connected registry is permitted to read still pays the full catalog cost on every resync.
 
 ## Reporting issues and asking for help
 
@@ -865,7 +760,7 @@ When reporting a problem, please include:
 
 * Subscription ID, registry name, connected registry name, and region
 * The UTC timestamp of the failure, and any correlation ID from the ARM response
-* The connected registry extension version and release train
+* The connected registry extension version
 * Kubernetes distribution and version, and the Azure Arc agent version
 * Relevant pod logs, **with connection strings, tokens, and passwords redacted**
 * What you expected to happen, and what happened instead
@@ -879,7 +774,7 @@ We are especially interested in feedback on:
 
 ## Conclusion
 
-Managed identity authentication removes the last long-lived secret from the connected registry synchronization path. Instead of generating, distributing, and rotating sync token passwords, you grant a user-assigned managed identity a connected registry sync role scoped with ABAC conditions, and the edge workload acquires short-lived Microsoft Entra ID tokens through Azure Arc workload identity. This aligns connected registry access control with the rest of Azure, lets you reuse the same repository scoping model you already use for ABAC-enabled registries, and eliminates an entire class of credential management and rotation work.
+Managed identity authentication removes the last long-lived secret from the connected registry synchronization path. Instead of distributing and rotating sync token passwords, you grant a user-assigned managed identity a sync role scoped with ABAC conditions, and the edge workload acquires short-lived Microsoft Entra ID tokens through Azure Arc workload identity.
 
 ## Next steps
 
