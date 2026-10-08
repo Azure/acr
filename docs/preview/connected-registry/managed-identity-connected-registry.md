@@ -4,7 +4,7 @@ description: Learn step-by-step guidance on configuring a connected registry tha
 ms.topic: article
 ms.date: 10/06/2026
 ms.author: zoeyli
-author: zoeyli
+author: lizMSFT
 ms.service: container-registry
 ---
 
@@ -507,7 +507,6 @@ az k8s-extension create \
   --cluster-type connectedClusters \
   --extension-type Microsoft.ContainerRegistry.ConnectedRegistry \
   --release-namespace "$NAMESPACE" \
-  --release-train <preview-release-train> \
   --auto-upgrade-minor-version true \
   --config service.clusterIP="$CR_CLUSTER_IP" \
   --config connectionString="$CONNECTION_STRING" \
@@ -551,7 +550,7 @@ By default the extension enables **trust distribution**, which pushes the connec
 Certificate handling and the identity token exchange are independent, so the alternatives documented in [Secure deployment options for the connected registry extension](https://learn.microsoft.com/azure/container-registry/tutorial-connected-registry-arc) — bring your own certificate, Kubernetes secret, and your own trust distribution — all remain available under managed identity authentication.
 
 > [!IMPORTANT]
-> Managed identity authentication requires connected registry Arc extension **1.5.0 or later**. The ACR team provides the `--release-train` value when your subscription is onboarded to the private preview. Deploying an earlier extension version does not enable managed identity authentication, and the connected registry falls back to expecting a sync token in its connection string.
+> Managed identity authentication requires connected registry Arc extension **1.5.0 or later**, which is published on the default `stable` release train. Deploying an earlier extension version does not enable managed identity authentication, and the connected registry falls back to expecting a sync token in its connection string.
 
 ## Validate the deployment
 
