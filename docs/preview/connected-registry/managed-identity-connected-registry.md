@@ -49,9 +49,9 @@ Managed identity mode relies on three Azure resources that you create before dep
 
 1. A **user-assigned managed identity** in Azure, which becomes the connected registry's sync identity.
 2. A **connected registry sync role** assigned to that identity on the parent registry, narrowed with an **ABAC condition** to the repositories you want synchronized.
-3. A **federated identity credential** on the identity, trusting your Arc-enabled Kubernetes cluster's OIDC issuer and the Kubernetes service account used by the connected registry pod.
+3. A **federated identity credential** on the identity, trusting your Arc-enabled Kubernetes cluster's OIDC issuer and the Kubernetes service account that the connected registry extension creates.
 
-With those in place, the connected registry pod obtains Microsoft Entra ID tokens automatically at runtime, and no secret is stored at the edge.
+With those in place, the connected registry synchronizes from its parent registry using the managed identity, and the repositories it synchronizes are exactly those the identity is permitted to read. No sync token is created, distributed to the edge, or rotated.
 
 ## Checklist for private preview - connected registry managed identity
 
