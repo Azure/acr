@@ -11,7 +11,7 @@ ms.service: container-registry
 # Managed Identity Authentication for Azure Container Registry Connected Registry (Private Preview)
 
 > [!IMPORTANT]
-> Managed identity authentication for Azure Container Registry (ACR) connected registry is currently in private preview.
+> Managed identity authentication for Azure Container Registry (ACR) connected registry is currently in private preview. As a private preview feature, we encourage users to explore its capabilities in a non-production environment, and avoid production workloads.
 
 Azure Container Registry [connected registry](https://learn.microsoft.com/en-us/azure/container-registry/intro-connected-registry) is an on-premises or edge registry that synchronizes container images and OCI artifacts from a parent cloud registry. Historically, every connected registry authenticated with its parent using a **sync token** — an ACR scope map token whose password had to be generated, embedded in a connection string, distributed to the edge, and rotated manually.
 
