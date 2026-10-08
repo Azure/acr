@@ -11,20 +11,25 @@ ms.service: container-registry
 # Managed Identity Authentication for Azure Container Registry Connected Registry (Private Preview)
 
 > [!IMPORTANT]
-> Managed identity authentication for Azure Container Registry (ACR) connected registry is currently in private preview. As a private preview feature, we encourage users to explore its capabilities in a non-production environment, and avoid production workloads. Private preview features are not covered by an SLA or by standard Azure support.
+> Managed identity authentication for Azure Container Registry (ACR) connected registry is currently in private preview.
 
-Azure Container Registry [connected registry](./intro-connected-registry.md) is an on-premises or edge registry that synchronizes container images and OCI artifacts from a parent cloud registry. Historically, every connected registry authenticated with its parent using a **sync token** — an ACR scope map token whose password had to be generated, embedded in a connection string, distributed to the edge, and rotated manually.
+Azure Container Registry [connected registry](https://learn.microsoft.com/en-us/azure/container-registry/intro-connected-registry) is an on-premises or edge registry that synchronizes container images and OCI artifacts from a parent cloud registry. Historically, every connected registry authenticated with its parent using a **sync token** — an ACR scope map token whose password had to be generated, embedded in a connection string, distributed to the edge, and rotated manually.
 
 With **managed identity authentication**, a connected registry running on an [Azure Arc-enabled Kubernetes](https://learn.microsoft.com/azure/azure-arc/kubernetes/overview) cluster authenticates to its parent registry using a **user-assigned managed identity** and [Azure Workload Identity](https://learn.microsoft.com/azure/azure-arc/kubernetes/conceptual-workload-identity). No long-lived secret is stored in the connection string, in a Kubernetes secret, or anywhere else in the deployment.
 
 Managed identity authentication builds on [ABAC-enabled repository permissions](https://learn.microsoft.com/azure/container-registry/container-registry-rbac-abac-repository-permissions). Instead of a scope map, the set of repositories a connected registry synchronizes is derived from the Azure RBAC role assignment and ABAC conditions you grant to the managed identity on the parent registry.
+
+Each connected registry has a **sync authentication mode**, set by the `authType` property when the connected registry is created. This article uses the following terms:
+
+* **Sync token mode** (`authType` is `SyncToken`) — the existing behavior, where synchronization authenticates with an ACR scope map token.
+* **Managed identity mode** (`authType` is `ManagedIdentity`) — the new behavior described in this article.
 
 > [!IMPORTANT]
 > Managed identity authentication requires the parent registry to be opted into **ABAC-enabled repository permissions mode**. Registries using legacy registry permissions are not supported. Before continuing, review [ABAC-enabled repository permissions](https://learn.microsoft.com/azure/container-registry/container-registry-rbac-abac-repository-permissions) and understand how opting a registry into ABAC changes the behavior of existing role assignments.
 
 ## What changes and what does not
 
-| | Sync token (existing) | Managed identity (new) |
+| | Sync token mode (existing) | Managed identity mode (new) |
 |---|---|---|
 | Credential in the connection string | Token password | None — only a client ID |
 | Credential rotation | Manual; requires redeploying the extension | Automatic; tokens are short-lived |
@@ -33,17 +38,17 @@ Managed identity authentication builds on [ABAC-enabled repository permissions](
 | Which repositories synchronize | Scope map definition | Derived from the identity's RBAC and ABAC permissions |
 
 > [!NOTE]
-> Managed identity applies only to **synchronization between the connected registry and its parent registry**. It does not change how clients access the on-premises connected registry. Docker, ORAS, and other OCI clients continue to authenticate to the local registry using ACR tokens listed in `clientTokenIds`. See [Understand access to a connected registry](./overview-connected-registry-access.md).
+> Managed identity applies only to **synchronization between the connected registry and its parent registry**. It does not change how clients access the on-premises connected registry. Docker, ORAS, and other OCI clients continue to authenticate to the local registry using ACR tokens listed in `clientTokenIds`. See [Understand access to a connected registry](https://learn.microsoft.com/en-us/azure/container-registry/intro-connected-registry#client-access).
 
 > [!NOTE]
-> Existing sync token connected registries are unaffected. Managed identity is a new, opt-in authentication mode selected when the connected registry is created.
+> Existing connected registries in sync token mode are unaffected. Managed identity mode is new and opt-in, and is selected when the connected registry is created.
 
 ## How it works
 
 1. You create a **user-assigned managed identity** in Azure.
 2. You grant that identity a **connected registry sync role** on the parent registry, narrowed with an **ABAC condition** to the repositories you want synchronized.
 3. You create a **federated identity credential** that trusts your Arc-enabled Kubernetes cluster's OIDC issuer and the Kubernetes service account used by the connected registry pod.
-4. The connected registry pod projects a service account token, exchanges it with Microsoft Entra ID for an access token, and calls the ACR gateway and data plane with that token.
+4. The connected registry pod uses that federated credential to obtain Microsoft Entra ID tokens automatically, with no secret stored at the edge.
 
 ## Checklist for private preview - connected registry managed identity
 
@@ -94,7 +99,7 @@ The table below summarizes the steps you need to undertake to participate in the
 | Parent registry permissions mode | **ABAC-enabled repository permissions** (`AbacRepositoryPermissions`) |
 | Registry dedicated data endpoint | **Enabled** |
 | Connected registry topology | **Top-level only** — the parent must be the cloud registry |
-| Nested connected registries | **Not supported** — a managed identity connected registry cannot have children |
+| Nested connected registries | **Not supported** — a connected registry in managed identity mode cannot have children |
 | Managed identity type | **User-assigned only**, exactly **one** identity |
 | Edge platform | **Azure Arc-enabled Kubernetes** with the OIDC issuer and workload identity enabled |
 | Connected registry Arc extension | **1.5.0 or later** |
@@ -405,24 +410,9 @@ echo "$OIDC_ISSUER"
 
 Confirm that `OIDC_ISSUER` is a public HTTPS URL before continuing.
 
-**For Ubuntu Linux with K3s**, add or merge the following entries in `/etc/rancher/k3s/config.yaml`. Replace the placeholder with the value printed above. If `kube-apiserver-arg` already exists, add the entries to that list instead of creating a second block.
+Configure your API server to advertise this issuer. The exact procedure depends on your Kubernetes distribution — follow [configure workload identity settings on the Kubernetes cluster](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#configure-workload-identity-settings-on-the-kubernetes-cluster), which covers each supported distribution.
 
-```yaml
-kube-apiserver-arg:
-  - "service-account-issuer=<OIDC_ISSUER>"
-  - "service-account-max-token-expiration=24h"
-```
-
-Restart K3s so that the API server uses the Arc issuer, then wait for the node to become ready:
-
-```bash
-sudo systemctl restart k3s
-kubectl wait --for=condition=Ready node --all --timeout=180s
-```
-
-**For AKS enabled by Azure Arc, Red Hat OpenShift, VMware Tanzu TKGm, or AKS on Edge Essentials**, do not use the K3s commands above. Follow the distribution-specific configuration in [configure workload identity settings on the Kubernetes cluster](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#configure-workload-identity-settings-on-the-kubernetes-cluster).
-
-Verify the issuer advertised by the API server:
+Then verify the issuer advertised by the API server:
 
 ```bash
 ADVERTISED_ISSUER="$(kubectl get --raw='/.well-known/openid-configuration' | jq -r '.issuer')"
@@ -432,7 +422,7 @@ printf 'Arc issuer:        %s\nAPI server issuer: %s\n' "$OIDC_ISSUER" "$ADVERTI
 The two issuer values must match, allowing only a trailing-slash difference.
 
 > [!WARNING]
-> Do not create the federated identity credential or deploy the connected registry extension if the API server still reports `https://kubernetes.default.svc.cluster.local`.
+> Do not create the federated identity credential or deploy the connected registry extension if the API server still reports `https://kubernetes.default.svc.cluster.local`. The deployment appears to succeed, but the connected registry never authenticates.
 
 Confirm that the workload identity webhook is installed:
 
@@ -666,7 +656,7 @@ This design has several important consequences:
 
 ## Troubleshooting
 
-The primary diagnostic surface for managed identity connected registries is the pod log on the Arc-enabled Kubernetes cluster:
+The primary diagnostic surface for connected registries in managed identity mode is the pod log on the Arc-enabled Kubernetes cluster:
 
 ```bash
 kubectl logs --namespace "$NAMESPACE" "$POD"
@@ -761,7 +751,7 @@ Access tokens are never written to logs. When sharing logs for support, still re
 
 ## Migrate an existing connected registry to managed identity
 
-An existing sync token connected registry can be migrated to managed identity authentication. The migration is **one-way and final**.
+An existing connected registry in sync token mode can be migrated to managed identity mode. The migration is **one-way and final**.
 
 ### Migration rules
 
@@ -772,7 +762,7 @@ An existing sync token connected registry can be migrated to managed identity au
 | Topology | Must be a top-level connected registry with no child connected registries. |
 | Registry | The parent registry must be opted into ABAC-enabled repository permissions. |
 | Immutability | After migration, the managed identity cannot be changed or replaced. |
-| Other changes | Changing `tokenId` on a sync token connected registry, or swapping one managed identity for another, is rejected. |
+| Other changes | Changing `tokenId` on a connected registry in sync token mode, or swapping one managed identity for another, is rejected. |
 
 ### Migration procedure
 
@@ -838,19 +828,19 @@ During the private preview of managed identity authentication for connected regi
 ### Feature limitations
 
 1. **ABAC-enabled registries only.** Managed identity requires a parent registry opted into ABAC-enabled repository permissions. Registries using legacy registry permissions are not supported.
-2. **Top-level connected registries only.** A managed identity connected registry cannot have child connected registries, and a connected registry whose parent is another connected registry must continue to use a sync token.
+2. **Top-level connected registries only.** A connected registry in managed identity mode cannot have child connected registries, and a connected registry whose parent is another connected registry must remain in sync token mode.
 3. **Exactly one user-assigned managed identity.** System-assigned managed identities are not supported.
 4. **The identity binding is immutable** after the connected registry is created.
-5. **Migration is one-way**, from sync token to managed identity only.
+5. **Migration is one-way**, from sync token mode to managed identity mode only.
 6. **Sync scope is derived from RBAC and ABAC permissions.** There is no explicit repository filter field, and no API reports the effective sync scope.
 7. **Permission changes require a manual resync.** Role assignment and ABAC condition changes are not detected automatically.
 
 ### Tooling limitations
 
 1. **Azure CLI does not yet support the managed identity properties** for `az acr connected-registry create`, `update`, or `get-settings`. Use the REST API as shown in this article. Other commands, including `deactivate`, `resync`, `show`, and `list`, work normally.
-2. **`az acr connected-registry permissions` applies only to sync token connected registries**, because its output is derived from a scope map.
-3. **The Azure portal can display a managed identity connected registry, but cannot create one** or perform the migration. Use the REST API.
-4. **Older API versions omit managed identity properties.** Reading a managed identity connected registry with an older API version omits `identity`, `authType`, and `tokenId`, because those versions cannot represent managed identity authentication. Use `2026-09-01-preview` to see the full resource.
+2. **`az acr connected-registry permissions` applies only to connected registries in sync token mode**, because its output is derived from a scope map.
+3. **The Azure portal can display a connected registry in managed identity mode, but cannot create one** or perform the migration. Use the REST API.
+4. **Older API versions omit managed identity properties.** Reading a connected registry in managed identity mode with an older API version omits `identity`, `authType`, and `tokenId`, because those versions cannot represent managed identity authentication. Use `2026-09-01-preview` to see the full resource.
 5. **Connected registry Arc extension 1.5.0 or later is required.** Earlier extension versions do not include managed identity support.
 
 ### Operational notes
@@ -863,9 +853,11 @@ During the private preview of managed identity authentication for connected regi
 
 ## Reporting issues and asking for help
 
-This feature is in private preview and is **not covered by Azure support or an SLA**. Do not open standard Azure support tickets for managed identity connected registry issues.
+For issues with this preview feature, the fastest path to a resolution is to contact the ACR team directly, because the engineers who own this feature triage these reports.
 
 To report issues, [create a new bug](https://github.com/Azure/acr/issues/new?assignees=&labels=connected-registry,bug&template=bug_report.md&title=) in this repository, or contact the ACR team at <acr-pm@microsoft.com>.
+
+If an issue affects your **parent registry** — for example synchronization failures, throttling, or anything impacting production traffic — open an Azure support case as you normally would, and mention that the connected registry is enrolled in the managed identity mode private preview.
 
 When reporting a problem, please include:
 
