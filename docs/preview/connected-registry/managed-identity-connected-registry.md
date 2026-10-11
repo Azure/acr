@@ -620,15 +620,20 @@ An existing connected registry in sync token mode can be migrated to managed ide
 | Topology | Must be a top-level connected registry with no child connected registries. |
 | Registry | The parent registry must be opted into ABAC-enabled repository permissions. |
 | Immutability | After migration, the managed identity cannot be changed or replaced. |
+| Extension version | The deployed Arc extension must be **1.5.0 or later** before it can use managed identity credentials. If auto-upgrade is disabled on the existing extension, upgrade it as part of the update in step 4. |
 | Other changes | Changing `tokenId` on a connected registry in sync token mode, or swapping one managed identity for another, is rejected. |
 
 ### Migration procedure
 
+> [!IMPORTANT]
+> Plan a maintenance window. The connected registry stops serving its clients when you deactivate it in step 2, and it does not resume until the extension update in step 4 completes and the pod reconnects. Re-activation also generates a new token server signing key, so bearer tokens issued before the migration stop working. Clients request a new token automatically using the credentials they already have, so no `docker login` is required.
+
+> [!NOTE]
+> This migration changes the synchronization authentication mode only. Leave the existing deployment's certificate management as it is. Switching an existing deployment between the extension's bundled cert-manager and Certificate Management for Azure Arc is a separate change, and is out of scope for this guide.
+
 1. Complete [Step 2](#step-2-create-the-user-assigned-managed-identity), [Step 3](#step-3-grant-the-managed-identity-permission-on-the-parent-registry), [Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity), [Step 7](#step-7-align-the-kubernetes-api-server-service-account-issuer), and [Step 8](#step-8-create-the-federated-identity-credential): create the managed identity, assign the sync role with an ABAC condition, enable the OIDC issuer and workload identity, align the API server service account issuer, and create the federated identity credential.
 
-2. Decide how to manage certificates before updating the extension. If the existing deployment uses the extension's bundled cert-manager, keep using it by omitting `cert-manager.install=false` in migration step 5, or move to Certificate Management for Azure Arc by completing [Step 9](#step-9-install-certificate-management-for-azure-arc) first. Running both at once collides on the cert-manager CRDs and webhooks.
-
-3. Deactivate the connected registry and confirm that it is offline:
+2. Deactivate the connected registry and confirm that it is offline:
 
     ```bash
     az acr connected-registry deactivate --registry "$ACR" --name "$CR" --yes
@@ -639,7 +644,7 @@ An existing connected registry in sync token mode can be migrated to managed ide
 
     Confirm that `connectionState` reports `Offline` before continuing. Changing the authentication mode while the connected registry is still online is rejected.
 
-4. Update the connected registry to managed identity authentication:
+3. Update the connected registry to managed identity authentication:
 
     ```bash
     az acr connected-registry update \
@@ -650,7 +655,7 @@ An existing connected registry in sync token mode can be migrated to managed ide
 
     The update should succeed. The cloud resource now uses managed identity mode, but the edge cannot reconnect until its extension receives the new connection string.
 
-5. Retrieve the connection string in managed identity format and update the existing Arc extension in place so the edge deployment uses the new credentials:
+4. Retrieve the connection string in managed identity format and update the existing Arc extension in place so the edge deployment uses the new credentials:
 
     ```bash
     cat << EOF > protected-settings-extension.json
@@ -672,9 +677,9 @@ An existing connected registry in sync token mode can be migrated to managed ide
 
     The extension update should succeed with the new protected settings. Confirm that the connected registry reconnects by following [Validate the deployment](#validate-the-deployment).
 
-    Add `--config cert-manager.install=false` only if you migrated to Certificate Management for Azure Arc in step 2. If the extension cannot be updated in place — for example because its release namespace is wrong for the federated identity credential subject — delete and recreate it instead, observing the warning in [Troubleshooting](#troubleshooting).
+    Pass only the protected settings. Leave the extension's other configuration, including its certificate management settings, unchanged. If the extension cannot be updated in place, or it is stuck in a failed provisioning state, delete and recreate it instead, observing the warning in [Troubleshooting](#troubleshooting).
 
-6. Validate the deployment. See [Validate the deployment](#validate-the-deployment).
+5. Validate the deployment. See [Validate the deployment](#validate-the-deployment).
 
 > [!IMPORTANT]
 > The cloud resource and the deployed Arc extension must use the same authentication mode. Update both, or the connected registry will not reconnect.
