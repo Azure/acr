@@ -250,8 +250,6 @@ az role assignment create \
   --description "Connected registry sync access"
 ```
 
-The resulting role assignment should show the selected sync role at the parent registry's scope, with the ABAC condition and condition version `2.0`.
-
 > [!WARNING]
 > Assign the sync role at **registry scope**, not at subscription or resource group scope. In managed identity mode, the identity's permissions are the only source of truth for the set of repositories that synchronize. A broader inherited role assignment silently widens the sync scope. Assigning a sync role **without** an ABAC condition grants permissions to all repositories in the registry.
 
@@ -362,8 +360,6 @@ az identity federated-credential create \
   --audiences "api://AzureADTokenExchange"
 ```
 
-The created credential should trust the Arc OIDC issuer, the `system:serviceaccount:<namespace>:<extension-name>-wi-sa` subject, and the `api://AzureADTokenExchange` audience.
-
 > [!IMPORTANT]
 > If you choose a different extension name or namespace, use those same values when building `FIC_SUBJECT` and when deploying the extension. A mismatch prevents the connected registry pod from obtaining a Microsoft Entra ID token.
 
@@ -457,17 +453,6 @@ Expect `authType` to be `ManagedIdentity`, `tokenId` to be absent, and — once 
 ### Verify workload identity injection
 
 ```bash
-kubectl get serviceaccount "$SERVICE_ACCOUNT" --namespace "$NAMESPACE" \
-  --output jsonpath='{.metadata.annotations.azure\.workload\.identity/client-id}'
-
-echo "$UAMI_CLIENT_ID"
-```
-
-The two values must match.
-
-Then inspect the pod:
-
-```bash
 POD="$(kubectl get pods --namespace "$NAMESPACE" \
   -l app.kubernetes.io/name=connected-registry \
   -o jsonpath='{.items[0].metadata.name}')"
@@ -476,7 +461,7 @@ kubectl exec --namespace "$NAMESPACE" "$POD" -- env | grep AZURE_
 kubectl describe pod --namespace "$NAMESPACE" "$POD" | grep -i azure-identity-token
 ```
 
-A correctly injected pod has `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_FEDERATED_TOKEN_FILE`, and `AZURE_AUTHORITY_HOST` set, plus a projected `azure-identity-token` volume. If these are missing, workload identity is not correctly configured. See [Troubleshooting](#troubleshooting).
+A correctly injected pod has `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_FEDERATED_TOKEN_FILE`, and `AZURE_AUTHORITY_HOST` set, plus a projected `azure-identity-token` volume. If they are missing, the admission webhook did not act and workload identity is not correctly configured. See [Troubleshooting](#troubleshooting).
 
 ### Verify a client pull
 
@@ -620,7 +605,7 @@ An existing connected registry in sync token mode can be migrated to managed ide
 ### Migration procedure
 
 > [!IMPORTANT]
-> Plan a maintenance window. The connected registry stops serving its clients when you deactivate it in step 2, and it does not resume until the extension update in step 4 completes and the pod reconnects. Re-activation also generates a new token server signing key, so bearer tokens issued before the migration stop working. Clients request a new token automatically using the credentials they already have, so no `docker login` is required.
+> Plan a maintenance window. The connected registry stops serving its clients when you deactivate it in step 2, and it does not resume until the extension update in step 4 completes and the pod reconnects. Migration changes only how the edge authenticates to the parent registry, so client credentials are unaffected and no client-side change is required.
 
 > [!NOTE]
 > This migration changes the synchronization authentication mode only. Leave the existing deployment's certificate management as it is. Switching an existing deployment between the extension's bundled cert-manager and Certificate Management for Azure Arc is a separate change, and is out of scope for this guide.
@@ -649,8 +634,7 @@ An existing connected registry in sync token mode can be migrated to managed ide
 
     The update should succeed. The cloud resource now uses managed identity mode, but the edge cannot reconnect until its extension receives the new connection string.
 
-    > [!IMPORTANT]
-    > Update the cloud resource before the extension, as shown here. If you update the extension first, the edge presents managed identity credentials to a parent that still expects a sync token, and activation is rejected with `403 DENIED — The token identity is not authorized for this connected registry`, leaving the pod in a crash loop until the cloud resource catches up.
+    **Update the cloud resource before the extension, as shown here.** If you update the extension first, the edge presents managed identity credentials to a parent that still expects a sync token, and activation is rejected with `403 DENIED — The token identity is not authorized for this connected registry`, leaving the pod in a crash loop until the cloud resource catches up.
 
 4. Retrieve the connection string in managed identity format and update the existing Arc extension in place so the edge deployment uses the new credentials:
 
@@ -685,8 +669,7 @@ An existing connected registry in sync token mode can be migrated to managed ide
     az acr scope-map delete --registry "$ACR" --name "$CR" --yes
     ```
 
-    > [!WARNING]
-    > Do not delete them before validation succeeds. If you need to abandon the migration and redeploy the previous extension configuration, the edge deployment still depends on this token.
+    **Do not delete them before validation succeeds.** If you need to abandon the migration and redeploy the previous extension configuration, the edge deployment still depends on this token.
 
     Leaving them in place keeps a long-lived credential that can act on the connected registry's gateway, which defeats the purpose of migrating to managed identity.
 
@@ -725,8 +708,6 @@ The following limitations apply during the private preview of managed identity a
 1. **The Azure portal can display a connected registry in managed identity mode, but cannot create one** or perform the migration. Use the Azure CLI.
 2. **`az acr connected-registry permissions` applies only to connected registries in sync token mode**, because its output is derived from a scope map.
 3. **`--cleanup` has no effect.** Deleting the connected registry leaves the managed identity and its role assignments in place.
-4. If the managed identity loses gateway permissions after activation, synchronization stalls silently, and recovery begins only after `messageTtl` elapses.
-5. Full synchronization lists the parent registry's entire catalog and then probes repository permissions in batches. A parent registry with far more repositories than the connected registry is permitted to read still pays the full catalog cost on every resync.
 
 ## Reporting issues and asking for help
 
