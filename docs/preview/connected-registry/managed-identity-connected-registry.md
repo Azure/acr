@@ -206,21 +206,16 @@ These roles grant the gateway actions required for activation and message exchan
 
 The example below grants repository actions only for the single repository named `hello`, and leaves the non-repository gateway actions unrestricted.
 
+> [!IMPORTANT]
+> A condition can only reference actions that the assigned role contains. The example below matches `Container Registry Connected Registry Sync Reader`. For a `ReadWrite` connected registry, also negate `content/write`, `content/delete`, `metadata/write`, and `metadata/delete`, which `Container Registry Connected Registry Sync Contributor` contains.
+
 ```bash
 CONDITION="$(cat <<'EOF' | tr -d '\n'
 (
  (
   !(ActionMatches{'Microsoft.ContainerRegistry/registries/repositories/content/read'})
   AND
-  !(ActionMatches{'Microsoft.ContainerRegistry/registries/repositories/content/write'})
-  AND
-  !(ActionMatches{'Microsoft.ContainerRegistry/registries/repositories/content/delete'})
-  AND
   !(ActionMatches{'Microsoft.ContainerRegistry/registries/repositories/metadata/read'})
-  AND
-  !(ActionMatches{'Microsoft.ContainerRegistry/registries/repositories/metadata/write'})
-  AND
-  !(ActionMatches{'Microsoft.ContainerRegistry/registries/repositories/metadata/delete'})
  )
  OR
  (
@@ -494,15 +489,14 @@ kubectl logs --namespace "$NAMESPACE" "$POD" | head -50
 
 The connected registry pod should be running, and its startup logs should show successful activation rather than an authentication error. If activation fails, see [Troubleshooting](#troubleshooting).
 
-The connected registry uses a `ClusterIP` service. Run the following commands on a cluster node to discover its endpoint:
+The connected registry uses a `ClusterIP` service named after the connected registry. Run the following commands on a cluster node to discover its endpoint:
 
 ```bash
-CR_SERVICE="$(kubectl --namespace "$NAMESPACE" get services \
-  --output jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep -v cert-manager | head -1)"
-CR_SERVICE_IP="$(kubectl --namespace "$NAMESPACE" get service "$CR_SERVICE" --output jsonpath='{.spec.clusterIP}')"
-CR_SERVICE_PORT="$(kubectl --namespace "$NAMESPACE" get service "$CR_SERVICE" --output jsonpath='{.spec.ports[0].port}')"
-CR_ENDPOINT="${CR_SERVICE_IP}:${CR_SERVICE_PORT}"
+CR_SERVICE_PORT="$(kubectl --namespace "$NAMESPACE" get service "$CR" --output jsonpath='{.spec.ports[0].port}')"
+CR_ENDPOINT="${CR_CLUSTER_IP}:${CR_SERVICE_PORT}"
 ```
+
+`CR_CLUSTER_IP` is the address you chose in [Step 10](#step-10-deploy-the-connected-registry-arc-extension). Use it rather than re-reading the service address, because it is the address the issued TLS certificate covers.
 
 Create a pull secret from the client token created in [Step 4](#step-4-create-a-client-token-for-local-access), then deploy a pod that uses the secret to pull a synchronized image from the connected registry:
 
@@ -655,6 +649,9 @@ An existing connected registry in sync token mode can be migrated to managed ide
 
     The update should succeed. The cloud resource now uses managed identity mode, but the edge cannot reconnect until its extension receives the new connection string.
 
+    > [!IMPORTANT]
+    > Update the cloud resource before the extension, as shown here. If you update the extension first, the edge presents managed identity credentials to a parent that still expects a sync token, and activation is rejected with `403 DENIED — The token identity is not authorized for this connected registry`, leaving the pod in a crash loop until the cloud resource catches up.
+
 4. Retrieve the connection string in managed identity format and update the existing Arc extension in place so the edge deployment uses the new credentials:
 
     ```bash
@@ -680,6 +677,18 @@ An existing connected registry in sync token mode can be migrated to managed ide
     Pass only the protected settings. Leave the extension's other configuration, including its certificate management settings, unchanged. If the extension cannot be updated in place, or it is stuck in a failed provisioning state, delete and recreate it instead, observing the warning in [Troubleshooting](#troubleshooting).
 
 5. Validate the deployment. See [Validate the deployment](#validate-the-deployment).
+
+6. After validation succeeds, delete the sync token and scope map that the connected registry used in sync token mode. Migration stops using them, but it does not remove them, so they remain enabled with gateway and repository permissions on the parent registry. Both are named after the connected registry:
+
+    ```bash
+    az acr token delete --registry "$ACR" --name "$CR" --yes
+    az acr scope-map delete --registry "$ACR" --name "$CR" --yes
+    ```
+
+    > [!WARNING]
+    > Do not delete them before validation succeeds. If you need to abandon the migration and redeploy the previous extension configuration, the edge deployment still depends on this token.
+
+    Leaving them in place keeps a long-lived credential that can act on the connected registry's gateway, which defeats the purpose of migrating to managed identity.
 
 > [!IMPORTANT]
 > The cloud resource and the deployed Arc extension must use the same authentication mode. Update both, or the connected registry will not reconnect.
