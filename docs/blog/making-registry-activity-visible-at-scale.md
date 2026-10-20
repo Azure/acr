@@ -12,6 +12,11 @@ ms.service: container-registry
 > [!NOTE]
 > This is a temporary public staging copy of an upcoming Azure Tech Community article by Caroline Barker. The final article will be published under Caroline's author profile.
 
+## Learn More
+
+- [Use Grafana dashboards in Azure Container Registry](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-dashboards-with-grafana)
+- [Monitor Azure Container Registry](https://learn.microsoft.com/en-us/azure/container-registry/monitor-container-registry)
+
 Azure Container Registry (ACR) now publishes two new metrics: **Transactions** and **Data Transfer**. For the first time, you can see which operations your registry serves, which region serves them, and how much data (egress) they move, for each registry and each of its geo-replicas.
 
 ACR often serves as a shared distribution point for containerized workloads. Build systems push container images and other artifacts, Kubernetes clusters pull images during deployments, and security and lifecycle tools scan artifacts throughout the day. As those environments grow, high-level signals such as a total pull count or storage used can tell you *that* activity changed, but not *why*. Transactions and Data Transfer fill that gap, so you can explain a traffic spike, catch a failing or throttled pipeline, and see where your data goes.
