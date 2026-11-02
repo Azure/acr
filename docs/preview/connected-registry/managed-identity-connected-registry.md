@@ -77,13 +77,9 @@ Command examples are formatted for the Bash shell and use variables to minimize 
 
 ### Supported Kubernetes distributions
 
-Managed identity authentication depends on Azure Arc workload identity, which supports only specific Kubernetes distributions. [Workload identity prerequisites](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#prerequisites) is the authoritative, current list — always check it rather than the snapshot below. At the time of writing, the supported distributions include:
-
-* Ubuntu Linux running **K3s**
-* **AKS enabled by Azure Arc**
-* **Red Hat OpenShift**
-* **VMware Tanzu TKGm**
-* **AKS on Edge Essentials**
+Managed identity authentication depends on Azure Arc workload identity. See the
+[workload identity prerequisites](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#prerequisites)
+for the supported Kubernetes distributions.
 
 > [!IMPORTANT]
 > A generic Arc-connected Kubernetes cluster is **not** sufficient. If your distribution does not support Azure Arc workload identity, the workload identity webhook will not inject credentials into the connected registry pod and the deployment will fail with a crash loop.
