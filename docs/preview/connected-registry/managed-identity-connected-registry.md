@@ -198,6 +198,9 @@ Assign one of the built-in connected registry sync roles to the managed identity
 
 These roles grant the gateway actions required for activation and message exchange, plus repository content and metadata actions. The gateway actions are not repository-scoped; the repository actions are, so you narrow them with an ABAC condition.
 
+> [!IMPORTANT]
+> Assigning either connected registry sync role at the parent registry scope **without an ABAC condition grants the role's repository permissions to all repositories in that registry**. Because managed identity permissions determine synchronization scope, all repositories are eligible for synchronization. Omitting a condition does **not** create an empty synchronization scope or defer synchronization. To restrict synchronization to selected repositories, include an ABAC condition when assigning the role, as shown below. This follows the [ACR ABAC role assignment behavior](https://learn.microsoft.com/azure/container-registry/container-registry-rbac-abac-repository-permissions#configure-azure-abac-repository-permissions).
+
 ### Define the repository condition
 
 The example below grants repository actions only for the single repository named `hello`, and leaves the non-repository gateway actions unrestricted.
@@ -247,7 +250,7 @@ az role assignment create \
 ```
 
 > [!WARNING]
-> Assign the sync role at **registry scope**, not at subscription or resource group scope. In managed identity mode, the identity's permissions are the only source of truth for the set of repositories that synchronize. A broader inherited role assignment silently widens the sync scope. Assigning a sync role **without** an ABAC condition grants permissions to all repositories in the registry.
+> Assign the sync role at **registry scope**, not at subscription or resource group scope. In managed identity mode, the identity's permissions are the only source of truth for the set of repositories that synchronize. A broader inherited role assignment silently widens the sync scope.
 
 > [!IMPORTANT]
 > Azure RBAC changes can take **up to 10 minutes** to propagate. Deploying the connected registry extension before propagation completes causes activation to fail with `403`. Either wait before deploying, or be prepared to restart the pod. See [Troubleshooting](#troubleshooting).
