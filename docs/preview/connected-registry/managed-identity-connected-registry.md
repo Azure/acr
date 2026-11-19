@@ -321,7 +321,11 @@ az connectedk8s show --name "$ARC_CLUSTER" --resource-group "$RG" \
 
 The expected result is `Connected`.
 
-## Step 7: Align the Kubernetes API server service account issuer
+## Step 7: Configure workload identity federation
+
+Follow the [Azure Arc workload identity guidance](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity), starting with retrieving the OIDC issuer URL. The steps below adapt that flow for Connected Registry, whose Helm chart creates the service account. The API server configuration example is for **K3s**; for other supported distributions, follow the distribution-specific Arc instructions linked below.
+
+### Retrieve the OIDC issuer
 
 Read the Arc OIDC issuer:
 
@@ -333,18 +337,7 @@ echo "$OIDC_ISSUER"
 
 Confirm that `OIDC_ISSUER` contains the Arc cluster's public HTTPS issuer URL before continuing.
 
-Configure your API server to advertise this issuer. The exact procedure depends on your Kubernetes distribution — follow [configure workload identity settings on the Kubernetes cluster](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#configure-workload-identity-settings-on-the-kubernetes-cluster), which covers each supported distribution.
-
-Then verify the issuer advertised by the API server:
-
-```bash
-ADVERTISED_ISSUER="$(kubectl get --raw='/.well-known/openid-configuration' | jq -r '.issuer')"
-printf 'Arc issuer: %s\nAPI server issuer: %s\n' "$OIDC_ISSUER" "$ADVERTISED_ISSUER"
-```
-
-The two values must match, apart from a possible trailing slash. If the API server still reports `https://kubernetes.default.svc.cluster.local`, stop here — the remaining steps appear to succeed, but the connected registry never authenticates.
-
-## Step 8: Create the federated identity credential
+### Create the federated identity credential
 
 The connected registry extension's Helm chart creates its workload identity service account deterministically as **`<extension-name>-wi-sa`** in the extension's release namespace, where `<extension-name>` is the value you pass to `az k8s-extension create --name`. The federated identity credential must exist *before* the pod starts, so use the extension name and default release namespace set in [Set up the environment](#set-up-the-environment) consistently.
 
@@ -362,7 +355,39 @@ az identity federated-credential create \
 > [!IMPORTANT]
 > If you choose a different extension name or namespace, use those same values when building `FIC_SUBJECT` and when deploying the extension. A mismatch prevents the connected registry pod from obtaining a Microsoft Entra ID token.
 
-## Step 9: Install Certificate Management for Azure Arc
+> [!NOTE]
+> Allow a few seconds for the credential to propagate before the first token request, as described in the [Arc workload identity guidance](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#create-the-federated-identity-credential).
+
+### Configure the Kubernetes API server
+
+After creating the credential, configure your API server to issue service account tokens with the Arc OIDC issuer. **The following example is for K3s. For other supported Kubernetes distributions, follow the distribution-specific steps in the [Arc workload identity documentation](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#configure-workload-identity-settings-on-the-kubernetes-cluster).**
+
+On the K3s server node, edit `/etc/rancher/k3s/config.yaml` to include the following API server arguments, as described in the [Arc instructions for K3s clusters](https://learn.microsoft.com/azure/azure-arc/kubernetes/workload-identity#k3s-clusters). Preserve existing settings and merge these entries into any existing `kube-apiserver-arg` list. Replace `<arc-oidc-issuer-url>` with the actual value of `OIDC_ISSUER`; the YAML file does not expand shell variables.
+
+```yaml
+kube-apiserver-arg:
+  - "service-account-issuer=<arc-oidc-issuer-url>"
+  - "service-account-max-token-expiration=24h"
+```
+
+Save the file, then restart K3s **on the server node** to apply the API server configuration change. This restart is not required by credential creation itself.
+
+```bash
+sudo systemctl restart k3s
+```
+
+### Verify the API server issuer
+
+After completing your distribution's configuration steps and waiting for the Kubernetes API server to become available, verify the issuer from your `kubectl` session:
+
+```bash
+ADVERTISED_ISSUER="$(kubectl get --raw='/.well-known/openid-configuration' | jq -r '.issuer')"
+printf 'Arc issuer: %s\nAPI server issuer: %s\n' "$OIDC_ISSUER" "$ADVERTISED_ISSUER"
+```
+
+The two values must match, apart from a possible trailing slash. If the API server still reports `https://kubernetes.default.svc.cluster.local`, stop here — the remaining steps appear to succeed, but the connected registry never authenticates.
+
+## Step 8: Install Certificate Management for Azure Arc
 
 The connected registry serves its endpoint over HTTPS, so it needs a TLS certificate. By default, the connected registry extension installs its own bundled cert-manager.
 
@@ -383,7 +408,7 @@ az k8s-extension create \
 
 Wait for the Certificate Management for Azure Arc extension to provision successfully and its certificate components to become ready before continuing.
 
-## Step 10: Deploy the connected registry Arc extension
+## Step 9: Deploy the connected registry Arc extension
 
 Generate the protected settings file holding the connection string. The command writes `protected-settings-extension.json` without displaying its contents. Keep the file private: although managed identity removes the sync password, the connection string still contains deployment settings.
 
@@ -429,7 +454,7 @@ The extension should provision successfully. Confirm that the connected registry
 > Managed identity support ships in connected registry Arc extension **1.5.0**, so leave auto-upgrade on. To pin a specific version instead, use `--version <version number>` with `--auto-upgrade-minor-version false`. Deploying an earlier extension version does not enable managed identity authentication, and the connected registry falls back to expecting a sync token in its connection string.
 
 > [!IMPORTANT]
-> `cert-manager.install=false` is required when you use Certificate Management for Azure Arc. It is **not** the extension's default. If you omit it, the extension installs its own bundled cert-manager, which collides with the one installed in [Step 9](#step-9-install-certificate-management-for-azure-arc) and the deployment fails. This is the same configuration documented for a preinstalled cert-manager in [Secure deployment options for the connected registry extension](https://learn.microsoft.com/azure/container-registry/tutorial-connected-registry-arc).
+> `cert-manager.install=false` is required when you use Certificate Management for Azure Arc. It is **not** the extension's default. If you omit it, the extension installs its own bundled cert-manager, which collides with the one installed in [Step 8](#step-8-install-certificate-management-for-azure-arc) and the deployment fails. This is the same configuration documented for a preinstalled cert-manager in [Secure deployment options for the connected registry extension](https://learn.microsoft.com/azure/container-registry/tutorial-connected-registry-arc).
 
 The extension has two separate cert-manager settings, and the distinction matters:
 
@@ -480,7 +505,7 @@ CR_SERVICE_PORT="$(kubectl --namespace "$NAMESPACE" get service "$CR" --output j
 CR_ENDPOINT="${CR_CLUSTER_IP}:${CR_SERVICE_PORT}"
 ```
 
-`CR_CLUSTER_IP` is the address you chose in [Step 10](#step-10-deploy-the-connected-registry-arc-extension). Use it rather than re-reading the service address, because it is the address the issued TLS certificate covers.
+`CR_CLUSTER_IP` is the address you chose in [Step 9](#step-9-deploy-the-connected-registry-arc-extension). Use it rather than re-reading the service address, because it is the address the issued TLS certificate covers.
 
 Create a pull secret from the client token created in [Step 4](#step-4-create-a-client-token-for-local-access), then deploy a pod that uses the secret to pull a synchronized image from the connected registry:
 
@@ -519,7 +544,7 @@ EOF
 kubectl rollout status deployment/hello-world-deployment --timeout=120s
 ```
 
-A successful rollout proves the whole chain: the managed identity authenticated to the parent registry, the ABAC condition allowed `hello`, the image synchronized to the edge, and the client token authorized the pull. No TLS flags are needed — the certificate covers the `service.clusterIP` you set in [Step 10](#step-10-deploy-the-connected-registry-arc-extension), and trust distribution already placed the connected registry's CA in the node's container runtime trust store.
+A successful rollout proves the whole chain: the managed identity authenticated to the parent registry, the ABAC condition allowed `hello`, the image synchronized to the edge, and the client token authorized the pull. No TLS flags are needed — the certificate covers the `service.clusterIP` you set in [Step 9](#step-9-deploy-the-connected-registry-arc-extension), and trust distribution already placed the connected registry's CA in the node's container runtime trust store.
 
 If the pod reports `ImagePullBackOff`, inspect the pull error:
 
@@ -548,10 +573,10 @@ kubectl logs --namespace "$NAMESPACE" "$POD" --previous   # if the container res
 
 | Symptom | Likely cause | Resolution |
 |---|---|---|
-| `CrashLoopBackOff`; log reports that `AZURE_TENANT_ID` and `AZURE_FEDERATED_TOKEN_FILE` are required | Workload identity was never injected, because the OIDC issuer or workload identity is not enabled, or the distribution is unsupported | Fix the cluster ([Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity), [Step 7](#step-7-align-the-kubernetes-api-server-service-account-issuer)) and the credential ([Step 8](#step-8-create-the-federated-identity-credential)), then restart the deployment |
+| `CrashLoopBackOff`; log reports that `AZURE_TENANT_ID` and `AZURE_FEDERATED_TOKEN_FILE` are required | Workload identity was never injected, because the OIDC issuer or workload identity is not enabled, or the distribution is unsupported | Fix the cluster and credential by completing [Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity) and [Step 7](#step-7-configure-workload-identity-federation), then restart the deployment |
 | Log reports that the federated token file does not exist | The pod predates the admission webhook, or the projected volume is missing | Delete the pod so it is recreated through the webhook |
 | Log shows `AADSTS70021: No matching federated identity record found for presented assertion` | The credential's issuer or subject does not match the cluster | Compare the credential with the cluster, as shown after this table |
-| The API server reports its issuer as `https://kubernetes.default.svc.cluster.local` | The API server service account issuer was never aligned to the Arc OIDC issuer | Repeat [Step 7](#step-7-align-the-kubernetes-api-server-service-account-issuer), then restart the pod |
+| The API server reports its issuer as `https://kubernetes.default.svc.cluster.local` | The API server service account issuer was never aligned to the Arc OIDC issuer | Complete the API server configuration and verification in [Step 7](#step-7-configure-workload-identity-federation), then restart the pod |
 | Activation fails with `403`; the log reports `status: Forbidden` and the pod restarts | The sync role assignment is missing or still propagating | Verify the assignment, wait up to 10 minutes, then delete the pod |
 | No repositories synchronize, or only some do | The ABAC condition matches no repository names, or not the expected ones, or the role grants gateway actions only | Correct the condition, then run `az acr connected-registry resync` |
 | Synchronization worked and then stopped | The role assignment was removed or narrowed, or the Arc OIDC issuer changed | Restore the permissions and resync. If the narrowing was intentional, resync so the edge catalog is rebuilt from current permissions. If the cluster was rebuilt, recreate the credential with the new issuer |
@@ -559,8 +584,8 @@ kubectl logs --namespace "$NAMESPACE" "$POD" --previous   # if the container res
 | Creation fails, reporting that managed identity sync requires an ABAC-enabled registry | The parent registry uses legacy registry permissions | Opt the registry into ABAC-enabled repository permissions |
 | Creation fails because the feature is not registered | `ConnectedRegistryManagedIdentity` is not registered on the subscription | Complete [Subscription preview registration](#subscription-preview-registration) |
 | ARM rejects the request with a `400` on the `identity` property | The identity does not exist, is in another tenant, is system-assigned, or more than one was supplied | Supply exactly one existing user-assigned managed identity |
-| Extension installation fails on cert-manager CRDs or webhooks, reporting that a resource is owned by another release | The bundled cert-manager collides with Certificate Management for Azure Arc | Delete the extension, then redeploy it with `--config cert-manager.install=false`. See [Step 10](#step-10-deploy-the-connected-registry-arc-extension) |
-| The pod stays `Pending` or `0/1 Ready`, and its TLS secret stays empty | `cert-manager.install=false` was set without installing Certificate Management for Azure Arc, so nothing issues the `Certificate` resources | Install it ([Step 9](#step-9-install-certificate-management-for-azure-arc)), then inspect the request with `kubectl describe certificate -n $NAMESPACE` |
+| Extension installation fails on cert-manager CRDs or webhooks, reporting that a resource is owned by another release | The bundled cert-manager collides with Certificate Management for Azure Arc | Delete the extension, then redeploy it with `--config cert-manager.install=false`. See [Step 9](#step-9-deploy-the-connected-registry-arc-extension) |
+| The pod stays `Pending` or `0/1 Ready`, and its TLS secret stays empty | `cert-manager.install=false` was set without installing Certificate Management for Azure Arc, so nothing issues the `Certificate` resources | Install it ([Step 8](#step-8-install-certificate-management-for-azure-arc)), then inspect the request with `kubectl describe certificate -n $NAMESPACE` |
 
 To compare the federated identity credential against the cluster's actual values:
 
@@ -580,7 +605,7 @@ kubectl rollout restart deployment "$EXTENSION_NAME" --namespace "$NAMESPACE"
 
 For more detail, set `"logging": { "logLevel": "Debug" }` on the connected registry resource. Access tokens are never written to logs; still redact connection strings, tokens, and passwords when sharing output.
 
-Delete and recreate the extension only if its name, namespace, connection string, or managed identity client ID is wrong, or it is stuck in a failed provisioning state. Then repeat [Step 10](#step-10-deploy-the-connected-registry-arc-extension).
+Delete and recreate the extension only if its name, namespace, connection string, or managed identity client ID is wrong, or it is stuck in a failed provisioning state. Then repeat [Step 9](#step-9-deploy-the-connected-registry-arc-extension).
 
 > [!WARNING]
 > Deleting the extension uninstalls the connected registry and interrupts local registry service for every client on the cluster. It also removes chart-managed resources, including the persistent volume claim holding synchronized artifacts and the issued TLS certificates. Prefer restarting the deployment or updating the extension in place whenever the release is recoverable.
@@ -609,7 +634,7 @@ An existing connected registry in sync token mode can be migrated to managed ide
 > [!NOTE]
 > This migration changes the synchronization authentication mode only. Leave the existing deployment's certificate management as it is. Switching an existing deployment between the extension's bundled cert-manager and Certificate Management for Azure Arc is a separate change, and is out of scope for this guide.
 
-1. Complete [Step 2](#step-2-create-the-user-assigned-managed-identity), [Step 3](#step-3-grant-the-managed-identity-permission-on-the-parent-registry), [Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity), [Step 7](#step-7-align-the-kubernetes-api-server-service-account-issuer), and [Step 8](#step-8-create-the-federated-identity-credential): create the managed identity, assign the sync role with an ABAC condition, enable the OIDC issuer and workload identity, align the API server service account issuer, and create the federated identity credential.
+1. Complete [Step 2](#step-2-create-the-user-assigned-managed-identity), [Step 3](#step-3-grant-the-managed-identity-permission-on-the-parent-registry), [Step 6](#step-6-connect-the-cluster-to-azure-arc-with-oidc-and-workload-identity), and [Step 7](#step-7-configure-workload-identity-federation): create the managed identity, assign the sync role with an ABAC condition, enable the OIDC issuer and workload identity, retrieve the issuer URL, create the federated identity credential, and configure and verify the API server service account issuer.
 
 2. Deactivate the connected registry and confirm that it is offline:
 
